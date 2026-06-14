@@ -420,9 +420,5 @@ export const mockService = {
   favorite: favoriteService,
   community: communityService
 }
-  resource: resourceService,
-  banner: bannerService,
-  favorite: favoriteService
-}
 
 export default mockService
