@@ -1,231 +1,155 @@
 // ============================================
-// 设计令牌 Design Tokens
+// 企动库 v2.0 设计令牌
+// 风格：Bento Grid + Glassmorphism + Dark First
 // ============================================
 
 // --------------------------------------------
-// 品牌色彩系统
+// 色彩系统 - 暗色优先
 // --------------------------------------------
 
-// 主色 - 活力橙
+// 深色基底
+$bg-primary: #0A0A0F;
+$bg-secondary: #12121A;
+$bg-tertiary: #1A1A26;
+$bg-elevated: #222233;
+$bg-card: rgba(255, 255, 255, 0.04);
+$bg-card-hover: rgba(255, 255, 255, 0.08);
+
+// 亮色基底
+$bg-light: #F8F9FC;
+$bg-light-card: rgba(255, 255, 255, 0.85);
+$bg-light-secondary: #EEEEF5;
+
+// 品牌渐变
+$gradient-primary: linear-gradient(135deg, #FF6B35, #FF9A5C);
+$gradient-secondary: linear-gradient(135deg, #6366F1, #8B5CF6);
+$gradient-success: linear-gradient(135deg, #10B981, #34D399);
+$gradient-warning: linear-gradient(135deg, #F59E0B, #FBBF24);
+$gradient-danger: linear-gradient(135deg, #EF4444, #F87171);
+$gradient-info: linear-gradient(135deg, #3B82F6, #60A5FA);
+$gradient-aurora: linear-gradient(135deg, #6366F1, #EC4899, #F59E0B);
+$gradient-sunset: linear-gradient(135deg, #FF6B35, #EC4899);
+$gradient-ocean: linear-gradient(135deg, #3B82F6, #06B6D4);
+
+// 品牌纯色
 $color-primary: #FF6B35;
-$color-primary-light: #FF8C5A;
-$color-primary-lighter: #FFAD80;
+$color-primary-light: #FF9A5C;
 $color-primary-dark: #E55A2B;
-$color-primary-darker: #CC4A1F;
+$color-secondary: #6366F1;
+$color-secondary-light: #8B5CF6;
+$color-accent: #EC4899;
+$color-accent-light: #F472B6;
 
-// 辅助色 - 信任蓝
-$color-secondary: #1890FF;
-$color-secondary-light: #40A9FF;
-$color-secondary-lighter: #69C0FF;
-$color-secondary-dark: #096DD9;
-$color-secondary-darker: #0050B3;
-
-// --------------------------------------------
 // 功能色
-// --------------------------------------------
+$color-success: #10B981;
+$color-warning: #F59E0B;
+$color-danger: #EF4444;
+$color-info: #3B82F6;
 
-// 成功
-$color-success: #52C41A;
-$color-success-light: #73D13D;
-$color-success-lighter: #95DE64;
-$color-success-dark: #389E0D;
-$color-success-darker: #237804;
+// 文本色 - 暗色模式
+$text-primary: rgba(255, 255, 255, 0.95);
+$text-secondary: rgba(255, 255, 255, 0.65);
+$text-tertiary: rgba(255, 255, 255, 0.40);
+$text-placeholder: rgba(255, 255, 255, 0.25);
 
-// 警告
-$color-warning: #FAAD14;
-$color-warning-light: #FFC53D;
-$color-warning-lighter: #FFD666;
-$color-warning-dark: #D48806;
-$color-warning-darker: #AD6800;
+// 文本色 - 亮色模式
+$text-dark-primary: rgba(0, 0, 0, 0.88);
+$text-dark-secondary: rgba(0, 0, 0, 0.60);
+$text-dark-tertiary: rgba(0, 0, 0, 0.38);
 
-// 危险
-$color-danger: #FF4D4F;
-$color-danger-light: #FF7875;
-$color-danger-lighter: #FFA39E;
-$color-danger-dark: #CF1322;
-$color-danger-darker: #A8071A;
-
-// 信息
-$color-info: #1890FF;
-$color-info-light: #40A9FF;
-$color-info-lighter: #69C0FF;
-$color-info-dark: #096DD9;
-$color-info-darker: #0050B3;
+// 边框
+$border-color: rgba(255, 255, 255, 0.08);
+$border-color-light: rgba(0, 0, 0, 0.08);
+$border-highlight: rgba(255, 255, 255, 0.15);
 
 // --------------------------------------------
-// 中性色
+// Glassmorphism 令牌
 // --------------------------------------------
+$glass-bg: rgba(255, 255, 255, 0.05);
+$glass-bg-strong: rgba(255, 255, 255, 0.10);
+$glass-border: rgba(255, 255, 255, 0.10);
+$glass-border-strong: rgba(255, 255, 255, 0.18);
+$glass-blur: 20px;
+$glass-blur-strong: 40px;
 
-$color-white: #FFFFFF;
-$color-black: #000000;
-
-// 灰度色阶
-$color-gray-50: #FAFAFA;
-$color-gray-100: #F5F5F5;
-$color-gray-200: #F0F0F0;
-$color-gray-300: #D9D9D9;
-$color-gray-400: #BFBFBF;
-$color-gray-500: #8C8C8C;
-$color-gray-600: #595959;
-$color-gray-700: #434343;
-$color-gray-800: #262626;
-$color-gray-900: #1F1F1F;
+// 亮色玻璃
+$glass-light-bg: rgba(255, 255, 255, 0.70);
+$glass-light-border: rgba(255, 255, 255, 0.50);
 
 // --------------------------------------------
-// 文本色
+// 字体体系
 // --------------------------------------------
+$font-xs: 20rpx;
+$font-sm: 24rpx;
+$font-base: 28rpx;
+$font-md: 32rpx;
+$font-lg: 36rpx;
+$font-xl: 44rpx;
+$font-2xl: 56rpx;
+$font-3xl: 72rpx;
 
-$color-text-primary: rgba(0, 0, 0, 0.85);
-$color-text-secondary: rgba(0, 0, 0, 0.65);
-$color-text-tertiary: rgba(0, 0, 0, 0.45);
-$color-text-disabled: rgba(0, 0, 0, 0.25);
-$color-text-placeholder: rgba(0, 0, 0, 0.35);
-
-// 反色文本
-$color-text-inverse: rgba(255, 255, 255, 0.85);
-$color-text-inverse-secondary: rgba(255, 255, 255, 0.65);
-
-// --------------------------------------------
-// 背景色
-// --------------------------------------------
-
-$color-bg-page: #F5F5F5;
-$color-bg-container: #FFFFFF;
-$color-bg-elevated: #FFFFFF;
-$color-bg-mask: rgba(0, 0, 0, 0.45);
-$color-bg-hover: rgba(0, 0, 0, 0.04);
-$color-bg-active: rgba(0, 0, 0, 0.08);
+$weight-normal: 400;
+$weight-medium: 500;
+$weight-semibold: 600;
+$weight-bold: 700;
+$weight-black: 800;
 
 // --------------------------------------------
-// 边框色
+// 间距体系 - Bento Grid 8px基准
 // --------------------------------------------
-
-$color-border: #D9D9D9;
-$color-border-light: #F0F0F0;
-$color-border-dark: #BFBFBF;
-
-// --------------------------------------------
-// 字体系统
-// --------------------------------------------
-
-// 字体族
-$font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
-  'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,
-  sans-serif;
-$font-family-code: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code',
-  'Fira Mono', 'Droid Sans Mono', 'Source Code Pro', monospace;
-
-// 字号体系 (rpx)
-$font-size-xs: 20rpx;
-$font-size-sm: 24rpx;
-$font-size-base: 28rpx;
-$font-size-md: 32rpx;
-$font-size-lg: 36rpx;
-$font-size-xl: 40rpx;
-
-// 字重
-$font-weight-normal: 400;
-$font-weight-medium: 500;
-$font-weight-semibold: 600;
-$font-weight-bold: 700;
-
-// 行高
-$line-height-tight: 1.25;
-$line-height-base: 1.5;
-$line-height-loose: 1.75;
+$space-1: 8rpx;
+$space-2: 16rpx;
+$space-3: 24rpx;
+$space-4: 32rpx;
+$space-5: 40rpx;
+$space-6: 48rpx;
+$space-8: 64rpx;
+$space-10: 80rpx;
+$space-12: 96rpx;
 
 // --------------------------------------------
-// 间距体系 (rpx)
+// 圆角体系
 // --------------------------------------------
-
-$spacing-xs: 8rpx;
-$spacing-sm: 16rpx;
-$spacing-base: 24rpx;
-$spacing-md: 32rpx;
-$spacing-lg: 40rpx;
-$spacing-xl: 48rpx;
-
-// --------------------------------------------
-// 圆角体系 (rpx)
-// --------------------------------------------
-
-$border-radius-sm: 8rpx;
-$border-radius-base: 16rpx;
-$border-radius-lg: 24rpx;
-$border-radius-full: 9999rpx;
+$radius-sm: 12rpx;
+$radius-md: 20rpx;
+$radius-lg: 28rpx;
+$radius-xl: 36rpx;
+$radius-2xl: 48rpx;
+$radius-full: 9999rpx;
 
 // --------------------------------------------
 // 阴影体系
 // --------------------------------------------
-
-$shadow-sm: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
-$shadow-md: 0 4rpx 16rpx rgba(0, 0, 0, 0.12);
-$shadow-lg: 0 8rpx 32rpx rgba(0, 0, 0, 0.16);
-
-// --------------------------------------------
-// 过渡动画
-// --------------------------------------------
-
-$transition-duration-fast: 0.15s;
-$transition-duration-base: 0.25s;
-$transition-duration-slow: 0.35s;
-
-$transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-$transition-timing-function-ease: ease;
-$transition-timing-function-ease-in: ease-in;
-$transition-timing-function-ease-out: ease-out;
-$transition-timing-function-ease-in-out: ease-in-out;
+$shadow-sm: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
+$shadow-md: 0 8rpx 24rpx rgba(0, 0, 0, 0.20);
+$shadow-lg: 0 16rpx 48rpx rgba(0, 0, 0, 0.30);
+$shadow-glow-primary: 0 0 40rpx rgba(255, 107, 53, 0.30);
+$shadow-glow-secondary: 0 0 40rpx rgba(99, 102, 241, 0.30);
+$shadow-glow-accent: 0 0 40rpx rgba(236, 72, 153, 0.30);
 
 // --------------------------------------------
-// 层级系统
+// 层级
 // --------------------------------------------
-
-$z-index-dropdown: 1000;
-$z-index-sticky: 1020;
-$z-index-fixed: 1030;
-$z-index-modal-backdrop: 1040;
-$z-index-modal: 1050;
-$z-index-popover: 1060;
-$z-index-tooltip: 1070;
-$z-index-toast: 1080;
+$z-base: 1;
+$z-dropdown: 100;
+$z-sticky: 200;
+$z-fixed: 300;
+$z-modal: 400;
+$z-toast: 500;
+$z-tooltip: 600;
 
 // --------------------------------------------
-// 断点 (px)
+// 过渡
 // --------------------------------------------
-
-$breakpoint-xs: 320px;
-$breakpoint-sm: 576px;
-$breakpoint-md: 768px;
-$breakpoint-lg: 992px;
-$breakpoint-xl: 1200px;
-$breakpoint-xxl: 1400px;
+$ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+$ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+$duration-fast: 0.15s;
+$duration-base: 0.25s;
+$duration-slow: 0.4s;
 
 // --------------------------------------------
-// 组件变量
+// Bento Grid 布局
 // --------------------------------------------
-
-// 按钮
-$button-height-sm: 56rpx;
-$button-height-base: 72rpx;
-$button-height-lg: 88rpx;
-$button-padding-sm: $spacing-sm $spacing-base;
-$button-padding-base: $spacing-base $spacing-md;
-$button-padding-lg: $spacing-md $spacing-lg;
-
-// 输入框
-$input-height-sm: 56rpx;
-$input-height-base: 72rpx;
-$input-height-lg: 88rpx;
-$input-padding-horizontal: $spacing-base;
-$input-border-radius: $border-radius-sm;
-
-// 卡片
-$card-padding: $spacing-base;
-$card-border-radius: $border-radius-base;
-$card-shadow: $shadow-sm;
-
-// 导航栏
-$navbar-height: 88rpx;
-
-// TabBar
-$tabbar-height: 100rpx;
+$bento-gap: 16rpx;
+$bento-columns: 2;
+$bento-card-min: 300rpx;
