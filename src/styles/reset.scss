@@ -1,0 +1,74 @@
+/* ============================================
+   Reset Styles - 样式重置
+   ============================================ */
+
+/* 清除默认边距与内边距 */
+view,
+text,
+image,
+scroll-view,
+swiper,
+swiper-item,
+input,
+textarea,
+button,
+label,
+form {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 图片自适应 */
+image {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* 链接重置 */
+navigator {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* 去除列表默认样式 */
+rich-text {
+  line-height: 1.6;
+}
+
+/* 滚动容器重置 */
+scroll-view {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 输入框重置 */
+input,
+textarea {
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: transparent;
+}
+
+/* 去除按钮默认样式 */
+button {
+  font-size: inherit;
+  text-align: center;
+  text-decoration: none;
+  overflow: hidden;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+button::after {
+  display: none;
+}
+
+/* 去除点击高亮 */
+view,
+text,
+navigator,
+image {
+  -webkit-tap-highlight-color: transparent;
+}
