@@ -161,6 +161,76 @@ const adminData = {
   token: 'admin_token_' + Date.now()
 }
 
+// ========== 社区 Mock ==========
+const usersData = [
+  { id: 'u1', nickname: '营销老司机', avatar: '', company: '字节跳动', bio: '10年营销经验，专注品牌增长', followers: 1280, posts: 45 },
+  { id: 'u2', nickname: '运营小能手', avatar: '', company: '腾讯科技', bio: '私域运营专家', followers: 856, posts: 32 },
+  { id: 'u3', nickname: '品牌策划师', avatar: '', company: '阿里巴巴', bio: '从0到1打造品牌', followers: 2100, posts: 68 },
+  { id: 'u4', nickname: '短视频达人', avatar: '', company: '快手科技', bio: '短视频运营实战派', followers: 3200, posts: 120 },
+  { id: 'u5', nickname: '私域增长官', avatar: '', company: '美团点评', bio: '社群裂变方法论', followers: 980, posts: 28 }
+]
+
+const topicsData = [
+  { id: 't1', name: '品牌营销', icon: '📢', posts: 156, hot: true },
+  { id: 't2', name: '短视频运营', icon: '📺', posts: 89, hot: true },
+  { id: 't3', name: '私域流量', icon: '💬', posts: 67, hot: true },
+  { id: 't4', name: '小红书种草', icon: '📝', posts: 45 },
+  { id: 't5', name: '直播带货', icon: '🎬', posts: 38 },
+  { id: 't6', name: '达人合作', icon: '🌟', posts: 52 },
+  { id: 't7', name: '活动策划', icon: '🎉', posts: 31 },
+  { id: 't8', name: '企业服务', icon: '🏢', posts: 28 }
+]
+
+const postsData = Array.from({ length: 20 }, (_, i) => ({
+  _id: `post_${i + 1}`,
+  author: usersData[i % 5],
+  content: [
+    '分享一个品牌增长的底层逻辑：用户心智占位是关键。最近帮一个新品牌做策划，3个月做到品类TOP3，核心就是找准了差异化定位。',
+    '短视频运营的黄金法则：前3秒定生死！测试了100+条视频，发现开场钩子决定80%的完播率。分享我的实战经验...',
+    '私域运营不要只盯着GMV！真正的价值是用户LTV。我们团队用这套方法，把复购率从15%提升到了45%',
+    '小红书种草的真相：不是发笔记就能爆。研究了50个爆款案例，发现都有这几个共性...',
+    '直播带货的冷启动攻略：新号首播怎么做？分享我们团队的7天破冷启动SOP',
+    '达人合作避坑指南：签约达人前一定要看清这几点！踩过的坑分享给大家',
+    '活动策划的成本控制：如何在有限预算内做出影响力？分享几个实战案例',
+    '企业服务选型心得：试用了10+个SaaS工具，总结出这套选型方法论',
+    '品牌联名怎么玩才能双赢？分享5个成功案例的底层逻辑',
+    '社群运营的4个阶段：从拉新到裂变，每个阶段的关键动作是什么？',
+    '内容营销的ROI怎么算？分享我们团队的测算模型和实操案例',
+    '新品上市的完整SOP：从0到1如何引爆？分享6个月实战经验',
+    'KOC投放策略：如何用小预算撬动大流量？测试后的最优解',
+    '品牌危机公关处理：遇到负面舆情怎么办？这套流程能帮到你',
+    '私域工具选型：企微vs个人微信？深度对比分析',
+    '短视频团队搭建：从剪辑到运营，需要什么样的人？',
+    '小红书投放预算分配：信息流vs达人合作哪个更值得？',
+    '直播话术设计：如何让观众下单？拆解10个爆款直播间',
+    '品牌视觉升级指南：从Logo到VI，如何保持一致性？',
+    '用户增长模型：AARRR之外还有什么？分享新的增长框架'
+  ][i],
+  images: [],
+  topic: topicsData[i % 8],
+  like_count: randInt(50, 500),
+  comment_count: randInt(5, 50),
+  share_count: randInt(10, 100),
+  view_count: randInt(500, 5000),
+  is_hot: i < 5,
+  created_at: new Date(Date.now() - randInt(1, 72) * 3600000).toISOString()
+}))
+
+const commentsData = Array.from({ length: 50 }, (_, i) => ({
+  _id: `comment_${i + 1}`,
+  post_id: `post_${(i % 20) + 1}`,
+  author: usersData[(i + 2) % 5],
+  content: [
+    '干货满满！收藏了', '这个方法论很实用', '学习了，感谢分享',
+    '我们也在做类似的项目，可以交流一下', '有具体的数据案例吗？', '这个思路很新颖',
+    '执行层面有什么建议？', '工具推荐哪个？', '预算大概多少？',
+    '效果怎么样？', '多久能看到结果？', '团队需要多少人？',
+    '外包还是自己做比较好？', '有什么风险要注意？', 'ROI能达到多少？'
+  ][i % 15],
+  like_count: randInt(1, 30),
+  created_at: new Date(Date.now() - randInt(1, 48) * 3600000).toISOString()
+}))
+
 // ========== 服务层 ==========
 export const userService = {
   async login(code) { await delay(); return userData },
@@ -265,6 +335,79 @@ export const favoriteService = {
   }
 }
 
+export const communityService = {
+  // 话题列表
+  topics() { return topicsData },
+
+  // 帖子列表
+  posts(params = {}) {
+    const { page = 1, pageSize = 10, topic_id, sort = 'latest', hot } = params
+    let list = [...postsData]
+
+    if (topic_id) list = list.filter(p => p.topic?.id === topic_id)
+    if (hot) list = list.filter(p => p.is_hot)
+
+    if (sort === 'hot') list.sort((a, b) => b.like_count + b.comment_count - a.like_count - a.comment_count)
+    else list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+
+    const start = (page - 1) * pageSize
+    return { list: list.slice(start, start + pageSize), total: list.length }
+  },
+
+  // 帖子详情
+  postDetail(id) { return postsData.find(p => p._id === id) || null },
+
+  // 发布帖子
+  createPost(data) {
+    const item = {
+      _id: uid(),
+      author: { ...usersData[0], id: 'demo_user_001', nickname: '演示用户', company: '示例科技' },
+      content: data.content,
+      images: data.images || [],
+      topic: topicsData.find(t => t.id === data.topic_id),
+      like_count: 0,
+      comment_count: 0,
+      share_count: 0,
+      view_count: 0,
+      is_hot: false,
+      created_at: new Date().toISOString()
+    }
+    postsData.unshift(item)
+    return item
+  },
+
+  // 评论列表
+  comments(postId) {
+    return commentsData.filter(c => c.post_id === postId)
+  },
+
+  // 发布评论
+  createComment(postId, content) {
+    const item = {
+      _id: uid(),
+      post_id: postId,
+      author: { ...usersData[0], id: 'demo_user_001', nickname: '演示用户' },
+      content,
+      like_count: 0,
+      created_at: new Date().toISOString()
+    }
+    commentsData.unshift(item)
+    const post = postsData.find(p => p._id === postId)
+    if (post) post.comment_count++
+    return item
+  },
+
+  // 点赞
+  like(postId) {
+    const post = postsData.find(p => p._id === postId)
+    if (post) { post.like_count++; return { liked: true, count: post.like_count } }
+    return { liked: false, count: 0 }
+  },
+
+  // 用户信息
+  userInfo(userId) { return usersData.find(u => u.id === userId) || null }
+}
+
 // 统一导出
 export const mockService = {
   user: userService,
@@ -272,6 +415,11 @@ export const mockService = {
   lead: leadService,
   product: productService,
   order: orderService,
+  resource: resourceService,
+  banner: bannerService,
+  favorite: favoriteService,
+  community: communityService
+}
   resource: resourceService,
   banner: bannerService,
   favorite: favoriteService
