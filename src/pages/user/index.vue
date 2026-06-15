@@ -115,17 +115,15 @@ const followCount = ref(0)
 
 const menuItems = [
   { label: '我的需求', path: '/pages/user/my-demands', icon: '📋' },
-  { label: '我的对接', path: '/pages/user/my-leads', icon: '🤝' },
-  { label: '我的订单', path: '/pages/user/my-orders', icon: '📦' },
-  { label: '我的收藏', path: '/pages/user/my-favorites', icon: '❤️' },
-  { label: '资料下载', path: '/pages/resource/list', icon: '📚' },
-  { label: '消息中心', path: '/pages/message/index', icon: '🔔' },
-  { label: '积分签到', path: '/pages/points/index', icon: '🎁' },
-  { label: '优惠券', path: '/pages/coupon/index', icon: '🎫' },
+  { label: '成交管理', path: '/pages/deals/index', icon: '🤝' },
   { label: '我的订单', path: '/pages/order/index', icon: '📦' },
   { label: '购物车', path: '/pages/cart/index', icon: '🛒' },
-  { label: '成交管理', path: '/pages/deals/index', icon: '🤝' },
+  { label: '我的收藏', path: '/pages/user/my-favorites', icon: '❤️' },
   { label: '我的关注', path: '/pages/follow/index', icon: '👥' },
+  { label: '企业认证', path: '/pages/verify/index', icon: '🏛️' },
+  { label: '数据看板', path: '/pages/dashboard/index', icon: '📊' },
+  { label: '积分签到', path: '/pages/points/index', icon: '🎁' },
+  { label: '优惠券', path: '/pages/coupon/index', icon: '🎫' },
   { label: '消息中心', path: '/pages/message/index', icon: '🔔' },
   { label: '资料下载', path: '/pages/resource/list', icon: '📚' }
 ]

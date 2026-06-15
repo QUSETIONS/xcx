@@ -31,7 +31,9 @@
     { "path": "pages/deals/index", "style": { "navigationBarTitleText": "成交管理", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
     { "path": "pages/profile/index", "style": { "navigationBarTitleText": "用户主页", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
     { "path": "pages/cart/index", "style": { "navigationBarTitleText": "购物车", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
-    { "path": "pages/order/index", "style": { "navigationBarTitleText": "我的订单", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } }
+    { "path": "pages/order/index", "style": { "navigationBarTitleText": "我的订单", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
+    { "path": "pages/verify/index", "style": { "navigationBarTitleText": "企业认证", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
+    { "path": "pages/search/index", "style": { "navigationBarTitleText": "搜索", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } }
   ],
   "globalStyle": {
     "navigationBarTextStyle": "black",

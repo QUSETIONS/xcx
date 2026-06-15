@@ -64,6 +64,8 @@
           <text class="quality-tip" v-for="(tip, i) in qualityScore.tips.slice(0, 3)" :key="i">• {{ tip }}</text>
         </view>
       </view>
+
+      <view v-if="form.quote_type === 'self'" class="form-card">
         <text class="form-label">预算区间（元）</text>
         <view class="budget-row">
           <input class="budget-input" type="digit" v-model="budgetMin" placeholder="最低"/>

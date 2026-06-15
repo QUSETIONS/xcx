@@ -748,8 +748,55 @@ export const dashboardService = {
   }
 }
 
-// 统一导出
-export const mockService = {
+// ========== 搜索 Mock ==========
+const hotKeywords = ['短视频代运营', '品牌全案', '抖音达人', '私域流量', '宣传片拍摄', '小红书种草', '直播带货', 'VI设计']
+export const searchService = {
+  hotKeywords() { return hotKeywords },
+  history() {
+    try { return JSON.parse(uni.getStorageSync('search_history') || '[]') } catch { return [] }
+  },
+  addHistory(keyword) {
+    if (!keyword || !keyword.trim()) return
+    const list = this.history().filter(k => k !== keyword)
+    list.unshift(keyword)
+    uni.setStorageSync('search_history', JSON.stringify(list.slice(0, 10)))
+  },
+  clearHistory() { uni.removeStorageSync('search_history') },
+  search(keyword) {
+    const kw = (keyword || '').trim().toLowerCase()
+    if (!kw) return { demands: [], products: [], posts: [], total: 0 }
+    const demands = demandData.filter(d => d.title.toLowerCase().includes(kw) || d.category_name.toLowerCase().includes(kw)).slice(0, 5)
+    const products = productData.filter(p => p.title.toLowerCase().includes(kw) || (p.tags || []).some(t => t.toLowerCase().includes(kw))).slice(0, 4)
+    const posts = postsData.filter(p => p.content.toLowerCase().includes(kw)).slice(0, 4)
+    return { demands, products, posts, total: demands.length + products.length + posts.length }
+  }
+}
+
+// ========== 企业认证 Mock ==========
+export const verifyService = {
+  _key: 'qiye_ku_verify',
+  getInfo() {
+    try { return JSON.parse(uni.getStorageSync(this._key) || 'null') } catch { return null }
+    // 默认状态：未认证
+  },
+  status() {
+    const info = this.getInfo()
+    if (!info) return 'none'
+    return info.status // none / pending / verified / rejected
+  },
+  submit(data) {
+    const info = { ...data, status: 'pending', submitted_at: new Date().toISOString() }
+    uni.setStorageSync(this._key, JSON.stringify(info))
+    return info
+  },
+  // 模拟审核通过
+  approve() {
+    const info = this.getInfo()
+    if (info) { info.status = 'verified'; info.verified_at = new Date().toISOString(); uni.setStorageSync(this._key, JSON.stringify(info)) }
+    return info
+  }
+}
+
 // ========== 缓存层 ==========
 const _cache = {}
 function cacheGet(key) { return _cache[key] }
@@ -853,7 +900,9 @@ export const mockService = {
   follow: followService,
   deal: dealService,
   notify: notifyService,
-  cart: cartService
+  cart: cartService,
+  search: searchService,
+  verify: verifyService
 }
 
 export default mockService

@@ -140,7 +140,7 @@ function getServiceIcon(type) {
 }
 function formatQuote(type) { return QUOTE_TYPES.find(q => q.value === type)?.label || '面议' }
 
-function goSearch() { uni.switchTab({ url: '/pages/demand/list' }) }
+function goSearch() { uni.navigateTo({ url: '/pages/search/index' }) }
 function goDemandList() { uni.switchTab({ url: '/pages/demand/list' }) }
 function goMallList() { uni.switchTab({ url: '/pages/mall/list' }) }
 function goCommunity() { uni.switchTab({ url: '/pages/community/index' }) }

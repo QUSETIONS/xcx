@@ -84,6 +84,29 @@
       </view>
     </view>
 
+    <!-- 待办提醒 -->
+    <view class="metrics-card">
+      <text class="chart-title">待办事项</text>
+      <view class="todo-item" @tap="goOrder">
+        <text class="todo-icon">📦</text>
+        <text class="todo-text">待处理订单</text>
+        <text class="todo-badge">3</text>
+        <text class="todo-arrow">›</text>
+      </view>
+      <view class="todo-item" @tap="goDeals">
+        <text class="todo-icon">🤝</text>
+        <text class="todo-text">新对接待回复</text>
+        <text class="todo-badge">5</text>
+        <text class="todo-arrow">›</text>
+      </view>
+      <view class="todo-item" @tap="goMessage">
+        <text class="todo-icon">💬</text>
+        <text class="todo-text">未读消息</text>
+        <text class="todo-badge">2</text>
+        <text class="todo-arrow">›</text>
+      </view>
+    </view>
+
     <view style="height: 40rpx;"></view>
   </view>
 </template>
@@ -121,6 +144,10 @@ function getCatWidth(count) {
   const max = Math.max(...categoryStats.value.map(c => c.count))
   return Math.round(count / max * 100)
 }
+
+function goOrder() { uni.navigateTo({ url: '/pages/order/index' }) }
+function goDeals() { uni.navigateTo({ url: '/pages/deals/index' }) }
+function goMessage() { uni.navigateTo({ url: '/pages/message/index' }) }
 </script>
 
 <style scoped>
@@ -171,4 +198,11 @@ function getCatWidth(count) {
 .metric-label { font-size: 28rpx; color: rgba(0,0,0,0.6); }
 .metric-value { font-size: 30rpx; font-weight: bold; color: rgba(0,0,0,0.85); }
 .metric-value.credit { color: #FF6B35; }
+
+.todo-item { display: flex; align-items: center; padding: 20rpx 0; border-bottom: 1rpx solid #F5F6FA; }
+.todo-item:last-child { border-bottom: none; }
+.todo-icon { font-size: 36rpx; margin-right: 16rpx; }
+.todo-text { flex: 1; font-size: 28rpx; color: rgba(0,0,0,0.85); }
+.todo-badge { font-size: 24rpx; color: #FFFFFF; background: #FF6B35; border-radius: 20rpx; padding: 2rpx 16rpx; min-width: 36rpx; text-align: center; }
+.todo-arrow { font-size: 32rpx; color: rgba(0,0,0,0.2); margin-left: 12rpx; }
 </style>
