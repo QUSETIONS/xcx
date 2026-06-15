@@ -168,10 +168,8 @@
 import { ref, onMounted } from 'vue'
 import { DEMAND_CATEGORIES, QUOTE_TYPES } from '@/config/constants'
 import { demandService, productService } from '@/mock/service'
-import { useUserStore } from '@/stores/user'
 
-const userStore = useUserStore()
-const userName = ref(userStore.nickname || '创业者')
+const userName = ref('创业者')
 const hasNotify = ref(false)
 const loading = ref(true)
 
