@@ -61,6 +61,52 @@
       </view>
     </view>
 
+    <!-- AI智能匹配服务商 -->
+    <view class="card" v-if="matchedProviders.length">
+      <text class="card-label">🎯 AI推荐服务商</text>
+      <view class="provider-list">
+        <view class="provider-item" v-for="(item, idx) in matchedProviders" :key="item._id">
+          <view class="provider-rank">{{ idx + 1 }}</view>
+          <view class="provider-info">
+            <view class="provider-name-row">
+              <text class="provider-name">{{ item.name }}</text>
+              <text class="provider-match">{{ item.match_percent }}</text>
+            </view>
+            <text class="provider-desc">{{ item.category_name }} · ⭐{{ item.rating }} · {{ item.deal_count }}单</text>
+            <view class="provider-tags">
+              <text class="provider-tag" v-for="(tag, i) in item.tags" :key="i">{{ tag }}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 用户评价 -->
+    <view class="card">
+      <view class="review-header">
+        <text class="card-label">💬 用户评价</text>
+        <view class="review-summary">
+          <text class="review-avg">{{ reviewAvg.avg }}</text>
+          <text class="review-stars">{{ getStars(reviewAvg.avg) }}</text>
+          <text class="review-count">{{ reviewAvg.count }}条</text>
+        </view>
+      </view>
+      <view class="review-list" v-if="reviews.length">
+        <view class="review-item" v-for="item in reviews" :key="item._id">
+          <view class="review-top">
+            <text class="reviewer-name">{{ item.reviewer.nickname }}</text>
+            <text class="review-stars">{{ getStars(item.rating) }}</text>
+          </view>
+          <text class="review-content">{{ item.content }}</text>
+          <view class="review-tags" v-if="item.tags && item.tags.length">
+            <text class="review-tag" v-for="(tag, i) in item.tags" :key="i">{{ tag }}</text>
+          </view>
+          <text class="review-time">{{ formatDate(item.created_at) }}</text>
+        </view>
+      </view>
+      <view v-else class="review-empty"><text>暂无评价</text></view>
+    </view>
+
     <!-- 底部操作 -->
     <view class="action-bar">
       <view class="action-left">
@@ -92,11 +138,14 @@
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { QUOTE_TYPES } from '@/config/constants'
-import { demandService, leadService, favoriteService } from '@/mock/service'
+import { demandService, leadService, favoriteService, reviewService, matchService } from '@/mock/service'
 
 const demandId = ref('')
 const demand = ref(null)
 const similarDemands = ref([])
+const matchedProviders = ref([])
+const reviews = ref([])
+const reviewAvg = ref({ avg: 0, count: 0 })
 const isFavorited = ref(false)
 const showLeadModal = ref(false)
 const submitting = ref(false)
@@ -105,17 +154,21 @@ const leadForm = ref({ contact_name: '', phone: '', wechat: '', message: '' })
 function formatQuote(type) { return QUOTE_TYPES.find(q => q.value === type)?.label || '面议' }
 function formatDate(t) { if (!t) return ''; const d = new Date(t); return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}` }
 function getHeat() { return demand.value ? Math.min(100, Math.round((demand.value.view_count / 3000) * 100)) : 0 }
+function getStars(rating) { const r = Math.round(rating); return '⭐'.repeat(r) + '☆'.repeat(5 - r) }
 
 function loadDetail() {
   demand.value = demandService.detail(demandId.value)
   if (!demand.value) return
   isFavorited.value = favoriteService.check({ userId: 'demo_user_001', targetType: 'demand', targetId: demandId.value })
-  // 智能推荐相似需求：同分类+不同ID
   const all = demandService.list({ pageSize: 100 })
   similarDemands.value = all.list
     .filter(d => d._id !== demandId.value && d.category_id === demand.value.category_id)
     .sort((a, b) => b.view_count - a.view_count)
     .slice(0, 3)
+  matchedProviders.value = matchService.matchProviders(demand.value)
+  const reviewRes = reviewService.list({ target_id: demandId.value, pageSize: 5 })
+  reviews.value = reviewRes.list
+  reviewAvg.value = reviewService.avgRating(demandId.value)
 }
 
 function toggleFavorite() {
@@ -179,21 +232,49 @@ onLoad((q) => { demandId.value = q.id; loadDetail() })
 .similar-title { font-size: 26rpx; font-weight: bold; color: rgba(0,0,0,0.7); display: block; margin-bottom: 4rpx; }
 .similar-company { font-size: 22rpx; color: rgba(0,0,0,0.5); }
 
-.action-bar { position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 16rpx 24rpx; padding-bottom: calc(16rpx + env(safe-area-inset-bottom)); background: #12121A; border-top: 1rpx solid rgba(0,0,0,0.06); }
+/* AI匹配服务商 */
+.provider-list { display: flex; flex-direction: column; }
+.provider-item { display: flex; margin-bottom: 12rpx; background: #F8F9FC; border-radius: 12rpx; padding: 16rpx; }
+.provider-rank { width: 40rpx; height: 40rpx; border-radius: 8rpx; background: #FF6B35; color: #fff; font-size: 24rpx; font-weight: bold; display: flex; align-items: center; justify-content: center; margin-right: 12rpx; flex-shrink: 0; }
+.provider-info { flex: 1; }
+.provider-name-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4rpx; }
+.provider-name { font-size: 28rpx; font-weight: bold; color: rgba(0,0,0,0.85); }
+.provider-match { font-size: 24rpx; color: #FF6B35; font-weight: bold; }
+.provider-desc { font-size: 22rpx; color: rgba(0,0,0,0.5); display: block; margin-bottom: 8rpx; }
+.provider-tags { display: flex; flex-wrap: wrap; }
+.provider-tag { font-size: 20rpx; color: #6366F1; background: rgba(99,102,241,0.1); padding: 4rpx 12rpx; border-radius: 8rpx; margin-right: 8rpx; margin-bottom: 4rpx; }
+
+/* 评价 */
+.review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16rpx; }
+.review-summary { display: flex; align-items: center; }
+.review-avg { font-size: 36rpx; font-weight: bold; color: #FF6B35; margin-right: 8rpx; }
+.review-stars { font-size: 20rpx; margin-right: 8rpx; }
+.review-count { font-size: 22rpx; color: rgba(0,0,0,0.4); }
+.review-list { display: flex; flex-direction: column; }
+.review-item { background: #F8F9FC; border-radius: 12rpx; padding: 16rpx; margin-bottom: 12rpx; }
+.review-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8rpx; }
+.reviewer-name { font-size: 26rpx; font-weight: bold; color: rgba(0,0,0,0.85); }
+.review-content { font-size: 26rpx; color: rgba(0,0,0,0.7); line-height: 1.6; display: block; margin-bottom: 8rpx; }
+.review-tags { display: flex; flex-wrap: wrap; margin-bottom: 8rpx; }
+.review-tag { font-size: 20rpx; color: #10B981; background: rgba(16,185,129,0.1); padding: 4rpx 12rpx; border-radius: 8rpx; margin-right: 8rpx; }
+.review-time { font-size: 20rpx; color: rgba(0,0,0,0.35); }
+.review-empty { text-align: center; padding: 24rpx; font-size: 26rpx; color: rgba(0,0,0,0.4); }
+
+.action-bar { position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 16rpx 24rpx; padding-bottom: calc(16rpx + env(safe-area-inset-bottom)); background: #FFFFFF; border-top: 1rpx solid rgba(0,0,0,0.06); }
 .action-left { display: flex; }
-.action-btn { display: flex; flex-direction: column; align-items: center; }
+.action-btn { display: flex; flex-direction: column; align-items: center; margin-right: 24rpx; }
 .action-icon { font-size: 36rpx; }
 .action-text { font-size: 20rpx; color: rgba(0,0,0,0.5); }
-.primary-btn { flex: 1; background: linear-gradient(135deg, #FF6B35, #FF9A5C); color: #333333; border-radius: 32rpx; padding: 20rpx; font-size: 28rpx; font-weight: bold; border: none; }
+.primary-btn { flex: 1; background: linear-gradient(135deg, #FF6B35, #FF9A5C); color: #FFFFFF; border-radius: 32rpx; padding: 20rpx; font-size: 28rpx; font-weight: bold; border: none; }
 
-.modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 400; display: flex; align-items: flex-end; }
-.modal-panel { width: 100%; padding: 32rpx; background: #1A1A26; border-radius: 32rpx 32rpx 0 0; }
+.modal-mask { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 400; display: flex; align-items: flex-end; }
+.modal-panel { width: 100%; padding: 32rpx; background: #FFFFFF; border-radius: 32rpx 32rpx 0 0; }
 .modal-title { font-size: 32rpx; font-weight: bold; color: rgba(0,0,0,0.85); display: block; margin-bottom: 24rpx; }
 .modal-body { display: flex; flex-direction: column; margin-bottom: 24rpx; }
-.form-row { display: flex; flex-direction: column; }
+.form-row { display: flex; flex-direction: column; margin-bottom: 16rpx; }
 .form-label { font-size: 24rpx; color: rgba(0,0,0,0.6); margin-bottom: 8rpx; }
-.form-input { height: 72rpx; background: #FFFFFF; border: 1rpx solid rgba(0,0,0,0.06); border-radius: 16rpx; padding: 16rpx; font-size: 28rpx; color: rgba(0,0,0,0.85); }
-.form-area { height: 120rpx; background: #FFFFFF; border: 1rpx solid rgba(0,0,0,0.06); border-radius: 16rpx; padding: 16rpx; font-size: 28rpx; color: rgba(0,0,0,0.85); }
+.form-input { height: 72rpx; background: #F5F6FA; border: 1rpx solid rgba(0,0,0,0.06); border-radius: 16rpx; padding: 16rpx; font-size: 28rpx; color: rgba(0,0,0,0.85); }
+.form-area { height: 120rpx; background: #F5F6FA; border: 1rpx solid rgba(0,0,0,0.06); border-radius: 16rpx; padding: 16rpx; font-size: 28rpx; color: rgba(0,0,0,0.85); }
 
 .empty { text-align: center; padding: 64rpx; }
 .empty-icon { font-size: 80rpx; display: block; margin-bottom: 16rpx; }

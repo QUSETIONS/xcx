@@ -23,7 +23,8 @@
     { "path": "pages/admin/lead-manage", "style": { "navigationBarTitleText": "对接管理", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
     { "path": "pages/admin/order-manage", "style": { "navigationBarTitleText": "订单管理", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
     { "path": "pages/admin/product-manage", "style": { "navigationBarTitleText": "商品管理", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
-    { "path": "pages/message/index", "style": { "navigationBarTitleText": "消息中心", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } }
+    { "path": "pages/message/index", "style": { "navigationBarTitleText": "消息中心", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
+    { "path": "pages/dashboard/index", "style": { "navigationBarTitleText": "数据看板", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } }
   ],
   "globalStyle": {
     "navigationBarTextStyle": "black",

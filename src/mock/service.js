@@ -344,6 +344,72 @@ export const favoriteService = {
   }
 }
 
+// ========== 评价 Mock ==========
+const reviewsData = Array.from({ length: 30 }, (_, i) => ({
+  _id: `review_${i + 1}`,
+  target_id: `demand_${(i % 20) + 1}`,
+  reviewer: usersData[i % 5],
+  rating: pick([5, 5, 5, 4, 4, 4, 3, 5]),
+  content: [
+    '服务非常专业，交付及时，沟通顺畅，强烈推荐！',
+    '整体满意，响应速度快，方案有创意，下次还合作。',
+    '基本满足需求，细节可以再完善，总体OK。',
+    '非常满意！超出预期，团队执行力强。',
+    '专业靠谱，按时交付，效果很好。',
+    '合作愉快，质量过硬，推荐给大家。',
+    '不错的服务商，价格合理，效果好。',
+  ][i % 7],
+  tags: pick([['专业', '及时', '靠谱'], ['创意', '高效'], ['性价比高', '沟通顺畅'], ['经验丰富']]),
+  created_at: new Date(Date.now() - randInt(1, 60) * 86400000).toISOString()
+}))
+
+// ========== 服务商 Mock ==========
+const providersData = Array.from({ length: 20 }, (_, i) => ({
+  _id: `provider_${i + 1}`,
+  name: ['创想营销', '新媒动力', '品牌工场', '增长黑客', '内容星球', '流量引擎', '视觉前线', '活动大师', '传播矩阵', '社交流', '数字脉搏', '创艺空间', '营销智库', '品牌导航', '增长实验室', '内容工厂', '视觉风暴', '活动策划邦', '传播工坊', '社群研究院'][i],
+  avatar: '',
+  category_id: DEMAND_CATEGORIES[i % 10].id,
+  category_name: DEMAND_CATEGORIES[i % 10].name,
+  region: pick(REGIONS),
+  rating: (4 + Math.random()).toFixed(1),
+  deal_count: randInt(10, 200),
+  response_rate: randInt(80, 99),
+  avg_price: pick([5000, 10000, 20000, 50000]),
+  tags: pick([['专业团队', '快速响应'], ['性价比高', '经验丰富'], ['创意驱动', '数据导向'], ['全案服务', '一对一定制']]),
+  intro: '专注企业服务10年，累计服务500+客户，交付率99%，好评率98%。',
+  verified: i < 10,
+  is_featured: i < 5
+}))
+
+// ========== 数据统计 Mock ==========
+const dashboardData = {
+  overview: {
+    total_views: randInt(1000, 5000),
+    total_leads: randInt(50, 200),
+    total_deals: randInt(10, 50),
+    total_revenue: randInt(100000, 500000),
+    conversion_rate: (Math.random() * 20 + 5).toFixed(1),
+    avg_response_time: randInt(1, 6) + '小时'
+  },
+  trend_7days: Array.from({ length: 7 }, (_, i) => ({
+    date: `${i + 1}日`,
+    views: randInt(50, 300),
+    leads: randInt(2, 15),
+    deals: randInt(0, 5)
+  })),
+  trend_30days: Array.from({ length: 30 }, (_, i) => ({
+    date: `${i + 1}日`,
+    views: randInt(30, 250),
+    leads: randInt(1, 12),
+    deals: randInt(0, 4)
+  })),
+  category_stats: DEMAND_CATEGORIES.slice(0, 6).map(cat => ({
+    name: cat.name,
+    count: randInt(5, 50),
+    color: pick(['#FF6B35', '#6366F1', '#10B981', '#F59E0B', '#3B82F6', '#EC4899'])
+  }))
+}
+
 export const communityService = {
   // 话题列表
   topics() { return topicsData },
@@ -417,6 +483,88 @@ export const communityService = {
   userInfo(userId) { return usersData.find(u => u.id === userId) || null }
 }
 
+// ========== 评价服务 ==========
+export const reviewService = {
+  list(params = {}) {
+    const { target_id, page = 1, pageSize = 10 } = params
+    let list = [...reviewsData]
+    if (target_id) list = list.filter(r => r.target_id === target_id)
+    list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    const start = (page - 1) * pageSize
+    return { list: list.slice(start, start + pageSize), total: list.length }
+  },
+  create(data) {
+    const item = {
+      _id: uid(),
+      reviewer: { ...usersData[0], id: 'demo_user_001', nickname: '演示用户' },
+      ...data,
+      created_at: new Date().toISOString()
+    }
+    reviewsData.unshift(item)
+    return item
+  },
+  avgRating(target_id) {
+    const list = reviewsData.filter(r => r.target_id === target_id)
+    if (!list.length) return { avg: 0, count: 0 }
+    const avg = (list.reduce((s, r) => s + r.rating, 0) / list.length).toFixed(1)
+    return { avg: parseFloat(avg), count: list.length }
+  },
+  userCreditScore(userId = 'demo_user_001') {
+    return { score: randInt(75, 98), level: '优秀', deals: randInt(10, 50), reviews: randInt(5, 30) }
+  }
+}
+
+// ========== 服务商匹配服务 ==========
+export const matchService = {
+  // AI智能匹配：根据需求推荐服务商
+  matchProviders(demand) {
+    if (!demand) return []
+    let list = [...providersData]
+
+    // 匹配算法：分类匹配(权重40%) + 地区匹配(权重20%) + 评分(权重20%) + 成交量(权重20%)
+    list = list.map(p => {
+      let score = 0
+      if (p.category_id === demand.category_id) score += 40
+      if (p.region === demand.region) score += 20
+      score += parseFloat(p.rating) * 4
+      score += Math.min(20, p.deal_count / 10)
+      return { ...p, match_score: Math.round(score), match_percent: Math.min(99, Math.round(score)) + '%' }
+    })
+
+    list.sort((a, b) => b.match_score - a.match_score)
+    return list.slice(0, 5)
+  },
+  // 推荐服务商列表
+  listProviders(params = {}) {
+    const { page = 1, pageSize = 10, category_id, keyword } = params
+    let list = [...providersData]
+    if (category_id) list = list.filter(p => p.category_id === category_id)
+    if (keyword) list = list.filter(p => p.name.includes(keyword) || p.category_name.includes(keyword))
+    list.sort((a, b) => b.deal_count - a.deal_count)
+    const start = (page - 1) * pageSize
+    return { list: list.slice(start, start + pageSize), total: list.length }
+  },
+  providerDetail(id) { return providersData.find(p => p._id === id) || null }
+}
+
+// ========== 数据看板服务 ==========
+export const dashboardService = {
+  overview() { return dashboardData.overview },
+  trend(days = 7) { return days === 7 ? dashboardData.trend_7days : dashboardData.trend_30days },
+  categoryStats() { return dashboardData.category_stats },
+  // 计算趋势变化
+  trendChange(days = 7) {
+    const data = days === 7 ? dashboardData.trend_7days : dashboardData.trend_30days
+    const half = Math.floor(data.length / 2)
+    const first = data.slice(0, half)
+    const second = data.slice(half)
+    const sumViews1 = first.reduce((s, d) => s + d.views, 0)
+    const sumViews2 = second.reduce((s, d) => s + d.views, 0)
+    const viewsChange = sumViews1 > 0 ? Math.round((sumViews2 - sumViews1) / sumViews1 * 100) : 0
+    return { views: viewsChange + '%', leads: '+' + randInt(5, 20) + '%', deals: '+' + randInt(2, 15) + '%' }
+  }
+}
+
 // 统一导出
 export const mockService = {
   user: userService,
@@ -427,7 +575,10 @@ export const mockService = {
   resource: resourceService,
   banner: bannerService,
   favorite: favoriteService,
-  community: communityService
+  community: communityService,
+  review: reviewService,
+  match: matchService,
+  dashboard: dashboardService
 }
 
 export default mockService
