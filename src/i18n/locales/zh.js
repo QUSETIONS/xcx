@@ -73,6 +73,13 @@ export default {
   user: {
     title: '我的',
     creditScore: '信用分',
+    credit: '信用分',
+    deals: '成交',
+    reviews: '评价',
+    level: '等级',
+    points: '积分',
+    coupon: '优惠券',
+    follow: '关注',
     myDemand: '我的需求',
     myOrder: '我的订单',
     myFavorite: '我的收藏',

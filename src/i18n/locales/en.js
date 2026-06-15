@@ -66,6 +66,13 @@ export default {
   user: {
     title: 'Me',
     creditScore: 'Credit',
+    credit: 'Credit',
+    deals: 'Deals',
+    reviews: 'Reviews',
+    level: 'Level',
+    points: 'Points',
+    coupon: 'Coupons',
+    follow: 'Following',
     myDemand: 'My Demands',
     myOrder: 'My Orders',
     myFavorite: 'Favorites',

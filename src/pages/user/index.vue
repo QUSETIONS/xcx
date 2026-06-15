@@ -20,12 +20,12 @@
     <view class="credit-card">
       <view class="credit-left">
         <text class="credit-score">{{ credit.score }}</text>
-        <text class="credit-label">信用分</text>
+        <text class="credit-label">{{ t('user.credit') }}</text>
       </view>
       <view class="credit-right">
-        <view class="credit-item"><text class="ci-num">{{ credit.deals }}</text><text class="ci-label">成交</text></view>
-        <view class="credit-item"><text class="ci-num">{{ credit.reviews }}</text><text class="ci-label">评价</text></view>
-        <view class="credit-item"><text class="ci-num">{{ credit.level }}</text><text class="ci-label">等级</text></view>
+        <view class="credit-item"><text class="ci-num">{{ credit.deals }}</text><text class="ci-label">{{ t('user.deals') }}</text></view>
+        <view class="credit-item"><text class="ci-num">{{ credit.reviews }}</text><text class="ci-label">{{ t('user.reviews') }}</text></view>
+        <view class="credit-item"><text class="ci-num">{{ credit.level }}</text><text class="ci-label">{{ t('user.level') }}</text></view>
       </view>
     </view>
 
@@ -34,17 +34,17 @@
       <view class="quick-item card-press" @tap="goPoints">
         <text class="quick-icon">🎁</text>
         <text class="quick-num">{{ pointsBalance }}</text>
-        <text class="quick-label">积分</text>
+        <text class="quick-label">{{ t('user.points') }}</text>
       </view>
       <view class="quick-item card-press" @tap="goPage('/pages/coupon/index')">
         <text class="quick-icon">🎫</text>
         <text class="quick-num">{{ couponCount }}</text>
-        <text class="quick-label">优惠券</text>
+        <text class="quick-label">{{ t('user.coupon') }}</text>
       </view>
       <view class="quick-item card-press" @tap="goPage('/pages/follow/index')">
         <text class="quick-icon">👥</text>
         <text class="quick-num">{{ followCount }}</text>
-        <text class="quick-label">关注</text>
+        <text class="quick-label">{{ t('user.follow') }}</text>
       </view>
     </view>
 
@@ -106,6 +106,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { demandService, leadService, favoriteService, reviewService, pointsService, couponService, followService } from '@/mock/service'
+import { t } from '@/i18n'
 
 const userInfo = ref({ nickname: '创业者', company: '创新科技有限公司' })
 const myDemandsCount = ref(0)
