@@ -10,7 +10,7 @@
 
     <scroll-view class="list-scroll" scroll-y :refresher-enabled="true" :refresher-triggered="refreshing" @refresherrefresh="onRefresh">
       <view class="msg-list" :class="{ 'animate-in': animated }">
-        <view class="msg-item" v-for="(item, idx) in filteredList" :key="item.id"
+        <view class="msg-item card-press" v-for="(item, idx) in filteredList" :key="item.id"
           :class="{ 'fade-in': animated, unread: !item.read }" :style="{ animationDelay: (idx * 0.08) + 's' }"
           @tap="readMsg(item)">
           <view class="msg-icon-box" :class="'type-' + item.type">

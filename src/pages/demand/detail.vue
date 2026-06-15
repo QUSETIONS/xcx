@@ -26,9 +26,9 @@
     <!-- 数据统计 -->
     <view class="card">
       <view class="stat-row">
-        <view class="stat-box"><text class="stat-num">{{ demand.view_count }}</text><text class="stat-label">浏览</text></view>
-        <view class="stat-box"><text class="stat-num">{{ demand.lead_count }}</text><text class="stat-label">对接</text></view>
-        <view class="stat-box"><text class="stat-num">{{ demand.favorite_count }}</text><text class="stat-label">收藏</text></view>
+        <view class="stat-box card-press"><text class="stat-num">{{ demand.view_count }}</text><text class="stat-label">浏览</text></view>
+        <view class="stat-box card-press"><text class="stat-num">{{ demand.lead_count }}</text><text class="stat-label">对接</text></view>
+        <view class="stat-box card-press"><text class="stat-num">{{ demand.favorite_count }}</text><text class="stat-label">收藏</text></view>
       </view>
       <view class="heat-row">
         <text class="heat-label">热度指数</text>
@@ -54,7 +54,7 @@
     <view class="card" v-if="similarDemands.length">
       <text class="card-label">🔗 相似需求</text>
       <view class="similar-list">
-        <view class="similar-item" v-for="item in similarDemands" :key="item._id" @tap="goDetail(item._id)">
+        <view class="similar-item card-press" v-for="item in similarDemands" :key="item._id" @tap="goDetail(item._id)">
           <text class="similar-title">{{ item.title }}</text>
           <text class="similar-company">{{ item.company_name }}</text>
         </view>
@@ -65,7 +65,7 @@
     <view class="card" v-if="matchedProviders.length">
       <text class="card-label">🎯 AI推荐服务商</text>
       <view class="provider-list">
-        <view class="provider-item" v-for="(item, idx) in matchedProviders" :key="item._id">
+        <view class="provider-item card-press" v-for="(item, idx) in matchedProviders" :key="item._id">
           <view class="provider-rank">{{ idx + 1 }}</view>
           <view class="provider-info">
             <view class="provider-name-row">
@@ -92,7 +92,7 @@
         </view>
       </view>
       <view class="review-list" v-if="reviews.length">
-        <view class="review-item" v-for="item in reviews" :key="item._id">
+        <view class="review-item card-press" v-for="item in reviews" :key="item._id">
           <view class="review-top">
             <text class="reviewer-name">{{ item.reviewer.nickname }}</text>
             <text class="review-stars">{{ getStars(item.rating) }}</text>

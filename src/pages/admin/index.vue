@@ -3,7 +3,7 @@
     <view class="header"><text class="header-title">后台管理</text></view>
 
     <view class="menu-grid" :class="{ 'animate-in': animated }">
-      <view class="menu-item" v-for="(item, idx) in menuItems" :key="item.path" @tap="goPage(item.path)"
+      <view class="menu-item card-press" v-for="(item, idx) in menuItems" :key="item.path" @tap="goPage(item.path)"
         :class="{ 'fade-in': animated }" :style="{ animationDelay: (idx * 0.08) + 's' }">
         <view class="menu-icon-box" :class="'menu-color-' + idx">
           <image class="menu-icon" :src="item.icon" mode="aspectFit"/>

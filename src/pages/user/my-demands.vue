@@ -6,7 +6,7 @@
 
     <scroll-view class="list-scroll" scroll-y :refresher-enabled="true" :refresher-triggered="refreshing" @refresherrefresh="onRefresh">
       <view class="demand-list" :class="{ 'animate-in': animated }">
-        <view class="demand-item" v-for="(item, idx) in list" :key="item._id" @tap="goDetail(item._id)"
+        <view class="demand-item card-press" v-for="(item, idx) in list" :key="item._id" @tap="goDetail(item._id)"
           :class="{ 'fade-in': animated }" :style="{ animationDelay: (idx * 0.08) + 's' }">
           <view class="item-top">
             <text class="item-title">{{ item.title }}</text>
@@ -17,8 +17,8 @@
             <text class="item-region">{{ item.region }}</text>
           </view>
           <view class="item-stats">
-            <view class="stat-box"><image class="stat-icon" src="/static/icons/eye.svg"/><text>{{ item.view_count }}</text></view>
-            <view class="stat-box"><image class="stat-icon" src="/static/icons/handshake.svg"/><text>{{ item.lead_count }}</text></view>
+            <view class="stat-box card-press"><image class="stat-icon" src="/static/icons/eye.svg"/><text>{{ item.view_count }}</text></view>
+            <view class="stat-box card-press"><image class="stat-icon" src="/static/icons/handshake.svg"/><text>{{ item.lead_count }}</text></view>
             <text class="item-time">{{ formatDate(item.publish_time) }}</text>
           </view>
         </view>

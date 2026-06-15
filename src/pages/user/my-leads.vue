@@ -4,7 +4,7 @@
 
     <scroll-view class="list-scroll" scroll-y :refresher-enabled="true" :refresher-triggered="refreshing" @refresherrefresh="onRefresh">
       <view class="lead-list" :class="{ 'animate-in': animated }">
-        <view class="lead-item" v-for="(item, idx) in list" :key="item._id" @tap="goDemand(item.demand_id)"
+        <view class="lead-item card-press" v-for="(item, idx) in list" :key="item._id" @tap="goDemand(item.demand_id)"
           :class="{ 'fade-in': animated }" :style="{ animationDelay: (idx * 0.08) + 's' }">
           <view class="lead-top">
             <text class="lead-contact">{{ item.contact_name }}</text>

@@ -52,7 +52,7 @@
     <scroll-view class="list-scroll" scroll-y @scrolltolower="loadMore"
       :refresher-enabled="true" :refresher-triggered="refreshing" @refresherrefresh="onRefresh">
       <view class="post-list">
-        <view class="post-item" v-for="item in postList" :key="item._id" @tap="goDetail(item._id)">
+        <view class="post-item card-press" v-for="item in postList" :key="item._id" @tap="goDetail(item._id)">
           <!-- 作者 -->
           <view class="post-author">
             <view class="author-avatar" :style="{ background: getAvatarColor(item.author.id) }">

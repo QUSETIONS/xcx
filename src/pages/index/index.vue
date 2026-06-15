@@ -28,15 +28,15 @@
 
     <!-- 数据统计 -->
     <view class="stats-row">
-      <view class="stat-box stat-orange">
+      <view class="stat-box card-press stat-orange">
         <text class="stat-num">{{ todayDemands }}</text>
         <text class="stat-label">今日需求</text>
       </view>
-      <view class="stat-box stat-blue">
+      <view class="stat-box card-press stat-blue">
         <text class="stat-num">{{ activeLeads }}</text>
         <text class="stat-label">活跃对接</text>
       </view>
-      <view class="stat-box stat-green">
+      <view class="stat-box card-press stat-green">
         <text class="stat-num">{{ totalUsers }}</text>
         <text class="stat-label">平台用户</text>
       </view>
@@ -46,7 +46,7 @@
     <view class="section">
       <text class="section-title">资源分类</text>
       <view class="cat-grid">
-        <view class="cat-item" v-for="(cat, idx) in categories" :key="cat.id" @tap="goDemandByCategory(cat)">
+        <view class="cat-item card-press" v-for="(cat, idx) in categories" :key="cat.id" @tap="goDemandByCategory(cat)">
           <view class="cat-icon-box" :class="'cat-color-' + (idx % 8)">
             <text class="cat-icon">{{ cat.icon }}</text>
           </view>
@@ -57,15 +57,15 @@
 
     <!-- 专区 -->
     <view class="zone-row">
-      <view class="zone-box zone-orange" @tap="goDemandList">
+      <view class="zone-box card-press zone-orange" @tap="goDemandList">
         <text class="zone-icon">🎯</text>
         <text class="zone-label">甲方专区</text>
       </view>
-      <view class="zone-box zone-blue" @tap="goDemandList">
+      <view class="zone-box card-press zone-blue" @tap="goDemandList">
         <text class="zone-icon">💼</text>
         <text class="zone-label">乙方专区</text>
       </view>
-      <view class="zone-box zone-green" @tap="goCommunity">
+      <view class="zone-box card-press zone-green" @tap="goCommunity">
         <text class="zone-icon">💬</text>
         <text class="zone-label">社区讨论</text>
       </view>
@@ -78,7 +78,7 @@
         <text class="section-more" @tap="goDemandList">查看全部</text>
       </view>
       <view class="demand-list" v-if="hotDemands.length">
-        <view class="demand-item" v-for="item in hotDemands" :key="item._id" @tap="goDemandDetail(item._id)">
+        <view class="demand-item card-press" v-for="item in hotDemands" :key="item._id" @tap="goDemandDetail(item._id)">
           <view class="demand-top">
             <text class="demand-cat-tag">{{ item.category_name }}</text>
             <text class="demand-quote-tag">{{ formatQuote(item.quote_type) }}</text>
@@ -102,7 +102,7 @@
         <text class="section-more" @tap="goMallList">更多</text>
       </view>
       <view class="service-grid">
-        <view class="service-item" v-for="item in featuredProducts" :key="item._id" @tap="goProductDetail(item._id)">
+        <view class="service-item card-press" v-for="item in featuredProducts" :key="item._id" @tap="goProductDetail(item._id)">
           <view class="service-icon-box" :class="'service-color-' + (item.service_type)">
             <text class="service-icon">{{ getServiceIcon(item.service_type) }}</text>
           </view>

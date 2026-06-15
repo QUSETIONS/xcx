@@ -25,8 +25,8 @@
     <!-- 分类 -->
     <scroll-view scroll-x class="cat-scroll">
       <view class="cat-list">
-        <view class="cat-item" :class="{ active: !currentType }" @tap="selectType(null)"><text>全部</text></view>
-        <view class="cat-item" :class="{ active: currentType === t }" v-for="(label, t) in serviceTypes" :key="t" @tap="selectType(t)">
+        <view class="cat-item card-press" :class="{ active: !currentType }" @tap="selectType(null)"><text>全部</text></view>
+        <view class="cat-item card-press" :class="{ active: currentType === t }" v-for="(label, t) in serviceTypes" :key="t" @tap="selectType(t)">
           <text>{{ label }}</text>
         </view>
       </view>
@@ -45,7 +45,7 @@
       </view>
 
       <view class="product-grid" :class="{ 'animate-in': animated }" v-else>
-        <view class="product-item" v-for="(item, idx) in productList" :key="item._id" @tap="goDetail(item._id)"
+        <view class="product-item card-press" v-for="(item, idx) in productList" :key="item._id" @tap="goDetail(item._id)"
           :class="{ 'fade-in': animated }" :style="{ animationDelay: (idx * 0.06) + 's' }">
           <view class="product-icon-box" :class="'type-' + item.service_type">
             <image class="product-icon" :src="'/static/icons/service/' + item.service_type + '.svg'" mode="aspectFit"/>

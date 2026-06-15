@@ -60,7 +60,7 @@
 
       <!-- 列表 -->
       <view class="demand-list" v-else :class="{ 'animate-in': animated }">
-        <view class="demand-item" v-for="(item, idx) in demandList" :key="item._id" @tap="goDetail(item._id)"
+        <view class="demand-item card-press" v-for="(item, idx) in demandList" :key="item._id" @tap="goDetail(item._id)"
           :class="{ 'fade-in': animated }" :style="{ animationDelay: (idx * 0.08) + 's' }">
           <view class="item-top">
             <view class="item-cat-tag">{{ item.category_name }}</view>
@@ -74,9 +74,9 @@
           </view>
           <view class="item-bottom">
             <view class="item-stats">
-              <view class="stat-box"><text class="stat-val">{{ formatCount(item.view_count) }}</text><text class="stat-label">浏览</text></view>
-              <view class="stat-box"><text class="stat-val">{{ item.lead_count }}</text><text class="stat-label">对接</text></view>
-              <view class="stat-box"><text class="stat-val">{{ item.favorite_count }}</text><text class="stat-label">收藏</text></view>
+              <view class="stat-box card-press"><text class="stat-val">{{ formatCount(item.view_count) }}</text><text class="stat-label">浏览</text></view>
+              <view class="stat-box card-press"><text class="stat-val">{{ item.lead_count }}</text><text class="stat-label">对接</text></view>
+              <view class="stat-box card-press"><text class="stat-val">{{ item.favorite_count }}</text><text class="stat-label">收藏</text></view>
             </view>
             <view class="heat-indicator" :class="getHeatClass(item)">
               <text>{{ getHeatLevel(item) }}</text>

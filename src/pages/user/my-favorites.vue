@@ -4,7 +4,7 @@
 
     <scroll-view class="list-scroll" scroll-y :refresher-enabled="true" :refresher-triggered="refreshing" @refresherrefresh="onRefresh">
       <view class="fav-list" :class="{ 'animate-in': animated }">
-        <view class="fav-item" v-for="(item, idx) in favList" :key="item.targetId" @tap="goDetail(item)"
+        <view class="fav-item card-press" v-for="(item, idx) in favList" :key="item.targetId" @tap="goDetail(item)"
           :class="{ 'fade-in': animated }" :style="{ animationDelay: (idx * 0.08) + 's' }">
           <view class="fav-icon-box" :class="'type-' + item.targetType">
             <image class="fav-icon" :src="'/static/icons/' + getIconName(item.targetType) + '.svg'" mode="aspectFit"/>

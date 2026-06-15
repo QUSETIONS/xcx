@@ -7,7 +7,7 @@
 
     <scroll-view class="list-scroll" scroll-y :refresher-enabled="true" :refresher-triggered="refreshing" @refresherrefresh="onRefresh">
       <view class="product-list" :class="{ 'animate-in': animated }">
-        <view class="product-item" v-for="(item, idx) in productList" :key="item._id"
+        <view class="product-item card-press" v-for="(item, idx) in productList" :key="item._id"
           :class="{ 'fade-in': animated }" :style="{ animationDelay: (idx * 0.08) + 's' }">
           <view class="product-main">
             <view class="product-icon-box" :class="'type-' + item.service_type">

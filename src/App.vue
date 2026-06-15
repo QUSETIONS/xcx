@@ -17,6 +17,8 @@ onLaunch(() => {
 </script>
 
 <style>
+@import './styles/utils.wxss';
+
 page {
   background: #F5F6FA;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Helvetica Neue', sans-serif;
@@ -36,33 +38,4 @@ button::after { display: none; }
 input, textarea::placeholder { color: rgba(0,0,0,0.25); }
 
 ::-webkit-scrollbar { display: none; }
-
-/* 安全区 */
-.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
-
-/* 动画基础 */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20rpx); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
-}
-
-@keyframes countUp {
-  from { opacity: 0; transform: translateY(10rpx); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(-20rpx); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
-}
 </style>

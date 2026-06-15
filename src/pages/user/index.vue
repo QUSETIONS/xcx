@@ -59,7 +59,7 @@
     <view class="menu-section">
       <text class="section-title">常用功能</text>
       <view class="menu-grid">
-        <view class="menu-item" v-for="(item, idx) in menuItems" :key="idx" @tap="goPage(item.path)">
+        <view class="menu-item card-press" v-for="(item, idx) in menuItems" :key="idx" @tap="goPage(item.path)">
           <view class="menu-icon-box" :class="'menu-color-' + (idx % 6)">
             <text class="menu-icon">{{ item.icon }}</text>
           </view>

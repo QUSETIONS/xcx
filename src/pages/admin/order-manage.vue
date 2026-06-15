@@ -7,7 +7,7 @@
 
     <scroll-view class="list-scroll" scroll-y :refresher-enabled="true" :refresher-triggered="refreshing" @refresherrefresh="onRefresh">
       <view class="order-list" :class="{ 'animate-in': animated }">
-        <view class="order-item" v-for="(item, idx) in filteredList" :key="item._id"
+        <view class="order-item card-press" v-for="(item, idx) in filteredList" :key="item._id"
           :class="{ 'fade-in': animated }" :style="{ animationDelay: (idx * 0.08) + 's' }">
           <view class="order-top">
             <text class="order-id">订单 {{ item._id }}</text>

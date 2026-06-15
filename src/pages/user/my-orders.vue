@@ -4,7 +4,7 @@
 
     <scroll-view class="list-scroll" scroll-y :refresher-enabled="true" :refresher-triggered="refreshing" @refresherrefresh="onRefresh">
       <view class="order-list" :class="{ 'animate-in': animated }">
-        <view class="order-item" v-for="(item, idx) in list" :key="item._id"
+        <view class="order-item card-press" v-for="(item, idx) in list" :key="item._id"
           :class="{ 'fade-in': animated }" :style="{ animationDelay: (idx * 0.08) + 's' }">
           <view class="order-top">
             <text class="order-product">{{ item.items?.[0]?.title || '商品' }}</text>
