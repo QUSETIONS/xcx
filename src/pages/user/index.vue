@@ -25,6 +25,25 @@
       </view>
     </view>
 
+    <!-- 积分优惠券快捷入口 -->
+    <view class="quick-row">
+      <view class="quick-item card-press" @tap="goPoints">
+        <text class="quick-icon">🎁</text>
+        <text class="quick-num">{{ pointsBalance }}</text>
+        <text class="quick-label">积分</text>
+      </view>
+      <view class="quick-item card-press" @tap="goPage('')">
+        <text class="quick-icon">🎫</text>
+        <text class="quick-num">{{ couponCount }}</text>
+        <text class="quick-label">优惠券</text>
+      </view>
+      <view class="quick-item card-press" @tap="goPage('')">
+        <text class="quick-icon">👥</text>
+        <text class="quick-num">{{ followCount }}</text>
+        <text class="quick-label">关注</text>
+      </view>
+    </view>
+
     <!-- 数据面板 -->
     <view class="stats-panel">
       <view class="stat-item" @tap="goPage('/pages/user/my-demands')">
@@ -82,7 +101,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { demandService, leadService, favoriteService, reviewService } from '@/mock/service'
+import { demandService, leadService, favoriteService, reviewService, pointsService, couponService, followService } from '@/mock/service'
 
 const userInfo = ref({ nickname: '创业者', company: '创新科技有限公司' })
 const myDemandsCount = ref(0)
@@ -90,6 +109,9 @@ const myLeadsCount = ref(0)
 const myFavoritesCount = ref(0)
 const credit = ref({ score: 0, level: '', deals: 0, reviews: 0 })
 const isAdmin = ref(true)
+const pointsBalance = ref(0)
+const couponCount = ref(0)
+const followCount = ref(0)
 
 const menuItems = [
   { label: '我的需求', path: '/pages/user/my-demands', icon: '📋' },
@@ -97,7 +119,9 @@ const menuItems = [
   { label: '我的订单', path: '/pages/user/my-orders', icon: '📦' },
   { label: '我的收藏', path: '/pages/user/my-favorites', icon: '❤️' },
   { label: '资料下载', path: '/pages/resource/list', icon: '📚' },
-  { label: '消息中心', path: '/pages/message/index', icon: '🔔' }
+  { label: '消息中心', path: '/pages/message/index', icon: '🔔' },
+  { label: '积分签到', path: '/pages/points/index', icon: '🎁' },
+  { label: '我的关注', path: '', icon: '👥' }
 ]
 
 onMounted(() => {
@@ -105,12 +129,16 @@ onMounted(() => {
   myLeadsCount.value = leadService.myLeads().total
   myFavoritesCount.value = favoriteService.list().total
   credit.value = reviewService.userCreditScore()
+  pointsBalance.value = pointsService.getInfo().balance
+  couponCount.value = couponService.available()
+  followCount.value = followService.count()
 })
 
 function goPage(path) {
   if (!path) { uni.showToast({ title: '功能开发中', icon: 'none' }); return }
   uni.navigateTo({ url: path })
 }
+function goPoints() { uni.navigateTo({ url: '/pages/points/index' }) }
 function goDashboard() { uni.navigateTo({ url: '/pages/dashboard/index' }) }
 function goAdmin() { uni.navigateTo({ url: '/pages/admin/index' }) }
 </script>
@@ -134,6 +162,14 @@ function goAdmin() { uni.navigateTo({ url: '/pages/admin/index' }) }
 .credit-item { display: flex; flex-direction: column; align-items: center; }
 .ci-num { font-size: 32rpx; font-weight: bold; color: #FFFFFF; }
 .ci-label { font-size: 20rpx; color: rgba(255,255,255,0.7); margin-top: 4rpx; }
+
+/* 积分优惠券快捷入口 */
+.quick-row { display: flex; margin-bottom: 16rpx; }
+.quick-item { flex: 1; background: #FFFFFF; border-radius: 16rpx; padding: 20rpx 0; text-align: center; margin-right: 12rpx; }
+.quick-item:last-child { margin-right: 0; }
+.quick-icon { font-size: 36rpx; display: block; margin-bottom: 4rpx; }
+.quick-num { font-size: 36rpx; font-weight: bold; color: #FF6B35; display: block; }
+.quick-label { font-size: 22rpx; color: rgba(0,0,0,0.5); display: block; margin-top: 4rpx; }
 
 /* 数据面板 */
 .stats-panel { display: flex; align-items: center; background: #FFFFFF; border-radius: 20rpx; padding: 24rpx; margin-bottom: 16rpx; }

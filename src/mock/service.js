@@ -567,6 +567,92 @@ export const dashboardService = {
 
 // 统一导出
 export const mockService = {
+// ========== 缓存层 ==========
+const _cache = {}
+function cacheGet(key) { return _cache[key] }
+function cacheSet(key, val) { _cache[key] = val; return val }
+
+// ========== 签到积分 Mock ==========
+const pointsData = {
+  balance: 2680,
+  history: [
+    { _id: 'p1', type: 'checkin', points: 10, desc: '每日签到', date: '今天' },
+    { _id: 'p2', type: 'publish', points: 50, desc: '发布需求奖励', date: '昨天' },
+    { _id: 'p3', type: 'lead', points: 20, desc: '成功对接奖励', date: '2天前' },
+    { _id: 'p4', type: 'checkin', points: 10, desc: '每日签到', date: '3天前' },
+    { _id: 'p5', type: 'invite', points: 100, desc: '邀请好友奖励', date: '5天前' },
+    { _id: 'p6', type: 'checkin', points: 10, desc: '每日签到+连续7天奖励', date: '7天前' },
+  ],
+  checkinStreak: 7,
+  todayChecked: false,
+  rules: [
+    { action: '每日签到', points: '+10' },
+    { action: '连续7天', points: '+50' },
+    { action: '发布需求', points: '+50' },
+    { action: '成功对接', points: '+20' },
+    { action: '发表帖子', points: '+15' },
+    { action: '邀请好友', points: '+100' },
+  ]
+}
+
+// ========== 优惠券 Mock ==========
+const couponData = [
+  { _id: 'c1', name: '新人专享券', amount: 5000, minSpend: 10000, expire: '2026-12-31', status: 'available', desc: '满100减50' },
+  { _id: 'c2', name: '会员折扣券', amount: 2000, minSpend: 5000, expire: '2026-07-31', status: 'available', desc: '满50减20' },
+  { _id: 'c3', name: '调研卡优惠券', amount: 3000, minSpend: 0, expire: '2026-08-15', status: 'available', desc: '无门槛减30' },
+  { _id: 'c4', name: '链接官体验券', amount: 1000, minSpend: 0, expire: '2026-06-30', status: 'available', desc: '无门槛减10' },
+]
+
+// ========== 关注 Mock ==========
+const followData = [
+  { _id: 'f1', user: usersData[0], followed_at: '2026-06-10' },
+  { _id: 'f2', user: usersData[2], followed_at: '2026-06-08' },
+  { _id: 'f3', user: usersData[4], followed_at: '2026-06-05' },
+]
+
+// ========== 签到积分服务 ==========
+export const pointsService = {
+  getInfo() { return pointsData },
+  checkin() {
+    if (pointsData.todayChecked) return { success: false, msg: '今天已签到' }
+    pointsData.todayChecked = true
+    pointsData.checkinStreak++
+    const bonus = pointsData.checkinStreak % 7 === 0 ? 50 : 10
+    pointsData.balance += bonus
+    pointsData.history.unshift({ _id: uid(), type: 'checkin', points: bonus, desc: bonus > 10 ? '签到+连续奖励' : '每日签到', date: '刚刚' })
+    return { success: true, points: bonus, streak: pointsData.checkinStreak, balance: pointsData.balance }
+  },
+  history() { return pointsData.history },
+  rules() { return pointsData.rules }
+}
+
+// ========== 优惠券服务 ==========
+export const couponService = {
+  list() { return couponData.filter(c => c.status === 'available') },
+  claim(id) {
+    const c = couponData.find(c => c._id === id)
+    if (c) { c.status = 'claimed'; return { success: true, coupon: c } }
+    return { success: false }
+  },
+  available() { return couponData.filter(c => c.status === 'available').length }
+}
+
+// ========== 关注服务 ==========
+export const followService = {
+  list() { return followData },
+  count() { return followData.length },
+  check(userId) { return followData.some(f => f.user.id === userId) },
+  toggle(userId) {
+    const idx = followData.findIndex(f => f.user.id === userId)
+    if (idx > -1) { followData.splice(idx, 1); return { followed: false } }
+    const user = usersData.find(u => u.id === userId)
+    if (user) { followData.unshift({ _id: uid(), user, followed_at: '刚刚' }); return { followed: true } }
+    return { followed: false }
+  }
+}
+
+// 统一导出
+export const mockService = {
   user: userService,
   demand: demandService,
   lead: leadService,
@@ -578,7 +664,10 @@ export const mockService = {
   community: communityService,
   review: reviewService,
   match: matchService,
-  dashboard: dashboardService
+  dashboard: dashboardService,
+  points: pointsService,
+  coupon: couponService,
+  follow: followService
 }
 
 export default mockService
