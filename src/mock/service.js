@@ -277,15 +277,143 @@ export const demandService = {
 
 export const leadService = {
   create(data) {
-    const item = { _id: uid(), ...data, status: 'new', created_at: new Date().toISOString() }
+    const demand = demandData.find(d => d._id === data.demand_id)
+    const item = {
+      _id: uid(),
+      ...data,
+      demand_title: demand ? demand.title : '',
+      demand_owner: demand ? demand.created_by : '',
+      status: 'new',
+      created_at: new Date().toISOString()
+    }
     leadData.unshift(item)
+    if (demand) demand.lead_count = (demand.lead_count || 0) + 1
+
+    // 生成通知给需求方
+    notifyData.unshift({
+      _id: uid(),
+      type: 'lead',
+      title: '收到新的对接申请',
+      desc: `${data.contact_name} 对接了「${item.demand_title}」`,
+      time: '刚刚',
+      read: false,
+      link_id: item._id,
+      created_at: new Date().toISOString()
+    })
+
     return item
   },
   myLeads() {
-    return { list: leadData.slice(0, 5), total: leadData.length }
+    return { list: leadData.filter(l => l.from_user_id === 'demo_user_001'), total: leadData.filter(l => l.from_user_id === 'demo_user_001').length }
+  },
+  // 需求方收到的对接（别人对接了我的需求）
+  receivedLeads() {
+    return { list: leadData.filter(l => l.demand_owner === 'demo_user_001' || true).slice(0, 10), total: leadData.length }
+  },
+  updateStatus(id, status) {
+    const lead = leadData.find(l => l._id === id)
+    if (!lead) return null
+    lead.status = status
+    lead.updated_at = new Date().toISOString()
+
+    // 如果成交，生成deal记录
+    if (status === 'deal') {
+      dealData.unshift({
+        _id: uid(),
+        lead_id: id,
+        demand_id: lead.demand_id,
+        demand_title: lead.demand_title,
+        provider_name: lead.contact_name,
+        provider_phone: lead.phone,
+        owner_id: lead.demand_owner || 'demo_user_001',
+        status: 'in_progress',
+        amount: 0,
+        can_review: true,
+        created_at: new Date().toISOString()
+      })
+
+      // 通知服务方
+      notifyData.unshift({
+        _id: uid(),
+        type: 'deal',
+        title: '需求方已接受您的对接',
+        desc: `「${lead.demand_title}」已成交，请及时联系需求方`,
+        time: '刚刚',
+        read: false,
+        link_id: lead.demand_id,
+        created_at: new Date().toISOString()
+      })
+    }
+
+    if (status === 'invalid') {
+      notifyData.unshift({
+        _id: uid(),
+        type: 'lead',
+        title: '对接已被拒绝',
+        desc: `「${lead.demand_title}」的需求方拒绝了您的对接`,
+        time: '刚刚',
+        read: false,
+        link_id: lead.demand_id,
+        created_at: new Date().toISOString()
+      })
+    }
+
+    return lead
   }
 }
 
+// ========== 成交记录 Mock ==========
+const dealData = [
+  { _id: 'deal_1', lead_id: 'lead_1', demand_id: 'demand_1', demand_title: '寻找活动供应商', provider_name: '李经理', provider_phone: '139****9999', owner_id: 'demo_user_001', status: 'completed', amount: 50000, can_review: false, has_review: true, created_at: new Date(Date.now() - 10 * 86400000).toISOString() },
+  { _id: 'deal_2', lead_id: 'lead_2', demand_id: 'demand_3', demand_title: '品牌发布会全案策划', provider_name: '王总监', provider_phone: '138****8888', owner_id: 'demo_user_001', status: 'in_progress', amount: 80000, can_review: true, has_review: false, created_at: new Date(Date.now() - 5 * 86400000).toISOString() },
+]
+
+// ========== 通知 Mock ==========
+const notifyData = [
+  { _id: 'n1', type: 'system', title: '系统维护通知', desc: '系统将于今晚22:00进行维护升级', time: '刚刚', read: false, link_id: '' },
+  { _id: 'n2', type: 'lead', title: '收到新的对接申请', desc: '张经理对接了「短视频运营合作」需求', time: '10分钟前', read: false, link_id: 'lead_1' },
+  { _id: 'n3', type: 'deal', title: '需求方已接受您的对接', desc: '「品牌发布会」已成交', time: '1小时前', read: false, link_id: 'demand_3' },
+  { _id: 'n4', type: 'system', title: '需求审核通过', desc: '您发布的「品牌营销策划」已通过审核', time: '2小时前', read: true, link_id: '' },
+  { _id: 'n5', type: 'interact', title: '新的评论', desc: '李总评论了您的帖子', time: '昨天', read: true, link_id: '' },
+]
+
+// ========== 成交服务 ==========
+export const dealService = {
+  myDeals() {
+    return { list: dealData.filter(d => d.owner_id === 'demo_user_001' || true), total: dealData.length }
+  },
+  updateStatus(id, status) {
+    const deal = dealData.find(d => d._id === id)
+    if (deal) { deal.status = status; return deal }
+    return null
+  },
+  addReview(id, reviewData) {
+    const deal = dealData.find(d => d._id === id)
+    if (deal) {
+      deal.has_review = true
+      deal.can_review = false
+      reviewService.create({ ...reviewData, target_id: deal.demand_id })
+      return { success: true }
+    }
+    return { success: false }
+  }
+}
+
+// ========== 通知服务 ==========
+export const notifyService = {
+  list(params = {}) {
+    const { type } = params
+    let list = [...notifyData]
+    if (type && type !== 'all') list = list.filter(n => n.type === type)
+    return { list, total: list.length, unread: notifyData.filter(n => !n.read).length }
+  },
+  read(id) {
+    const n = notifyData.find(n => n._id === id)
+    if (n) n.read = true
+  },
+  readAll() { notifyData.forEach(n => n.read = true) },
+  unreadCount() { return notifyData.filter(n => !n.read).length }
+}
 export const productService = {
   list(params = {}) {
     const { page = 1, pageSize = 10, service_type, keyword } = params
@@ -667,7 +795,9 @@ export const mockService = {
   dashboard: dashboardService,
   points: pointsService,
   coupon: couponService,
-  follow: followService
+  follow: followService,
+  deal: dealService,
+  notify: notifyService
 }
 
 export default mockService

@@ -74,6 +74,7 @@ onLoad((q) => {
 })
 
 async function submitOrder() {
+  if (!product.value) { uni.showToast({ title: '商品信息错误', icon: 'none' }); return }
   if (!form.value.contact_name.trim() || !form.value.phone.trim()) { uni.showToast({ title: '请填写联系信息', icon: 'none' }); return }
   submitting.value = true
   try {

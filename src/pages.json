@@ -27,7 +27,8 @@
     { "path": "pages/dashboard/index", "style": { "navigationBarTitleText": "数据看板", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
     { "path": "pages/points/index", "style": { "navigationBarTitleText": "积分中心", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
     { "path": "pages/coupon/index", "style": { "navigationBarTitleText": "我的优惠券", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
-    { "path": "pages/follow/index", "style": { "navigationBarTitleText": "我的关注", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } }
+    { "path": "pages/follow/index", "style": { "navigationBarTitleText": "我的关注", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
+    { "path": "pages/deals/index", "style": { "navigationBarTitleText": "成交管理", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } }
   ],
   "globalStyle": {
     "navigationBarTextStyle": "black",
