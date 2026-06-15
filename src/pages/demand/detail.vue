@@ -139,6 +139,7 @@ import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { QUOTE_TYPES } from '@/config/constants'
 import { demandService, leadService, favoriteService, reviewService, matchService } from '@/mock/service'
+import { trackBrowse } from '@/mock/smart'
 
 const demandId = ref('')
 const demand = ref(null)
@@ -159,6 +160,7 @@ function getStars(rating) { const r = Math.round(rating); return '⭐'.repeat(r)
 function loadDetail() {
   demand.value = demandService.detail(demandId.value)
   if (!demand.value) return
+  trackBrowse('demand', demandId.value, demand.value)
   isFavorited.value = favoriteService.check({ userId: 'demo_user_001', targetType: 'demand', targetId: demandId.value })
   const all = demandService.list({ pageSize: 100 })
   similarDemands.value = all.list

@@ -43,7 +43,27 @@
         </view>
       </view>
 
-      <view v-if="form.quote_type === 'self'" class="form-card">
+      <view v-if="form.quote_type === 'self' && form.category_id" class="form-card price-suggest-card">
+        <text class="price-suggest-title">💡 智能价格建议</text>
+        <text class="price-suggest-text">{{ priceSuggestion ? priceSuggestion.tip : '选择分类后查看价格建议' }}</text>
+        <view class="price-suggest-row" v-if="priceSuggestion">
+          <view class="ps-tag"><text>{{ priceSuggestion.level }}</text></view>
+          <text class="ps-range">参考：¥{{ priceSuggestion.min }} - ¥{{ priceSuggestion.max }}</text>
+        </view>
+      </view>
+
+      <view v-if="qualityScore" class="form-card quality-card">
+        <view class="quality-header">
+          <text class="quality-title">需求质量评分</text>
+          <text class="quality-score" :class="'q-' + qualityLevel">{{ qualityScore.total }}/100</text>
+        </view>
+        <view class="quality-bar">
+          <view class="quality-fill" :class="'q-fill-' + qualityLevel" :style="{ width: qualityScore.total + '%' }"></view>
+        </view>
+        <view class="quality-tips" v-if="qualityScore.tips.length">
+          <text class="quality-tip" v-for="(tip, i) in qualityScore.tips.slice(0, 3)" :key="i">• {{ tip }}</text>
+        </view>
+      </view>
         <text class="form-label">预算区间（元）</text>
         <view class="budget-row">
           <input class="budget-input" type="digit" v-model="budgetMin" placeholder="最低"/>
@@ -117,9 +137,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { DEMAND_CATEGORIES, REGIONS, QUOTE_TYPES } from '@/config/constants'
 import { demandService } from '@/mock/service'
+import { getPriceSuggestion, scoreDemandQuality } from '@/mock/smart'
 
 const categories = DEMAND_CATEGORIES
 const regions = REGIONS
@@ -135,6 +156,24 @@ const showRegionPicker = ref(false)
 const showCategoryPicker = ref(false)
 const showHelp = ref(false)
 const submitting = ref(false)
+
+// 智能价格建议
+const priceSuggestion = computed(() => {
+  if (form.value.quote_type !== 'self' || !form.value.category_id) return null
+  return getPriceSuggestion(form.value.category_id, form.value.quote_type)
+})
+
+// 需求质量评分
+const qualityScore = computed(() => {
+  if (!form.value.title && !form.value.description) return null
+  return scoreDemandQuality(form.value)
+})
+const qualityLevel = computed(() => {
+  if (!qualityScore.value) return 'low'
+  if (qualityScore.value.total >= 80) return 'high'
+  if (qualityScore.value.total >= 60) return 'mid'
+  return 'low'
+})
 
 // 检查是否编辑模式
 const pages = getCurrentPages()
@@ -232,6 +271,31 @@ function submitForm() {
 .budget-row { display: flex; align-items: center; }
 .budget-input { flex: 1; font-size: 28rpx; color: rgba(0,0,0,0.85); padding: 12rpx; background: #F5F6FA; border-radius: 12rpx; text-align: center; }
 .budget-sep { color: rgba(0,0,0,0.3); }
+
+/* 价格建议卡片 */
+.price-suggest-card { background: rgba(59,130,246,0.05); border: 1rpx solid rgba(59,130,246,0.15); }
+.price-suggest-title { font-size: 26rpx; font-weight: bold; color: #3B82F6; display: block; margin-bottom: 8rpx; }
+.price-suggest-text { font-size: 24rpx; color: rgba(0,0,0,0.6); display: block; margin-bottom: 12rpx; }
+.price-suggest-row { display: flex; align-items: center; }
+.ps-tag { background: rgba(16,185,129,0.1); padding: 4rpx 12rpx; border-radius: 8rpx; margin-right: 12rpx; }
+.ps-tag text { font-size: 20rpx; color: #10B981; font-weight: bold; }
+.ps-range { font-size: 24rpx; color: rgba(0,0,0,0.5); }
+
+/* 质量评分卡片 */
+.quality-card { background: rgba(255,107,53,0.04); border: 1rpx solid rgba(255,107,53,0.12); }
+.quality-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12rpx; }
+.quality-title { font-size: 26rpx; font-weight: bold; color: rgba(0,0,0,0.85); }
+.quality-score { font-size: 32rpx; font-weight: bold; }
+.q-high { color: #10B981; }
+.q-mid { color: #F59E0B; }
+.q-low { color: #EF4444; }
+.quality-bar { height: 10rpx; background: #F5F6FA; border-radius: 5rpx; overflow: hidden; margin-bottom: 12rpx; }
+.quality-fill { height: 100%; border-radius: 5rpx; transition: width 0.3s ease; }
+.q-fill-high { background: linear-gradient(90deg, #10B981, #34D399); }
+.q-fill-mid { background: linear-gradient(90deg, #F59E0B, #FBBF24); }
+.q-fill-low { background: linear-gradient(90deg, #EF4444, #F87171); }
+.quality-tips { display: flex; flex-direction: column; }
+.quality-tip { font-size: 22rpx; color: rgba(0,0,0,0.5); line-height: 1.8; }
 
 .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; display: flex; padding: 16rpx 24rpx; padding-bottom: calc(16rpx + env(safe-area-inset-bottom)); background: #FFFFFF; border-top: 1rpx solid rgba(0,0,0,0.06); box-shadow: 0 -4rpx 12rpx rgba(0,0,0,0.04); }
 .draft-btn { padding: 20rpx 40rpx; background: #F5F6FA; border-radius: 24rpx; font-size: 28rpx; color: rgba(0,0,0,0.6); }

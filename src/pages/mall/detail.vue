@@ -59,6 +59,7 @@ import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { SERVICE_TYPES } from '@/config/constants'
 import { productService, favoriteService } from '@/mock/service'
+import { trackBrowse } from '@/mock/smart'
 
 const productId = ref('')
 const product = ref(null)
@@ -94,6 +95,7 @@ function getBenefits(type) {
 
 function loadDetail() {
   product.value = productService.detail(productId.value)
+  if (product.value) trackBrowse('product', productId.value, product.value)
   isFavorited.value = favoriteService.check({ userId: 'demo_user_001', targetType: 'product', targetId: productId.value })
 }
 

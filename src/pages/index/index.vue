@@ -74,7 +74,7 @@
     <!-- 推荐需求 -->
     <view class="section">
       <view class="section-header">
-        <text class="section-title">智能推荐</text>
+        <text class="section-title">为你推荐</text>
         <text class="section-more" @tap="goDemandList">查看全部</text>
       </view>
       <view class="demand-list" v-if="hotDemands.length">
@@ -120,6 +120,7 @@
 import { ref } from 'vue'
 import { DEMAND_CATEGORIES, QUOTE_TYPES } from '@/config/constants'
 import { demandService, productService } from '@/mock/service'
+import { getRecommendedDemands, getRecommendedProducts } from '@/mock/smart'
 
 const todayDemands = ref(128)
 const activeLeads = ref(56)
@@ -129,12 +130,9 @@ const categories = ref(DEMAND_CATEGORIES.slice(0, 8))
 const hotDemands = ref([])
 const featuredProducts = ref([])
 
-// 加载数据（同步，避免setTimeout）
-const demandRes = demandService.list({ sort: 'hot', page: 1, pageSize: 6 })
-hotDemands.value = demandRes.list
-
-const productRes = productService.list({ sort: 'default', page: 1, pageSize: 4 })
-featuredProducts.value = productRes.list.filter(p => p.is_featured || p.sale_count > 50)
+// 智能推荐（基于浏览历史+热度+偏好）
+hotDemands.value = getRecommendedDemands(6)
+featuredProducts.value = getRecommendedProducts(4)
 
 function getServiceIcon(type) {
   const map = { member: '👑', linker: '🔗', survey: '📊', resource_pack: '📦', certification: '✅' }
