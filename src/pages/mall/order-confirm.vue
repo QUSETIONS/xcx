@@ -98,6 +98,7 @@ import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { SERVICE_TYPES } from '@/config/constants'
 import { productService, orderService, couponService, pointsService } from '@/mock/service'
+import { guardClick, toastSuccess, toastError, hapticSuccess } from '@/utils/feedback'
 
 const productId = ref('')
 const product = ref(null)
@@ -148,9 +149,9 @@ onLoad((q) => {
   try { const last = uni.getStorageSync('last_order_contact'); if (last) { form.value.contact_name = last.name || ''; form.value.phone = last.phone || '' } } catch {}
 })
 
-async function submitOrder() {
-  if (!product.value) { uni.showToast({ title: '商品信息错误', icon: 'none' }); return }
-  if (!form.value.contact_name.trim() || !form.value.phone.trim()) { uni.showToast({ title: '请填写联系信息', icon: 'none' }); return }
+async function doSubmit() {
+  if (!product.value) { toastError('商品信息错误'); return }
+  if (!form.value.contact_name.trim() || !form.value.phone.trim()) { toastError('请填写联系信息'); return }
   submitting.value = true
   try {
     orderService.create({
@@ -168,10 +169,14 @@ async function submitOrder() {
       info.history.unshift({ _id: 'p' + Date.now(), type: 'redeem', points: -pointsUsed.value, desc: '订单积分抵扣', date: '刚刚' })
     }
     uni.setStorageSync('last_order_contact', { name: form.value.contact_name, phone: form.value.phone })
-    uni.showToast({ title: '下单成功', icon: 'success' })
+    hapticSuccess()
+    toastSuccess('下单成功')
     setTimeout(() => uni.redirectTo({ url: '/pages/order/index' }), 1500)
   } finally { submitting.value = false }
 }
+
+// 防重复提交：1.5s 内只允许一次，避免误触重复下单
+const submitOrder = guardClick(doSubmit, 1500)
 </script>
 
 <style scoped>

@@ -62,6 +62,7 @@ import { onLoad } from '@dcloudio/uni-app'
 import { SERVICE_TYPES } from '@/config/constants'
 import { productService, favoriteService, cartService } from '@/mock/service'
 import { trackBrowse } from '@/mock/smart'
+import { hapticLight, toastSuccess } from '@/utils/feedback'
 
 const productId = ref('')
 const product = ref(null)
@@ -104,6 +105,7 @@ function loadDetail() {
 function toggleFavorite() {
   const r = favoriteService.toggle({ userId: 'demo_user_001', targetType: 'product', targetId: productId.value })
   isFavorited.value = r.isFavorited
+  if (r.isFavorited) hapticLight()
   uni.showToast({ title: r.isFavorited ? '已收藏' : '已取消', icon: 'none' })
 }
 
@@ -111,7 +113,8 @@ function share() { uni.showModal({ title: '分享商品', content: '点击右上
 function buyNow() { uni.navigateTo({ url: `/pages/mall/order-confirm?id=${productId.value}` }) }
 function addToCart() {
   cartService.add(product.value)
-  uni.showToast({ title: '已加入购物车', icon: 'success' })
+  hapticLight()
+  toastSuccess('已加入购物车')
 }
 function goCart() { uni.navigateTo({ url: '/pages/cart/index' }) }
 

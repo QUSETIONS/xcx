@@ -143,6 +143,7 @@ import { ref, computed, watch } from 'vue'
 import { DEMAND_CATEGORIES, REGIONS, QUOTE_TYPES } from '@/config/constants'
 import { demandService } from '@/mock/service'
 import { getPriceSuggestion, scoreDemandQuality } from '@/mock/smart'
+import { guardClick } from '@/utils/feedback'
 
 const categories = DEMAND_CATEGORIES
 const regions = REGIONS
@@ -218,7 +219,7 @@ function saveDraft() {
   uni.showToast({ title: '草稿已保存', icon: 'success' })
 }
 
-function submitForm() {
+function doSubmit() {
   const required = ['title', 'company_name', 'region', 'category_id', 'description', 'contact_name', 'contact_phone']
   for (const f of required) {
     if (!form.value[f]?.toString().trim()) { uni.showToast({ title: '请填写完整信息', icon: 'none' }); return }
@@ -246,6 +247,9 @@ function submitForm() {
     }
   } finally { submitting.value = false }
 }
+
+// 防重复提交：避免误触重复发布需求
+const submitForm = guardClick(doSubmit, 1500)
 </script>
 
 <style lang="scss" scoped>
