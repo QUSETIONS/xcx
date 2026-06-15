@@ -202,36 +202,30 @@ const serviceColors = [
   'linear-gradient(135deg, rgba(236,72,153,0.2), rgba(236,72,153,0.05))'
 ]
 
-onMounted(async () => {
+onMounted(() => {
   loadData()
 })
 
-async function loadData() {
+function loadData() {
   loading.value = true
   try {
-    // 动态统计
     const allDemands = demandService.list({ pageSize: 100 })
     todayDemands.value = allDemands.total
     activeLeads.value = Math.floor(allDemands.total * 0.4)
-
-    // 分类计数
-    const cats = DEMAND_CATEGORIES.slice(0, 8).map(cat => ({
+    categories.value = DEMAND_CATEGORIES.slice(0, 8).map(cat => ({
       ...cat,
       count: allDemands.list.filter(d => d.category_id === cat.id).length
     }))
-    categories.value = cats
-
-    // 推荐需求 - 智能算法：热度+时间权重
     const demands = allDemands.list.map(d => ({
       ...d,
       score: d.view_count * 0.5 + d.lead_count * 3 + (Date.now() - new Date(d.publish_time).getTime()) / 86400000 * -10
     }))
     demands.sort((a, b) => b.score - a.score)
     hotDemands.value = demands.slice(0, 6)
-
-    // 精选服务
     const products = productService.list({ pageSize: 20 })
     featuredProducts.value = products.list.filter(p => p.is_featured || p.sale_count > 50).slice(0, 4)
+  } catch (e) {
+    console.error('loadData error:', e)
   } finally {
     loading.value = false
   }
