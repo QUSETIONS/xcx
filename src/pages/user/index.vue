@@ -32,12 +32,12 @@
         <text class="quick-num">{{ pointsBalance }}</text>
         <text class="quick-label">积分</text>
       </view>
-      <view class="quick-item card-press" @tap="goPage('')">
+      <view class="quick-item card-press" @tap="goPage('/pages/coupon/index')">
         <text class="quick-icon">🎫</text>
         <text class="quick-num">{{ couponCount }}</text>
         <text class="quick-label">优惠券</text>
       </view>
-      <view class="quick-item card-press" @tap="goPage('')">
+      <view class="quick-item card-press" @tap="goPage('/pages/follow/index')">
         <text class="quick-icon">👥</text>
         <text class="quick-num">{{ followCount }}</text>
         <text class="quick-label">关注</text>
@@ -121,7 +121,8 @@ const menuItems = [
   { label: '资料下载', path: '/pages/resource/list', icon: '📚' },
   { label: '消息中心', path: '/pages/message/index', icon: '🔔' },
   { label: '积分签到', path: '/pages/points/index', icon: '🎁' },
-  { label: '我的关注', path: '', icon: '👥' }
+  { label: '优惠券', path: '/pages/coupon/index', icon: '🎫' },
+  { label: '我的关注', path: '/pages/follow/index', icon: '👥' }
 ]
 
 onMounted(() => {

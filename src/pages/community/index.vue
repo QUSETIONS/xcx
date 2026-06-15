@@ -162,7 +162,7 @@ function likePost(item) {
 
 function goDetail(id) { uni.navigateTo({ url: `/pages/community/detail?id=${id}` }) }
 function goPublish() { uni.navigateTo({ url: '/pages/community/post' }) }
-function goNotify() { uni.showToast({ title: '消息中心开发中', icon: 'none' }) }
+function goNotify() { uni.navigateTo({ url: '/pages/message/index' }) }
 function sharePost() { uni.showModal({ title: '分享', content: '点击右上角「...」分享', showCancel: false }) }
 
 loadList(true)

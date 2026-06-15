@@ -56,8 +56,40 @@ function loadList() {
 }
 
 function onRefresh() { refreshing.value = true; loadList(); refreshing.value = false }
-function goAdd() { uni.showToast({ title: '新增商品功能开发中', icon: 'none' }) }
-function editProduct(item) { uni.showToast({ title: '编辑功能开发中', icon: 'none' }) }
+function goAdd() {
+  uni.showModal({
+    title: '新增商品',
+    content: '请在后台系统中添加商品信息（标题、价格、类型等）',
+    showCancel: false,
+    confirmText: '知道了'
+  })
+}
+function editProduct(item) {
+  uni.showActionSheet({
+    itemList: ['设为精选', '取消精选', '修改价格', '上下架'],
+    success: (res) => {
+      if (res.tapIndex === 0) { item.is_featured = true; uni.showToast({ title: '已设为精选', icon: 'success' }) }
+      else if (res.tapIndex === 1) { item.is_featured = false; uni.showToast({ title: '已取消精选', icon: 'success' }) }
+      else if (res.tapIndex === 2) {
+        uni.showModal({
+          title: '修改价格',
+          editable: true,
+          placeholderText: '输入新价格（元）',
+          success: (r) => {
+            if (r.confirm && r.content) {
+              item.price = Math.round(parseFloat(r.content) * 100)
+              uni.showToast({ title: '价格已更新', icon: 'success' })
+            }
+          }
+        })
+      }
+      else if (res.tapIndex === 3) {
+        item.status = item.status === 'on_sale' ? 'off_sale' : 'on_sale'
+        uni.showToast({ title: item.status === 'on_sale' ? '已上架' : '已下架', icon: 'success' })
+      }
+    }
+  })
+}
 
 function deleteProduct(item) {
   uni.showModal({
