@@ -24,6 +24,12 @@
             <text>🤝 {{ item.lead_count }}</text>
             <text class="item-time">{{ formatDate(item.publish_time) }}</text>
           </view>
+          <view class="item-actions">
+            <view class="action-btn" @tap.stop="editDemand(item)"><text>编辑</text></view>
+            <view class="action-btn warn" v-if="item.status === 'published'" @tap.stop="offlineDemand(item)"><text>下架</text></view>
+            <view class="action-btn success" v-if="item.status === 'offline'" @tap.stop="publishDemand(item)"><text>上架</text></view>
+            <view class="action-btn danger" @tap.stop="deleteDemand(item)"><text>删除</text></view>
+          </view>
         </view>
       </view>
       <view v-if="!filteredList.length" class="empty"><text>暂无需求</text></view>
@@ -59,6 +65,30 @@ const filteredList = computed(() => {
 function formatDate(t) { if (!t) return ''; const d = new Date(t); return `${d.getMonth()+1}/${d.getDate()}` }
 function onRefresh() { refreshing.value = true; allDemands.value = demandService.list({ pageSize: 50, sort: 'latest' }).list; refreshing.value = false }
 function goDetail(id) { uni.navigateTo({ url: `/pages/demand/detail?id=${id}` }) }
+
+function editDemand(item) { uni.showToast({ title: '编辑功能开发中', icon: 'none' }) }
+
+function offlineDemand(item) {
+  uni.showModal({ title: '确认下架', content: `确定要下架「${item.title}」吗？`, success: (res) => {
+    if (res.confirm) { item.status = 'offline'; uni.showToast({ title: '已下架', icon: 'success' }) }
+  }})
+}
+
+function publishDemand(item) {
+  uni.showModal({ title: '确认上架', content: `确定要上架「${item.title}」吗？`, success: (res) => {
+    if (res.confirm) { item.status = 'published'; uni.showToast({ title: '已上架', icon: 'success' }) }
+  }})
+}
+
+function deleteDemand(item) {
+  uni.showModal({ title: '确认删除', content: `确定要删除「${item.title}」吗？`, success: (res) => {
+    if (res.confirm) {
+      const idx = allDemands.value.findIndex(d => d._id === item._id)
+      if (idx > -1) allDemands.value.splice(idx, 1)
+      uni.showToast({ title: '已删除', icon: 'success' })
+    }
+  }})
+}
 </script>
 
 <style lang="scss" scoped>
@@ -82,9 +112,14 @@ function goDetail(id) { uni.navigateTo({ url: `/pages/demand/detail?id=${id}` })
 .item-meta { display: flex; justify-content: space-between; margin-bottom: 8rpx; }
 .item-company { font-size: 24rpx; color: rgba(255,255,255,0.65); }
 .item-region { font-size: 22rpx; color: rgba(255,255,255,0.5); }
-.item-stats { display: flex; gap: 16rpx; }
+.item-stats { display: flex; gap: 16rpx; margin-bottom: 12rpx; }
 .item-stats text { font-size: 22rpx; color: rgba(255,255,255,0.5); }
 .item-time { margin-left: auto; }
+.item-actions { display: flex; gap: 12rpx; padding-top: 12rpx; border-top: 1rpx solid rgba(255,255,255,0.06); }
+.action-btn { padding: 8rpx 16rpx; background: rgba(255,255,255,0.06); border-radius: 12rpx; font-size: 22rpx; color: rgba(255,255,255,0.65); }
+.action-btn.success { background: rgba(16,185,129,0.15); color: #34D399; }
+.action-btn.warn { background: rgba(245,158,11,0.15); color: #FBBF24; }
+.action-btn.danger { background: rgba(239,68,68,0.15); color: #F87171; }
 .empty { text-align: center; padding: 64rpx; font-size: 28rpx; color: rgba(255,255,255,0.5); }
 
 .picker-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 400; display: flex; align-items: flex-end; justify-content: center; padding: 24rpx; }
