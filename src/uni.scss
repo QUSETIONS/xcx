@@ -1,24 +1,19 @@
 // ============================================
-// 企动库 v2.0 设计令牌
-// 风格：Bento Grid + Glassmorphism + Dark First
+// 企动库 v2.0 设计令牌 - 浅色主题
+// 风格：清新明亮 + 圆润卡片 + 品牌橙色
 // ============================================
 
 // --------------------------------------------
-// 色彩系统 - 暗色优先
+// 色彩系统 - 浅色优先
 // --------------------------------------------
 
-// 深色基底
-$bg-primary: #0A0A0F;
-$bg-secondary: #12121A;
-$bg-tertiary: #1A1A26;
-$bg-elevated: #222233;
-$bg-card: rgba(255, 255, 255, 0.04);
-$bg-card-hover: rgba(255, 255, 255, 0.08);
-
-// 亮色基底
-$bg-light: #F8F9FC;
-$bg-light-card: rgba(255, 255, 255, 0.85);
-$bg-light-secondary: #EEEEF5;
+// 浅色基底
+$bg-primary: #F5F6FA;
+$bg-secondary: #FFFFFF;
+$bg-tertiary: #F0F1F5;
+$bg-elevated: #FFFFFF;
+$bg-card: #FFFFFF;
+$bg-card-hover: #FAFAFA;
 
 // 品牌渐变
 $gradient-primary: linear-gradient(135deg, #FF6B35, #FF9A5C);
@@ -27,9 +22,7 @@ $gradient-success: linear-gradient(135deg, #10B981, #34D399);
 $gradient-warning: linear-gradient(135deg, #F59E0B, #FBBF24);
 $gradient-danger: linear-gradient(135deg, #EF4444, #F87171);
 $gradient-info: linear-gradient(135deg, #3B82F6, #60A5FA);
-$gradient-aurora: linear-gradient(135deg, #6366F1, #EC4899, #F59E0B);
-$gradient-sunset: linear-gradient(135deg, #FF6B35, #EC4899);
-$gradient-ocean: linear-gradient(135deg, #3B82F6, #06B6D4);
+$gradient-warm: linear-gradient(135deg, #FFF5EB, #FFE8D6);
 
 // 品牌纯色
 $color-primary: #FF6B35;
@@ -46,35 +39,26 @@ $color-warning: #F59E0B;
 $color-danger: #EF4444;
 $color-info: #3B82F6;
 
-// 文本色 - 暗色模式
-$text-primary: rgba(255, 255, 255, 0.95);
-$text-secondary: rgba(255, 255, 255, 0.65);
-$text-tertiary: rgba(255, 255, 255, 0.40);
-$text-placeholder: rgba(255, 255, 255, 0.25);
-
-// 文本色 - 亮色模式
-$text-dark-primary: rgba(0, 0, 0, 0.88);
-$text-dark-secondary: rgba(0, 0, 0, 0.60);
-$text-dark-tertiary: rgba(0, 0, 0, 0.38);
+// 文本色 - 浅色模式
+$text-primary: rgba(0, 0, 0, 0.88);
+$text-secondary: rgba(0, 0, 0, 0.60);
+$text-tertiary: rgba(0, 0, 0, 0.40);
+$text-placeholder: rgba(0, 0, 0, 0.25);
 
 // 边框
-$border-color: rgba(255, 255, 255, 0.08);
-$border-color-light: rgba(0, 0, 0, 0.08);
-$border-highlight: rgba(255, 255, 255, 0.15);
+$border-color: rgba(0, 0, 0, 0.06);
+$border-color-light: rgba(0, 0, 0, 0.04);
+$border-highlight: rgba(0, 0, 0, 0.10);
 
 // --------------------------------------------
-// Glassmorphism 令牌
+// Glassmorphism 令牌 - 浅色版
 // --------------------------------------------
-$glass-bg: rgba(255, 255, 255, 0.05);
-$glass-bg-strong: rgba(255, 255, 255, 0.10);
-$glass-border: rgba(255, 255, 255, 0.10);
-$glass-border-strong: rgba(255, 255, 255, 0.18);
+$glass-bg: rgba(255, 255, 255, 0.80);
+$glass-bg-strong: rgba(255, 255, 255, 0.95);
+$glass-border: rgba(0, 0, 0, 0.06);
+$glass-border-strong: rgba(0, 0, 0, 0.10);
 $glass-blur: 20px;
 $glass-blur-strong: 40px;
-
-// 亮色玻璃
-$glass-light-bg: rgba(255, 255, 255, 0.70);
-$glass-light-border: rgba(255, 255, 255, 0.50);
 
 // --------------------------------------------
 // 字体体系
@@ -95,7 +79,7 @@ $weight-bold: 700;
 $weight-black: 800;
 
 // --------------------------------------------
-// 间距体系 - Bento Grid 8px基准
+// 间距体系
 // --------------------------------------------
 $space-1: 8rpx;
 $space-2: 16rpx;
@@ -118,14 +102,14 @@ $radius-2xl: 48rpx;
 $radius-full: 9999rpx;
 
 // --------------------------------------------
-// 阴影体系
+// 阴影体系 - 浅色版
 // --------------------------------------------
-$shadow-sm: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
-$shadow-md: 0 8rpx 24rpx rgba(0, 0, 0, 0.20);
-$shadow-lg: 0 16rpx 48rpx rgba(0, 0, 0, 0.30);
-$shadow-glow-primary: 0 0 40rpx rgba(255, 107, 53, 0.30);
-$shadow-glow-secondary: 0 0 40rpx rgba(99, 102, 241, 0.30);
-$shadow-glow-accent: 0 0 40rpx rgba(236, 72, 153, 0.30);
+$shadow-sm: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+$shadow-md: 0 8rpx 24rpx rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 16rpx 48rpx rgba(0, 0, 0, 0.08);
+$shadow-card: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+$shadow-glow-primary: 0 4rpx 20rpx rgba(255, 107, 53, 0.15);
+$shadow-glow-secondary: 0 4rpx 20rpx rgba(99, 102, 241, 0.15);
 
 // --------------------------------------------
 // 层级
@@ -146,10 +130,3 @@ $ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 $duration-fast: 0.15s;
 $duration-base: 0.25s;
 $duration-slow: 0.4s;
-
-// --------------------------------------------
-// Bento Grid 布局
-// --------------------------------------------
-$bento-gap: 16rpx;
-$bento-columns: 2;
-$bento-card-min: 300rpx;
