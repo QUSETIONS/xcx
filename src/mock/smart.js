@@ -60,9 +60,24 @@ function getPreference() {
   try { return JSON.parse(uni.getStorageSync(PREFERENCE_KEY) || '{}') } catch { return {} }
 }
 
-// ========== 个性化推荐 ==========
+// ========== 个性化推荐（带缓存）==========
+
+// 推荐结果缓存：浏览历史变化前复用，避免重复打分计算
+let _recoCache = { hash: null, limit: 0, result: [] }
+
+function historyHash() {
+  const h = getHistory()
+  // 用最近 10 条的 id 拼接作为指纹
+  return h.slice(0, 10).map(x => x.id).join(',') + ':' + h.length
+}
 
 export function getRecommendedDemands(limit = 6) {
+  // 命中缓存：历史指纹 + limit 均未变，直接返回缓存数组（同一引用）
+  const hash = historyHash()
+  if (_recoCache.hash === hash && _recoCache.limit === limit) {
+    return _recoCache.result
+  }
+
   const pref = getPreference()
   const allDemands = demandService.list({ pageSize: 100, sort: 'hot' }).list
   const history = getHistory()
@@ -95,7 +110,11 @@ export function getRecommendedDemands(limit = 6) {
   })
 
   scored.sort((a, b) => b._score - a._score)
-  return scored.slice(0, limit)
+  const result = scored.slice(0, limit)
+
+  // 写入缓存
+  _recoCache = { hash, limit, result }
+  return result
 }
 
 export function getRecommendedProducts(limit = 4) {

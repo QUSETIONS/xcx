@@ -127,6 +127,21 @@ describe('trackBrowse + 推荐 - 个性化推荐', () => {
     })
   })
 
+  it('缓存：浏览历史不变时第二次调用复用缓存结果', () => {
+    const a = getRecommendedDemands(6)
+    const b = getRecommendedDemands(6)
+    // 命中缓存应返回相同的数组引用（同一对象）
+    expect(b).toBe(a)
+  })
+
+  it('缓存：浏览新内容后缓存失效，重新计算', () => {
+    const a = getRecommendedDemands(6)
+    trackBrowse('demand', 'demand_999', { title: '新浏览' })
+    const b = getRecommendedDemands(6)
+    // 历史变化后应重新计算，返回新数组
+    expect(b).not.toBe(a)
+  })
+
   it('getRecommendedProducts 返回指定数量', () => {
     const list = getRecommendedProducts(4)
     expect(list.length).toBeLessThanOrEqual(4)
