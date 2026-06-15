@@ -2,23 +2,23 @@
   <view class="page">
     <!-- 账户信息 -->
     <view class="section">
-      <text class="section-title">账户</text>
+      <text class="section-title">{{ t('settings.account') }}</text>
       <view class="card">
         <view class="cell" @tap="editNickname">
           <text class="cell-icon">👤</text>
-          <text class="cell-label">昵称</text>
+          <text class="cell-label">{{ t('settings.nickname') }}</text>
           <text class="cell-value">{{ nickname }}</text>
           <text class="cell-arrow">›</text>
         </view>
         <view class="cell" @tap="goVerify">
           <text class="cell-icon">🏛️</text>
-          <text class="cell-label">企业认证</text>
+          <text class="cell-label">{{ t('settings.verify') }}</text>
           <text class="cell-value" :class="verifyClass">{{ verifyText }}</text>
           <text class="cell-arrow">›</text>
         </view>
         <view class="cell" @tap="goMember">
           <text class="cell-icon">⭐</text>
-          <text class="cell-label">会员等级</text>
+          <text class="cell-label">{{ t('settings.memberLevel') }}</text>
           <text class="cell-value">{{ memberText }}</text>
           <text class="cell-arrow">›</text>
         </view>
@@ -27,26 +27,26 @@
 
     <!-- 通知设置 -->
     <view class="section">
-      <text class="section-title">通知</text>
+      <text class="section-title">{{ t('settings.notification') }}</text>
       <view class="card">
         <view class="cell">
           <text class="cell-icon">🔔</text>
-          <text class="cell-label">对接提醒</text>
+          <text class="cell-label">{{ t('settings.notifLead') }}</text>
           <switch :checked="notify.lead" @change="(e) => toggleNotify('lead', e)" color="#FF6B35"/>
         </view>
         <view class="cell">
           <text class="cell-icon">📦</text>
-          <text class="cell-label">订单通知</text>
+          <text class="cell-label">{{ t('settings.notifOrder') }}</text>
           <switch :checked="notify.order" @change="(e) => toggleNotify('order', e)" color="#FF6B35"/>
         </view>
         <view class="cell">
           <text class="cell-icon">💬</text>
-          <text class="cell-label">社区互动</text>
+          <text class="cell-label">{{ t('settings.notifInteract') }}</text>
           <switch :checked="notify.interact" @change="(e) => toggleNotify('interact', e)" color="#FF6B35"/>
         </view>
         <view class="cell">
           <text class="cell-icon">🎯</text>
-          <text class="cell-label">活动推送</text>
+          <text class="cell-label">{{ t('settings.notifCampaign') }}</text>
           <switch :checked="notify.campaign" @change="(e) => toggleNotify('campaign', e)" color="#FF6B35"/>
         </view>
       </view>
@@ -54,23 +54,23 @@
 
     <!-- 无障碍与语言 -->
     <view class="section">
-      <text class="section-title">显示与语言</text>
+      <text class="section-title">{{ t('settings.display') }}</text>
       <view class="card">
         <view class="cell" @tap="showLanguagePicker">
           <text class="cell-icon">🌍</text>
-          <text class="cell-label">语言</text>
+          <text class="cell-label">{{ t('settings.language') }}</text>
           <text class="cell-value">{{ currentLocaleLabel }}</text>
           <text class="cell-arrow">›</text>
         </view>
         <view class="cell" @tap="showFontPicker">
           <text class="cell-icon">🔤</text>
-          <text class="cell-label">字体大小</text>
+          <text class="cell-label">{{ t('settings.fontSize') }}</text>
           <text class="cell-value">{{ fontLabel }}</text>
           <text class="cell-arrow">›</text>
         </view>
         <view class="cell">
           <text class="cell-icon">🎨</text>
-          <text class="cell-label">高对比度</text>
+          <text class="cell-label">{{ t('settings.highContrast') }}</text>
           <switch :checked="contrast" @change="onToggleContrast" color="#FF6B35"/>
         </view>
       </view>
@@ -78,28 +78,28 @@
 
     <!-- 通用 -->
     <view class="section">
-      <text class="section-title">通用</text>
+      <text class="section-title">{{ t('settings.general') }}</text>
       <view class="card">
         <view class="cell">
           <text class="cell-icon">🌐</text>
-          <text class="cell-label">清除缓存</text>
+          <text class="cell-label">{{ t('settings.clearCache') }}</text>
           <text class="cell-value">{{ cacheSize }}</text>
-          <text class="cell-clear" @tap.stop="clearCache">清理</text>
+          <text class="cell-clear" @tap.stop="clearCache">{{ t('settings.cacheClear') }}</text>
         </view>
         <view class="cell" @tap="checkUpdate">
           <text class="cell-icon">🔄</text>
-          <text class="cell-label">检查更新</text>
+          <text class="cell-label">{{ t('settings.checkUpdate') }}</text>
           <text class="cell-value">v1.0.0</text>
           <text class="cell-arrow">›</text>
         </view>
         <view class="cell" @tap="showAgreement">
           <text class="cell-icon">📄</text>
-          <text class="cell-label">用户协议</text>
+          <text class="cell-label">{{ t('settings.agreement') }}</text>
           <text class="cell-arrow">›</text>
         </view>
         <view class="cell" @tap="showPrivacy">
           <text class="cell-icon">🔒</text>
-          <text class="cell-label">隐私政策</text>
+          <text class="cell-label">{{ t('settings.privacy') }}</text>
           <text class="cell-arrow">›</text>
         </view>
       </view>
@@ -107,28 +107,28 @@
 
     <!-- 反馈 -->
     <view class="section">
-      <text class="section-title">帮助与反馈</text>
+      <text class="section-title">{{ t('settings.helpFeedback') }}</text>
       <view class="card">
         <view class="cell" @tap="goChat">
           <text class="cell-icon">💬</text>
-          <text class="cell-label">在线客服</text>
+          <text class="cell-label">{{ t('settings.onlineService') }}</text>
           <text class="cell-arrow">›</text>
         </view>
         <view class="cell" @tap="feedback">
           <text class="cell-icon">✏️</text>
-          <text class="cell-label">意见反馈</text>
+          <text class="cell-label">{{ t('settings.feedback') }}</text>
           <text class="cell-arrow">›</text>
         </view>
         <view class="cell" @tap="aboutUs">
           <text class="cell-icon">ℹ️</text>
-          <text class="cell-label">关于我们</text>
+          <text class="cell-label">{{ t('settings.about') }}</text>
           <text class="cell-arrow">›</text>
         </view>
       </view>
     </view>
 
     <!-- 退出登录 -->
-    <view class="logout-btn" @tap="logout"><text>退出登录</text></view>
+    <view class="logout-btn" @tap="logout"><text>{{ t('settings.logout') }}</text></view>
     <text class="version-text">企业库 v1.0.0 · 仅供演示</text>
     <view style="height: 60rpx;"></view>
   </view>

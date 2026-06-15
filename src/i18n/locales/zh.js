@@ -98,12 +98,29 @@ export default {
   // 设置
   settings: {
     title: '设置',
+    account: '账户',
+    nickname: '昵称',
+    verify: '企业认证',
+    memberLevel: '会员等级',
+    notification: '通知',
+    notifLead: '对接提醒',
+    notifOrder: '订单通知',
+    notifInteract: '社区互动',
+    notifCampaign: '活动推送',
+    display: '显示与语言',
     language: '语言',
     fontSize: '字体大小',
     highContrast: '高对比度',
-    notification: '通知',
+    general: '通用',
     clearCache: '清除缓存',
+    cacheClear: '清理',
+    checkUpdate: '检查更新',
+    agreement: '用户协议',
+    privacy: '隐私政策',
+    helpFeedback: '帮助与反馈',
+    onlineService: '在线客服',
+    feedback: '意见反馈',
     about: '关于我们',
-    feedback: '意见反馈'
+    logout: '退出登录'
   }
 }

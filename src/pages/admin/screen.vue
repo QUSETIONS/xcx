@@ -32,8 +32,8 @@
         <view class="line-chart">
           <view class="line-area" v-for="(d, i) in trendData" :key="i">
             <view class="bar-group">
-              <view class="bar bar-deals" :style="{ height: barHeight(d.deals) + '%' }"></view>
-              <view class="bar bar-leads" :style="{ height: barHeight(d.leads) + '%' }"></view>
+              <view class="bar bar-deals" :style="{ height: barHeight(d.deals, 'deals') + '%' }"></view>
+              <view class="bar bar-leads" :style="{ height: barHeight(d.leads, 'leads') + '%' }"></view>
             </view>
             <text class="bar-x">{{ d.date }}</text>
           </view>

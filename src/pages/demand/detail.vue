@@ -94,7 +94,7 @@
       <view class="review-list" v-if="reviews.length">
         <view class="review-item card-press" v-for="item in reviews" :key="item._id">
           <view class="review-top">
-            <text class="reviewer-name">{{ item.reviewer.nickname }}</text>
+            <text class="reviewer-name">{{ item.reviewer?.nickname || '匿名用户' }}</text>
             <text class="review-stars">{{ getStars(item.rating) }}</text>
           </view>
           <text class="review-content">{{ item.content }}</text>

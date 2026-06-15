@@ -142,8 +142,8 @@ function cancelOrder(id) {
 }
 function contactService() { uni.navigateTo({ url: '/pages/chat/index' }) }
 function review() { uni.navigateTo({ url: '/pages/deals/index' }) }
-function buyAgain() { uni.switchTab({ url: '/pages/mall/index' }) }
-function goMall() { uni.switchTab({ url: '/pages/mall/index' }) }
+function buyAgain() { uni.switchTab({ url: '/pages/mall/list' }) }
+function goMall() { uni.switchTab({ url: '/pages/mall/list' }) }
 </script>
 
 <style scoped>

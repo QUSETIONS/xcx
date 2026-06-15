@@ -89,12 +89,29 @@ export default {
   },
   settings: {
     title: 'Settings',
+    account: 'Account',
+    nickname: 'Nickname',
+    verify: 'Verification',
+    memberLevel: 'Membership',
+    notification: 'Notifications',
+    notifLead: 'Lead Alerts',
+    notifOrder: 'Order Alerts',
+    notifInteract: 'Community',
+    notifCampaign: 'Campaigns',
+    display: 'Display & Language',
     language: 'Language',
     fontSize: 'Font Size',
     highContrast: 'High Contrast',
-    notification: 'Notification',
+    general: 'General',
     clearCache: 'Clear Cache',
+    cacheClear: 'Clear',
+    checkUpdate: 'Check Update',
+    agreement: 'User Agreement',
+    privacy: 'Privacy Policy',
+    helpFeedback: 'Help & Feedback',
+    onlineService: 'Online Service',
+    feedback: 'Feedback',
     about: 'About',
-    feedback: 'Feedback'
+    logout: 'Log Out'
   }
 }

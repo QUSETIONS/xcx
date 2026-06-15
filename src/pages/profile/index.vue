@@ -69,7 +69,7 @@
     <view v-if="tab === 'reviews'" class="content-list">
       <view class="review-item" v-for="item in userReviews" :key="item._id">
         <view class="review-top">
-          <text class="reviewer">{{ item.reviewer.nickname }}</text>
+          <text class="reviewer">{{ item.reviewer?.nickname || '匿名用户' }}</text>
           <text class="review-stars">{{ getStars(item.rating) }}</text>
         </view>
         <text class="review-content">{{ item.content }}</text>

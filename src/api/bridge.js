@@ -59,7 +59,7 @@ export const bridge = {
   // 认证
   user: {
     login: adapt((d) => mock.userService.login(d), (d) => http.post('/auth/login', d)),
-    info: adapt(() => mock.userService.info(), () => http.get('/user/info'))
+    info: adapt(() => mock.userService.getInfo(), () => http.get('/user/info'))
   },
 
   // 收藏

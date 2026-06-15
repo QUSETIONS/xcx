@@ -3,7 +3,7 @@
  * 在没有真实后端时提供完整的数据模拟
  * 所有接口返回格式与真实 API 一致
  */
-import { DEMAND_CATEGORIES, REGIONS, QUOTE_TYPES, SERVICE_TYPES, ORDER_STATUS, DEMAND_STATUS, LEAD_STATUS } from '@/config/constants'
+import { DEMAND_CATEGORIES, REGIONS, QUOTE_TYPES } from '@/config/constants'
 
 // ========== 工具函数 ==========
 const delay = (ms = 200) => new Promise(r => setTimeout(r, ms))
@@ -281,6 +281,7 @@ export const leadService = {
     const item = {
       _id: uid(),
       ...data,
+      from_user_id: data.from_user_id || data.user_id || 'demo_user_001',
       demand_title: demand ? demand.title : '',
       demand_owner: demand ? demand.created_by : '',
       status: 'new',
@@ -854,7 +855,7 @@ export const chatService = {
   send(content) {
     const list = this._getList()
     const now = new Date()
-    const msg = { id: 'msg_' + list.length, from: 'user', content, time: now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0') }
+    const msg = { id: uid(), from: 'user', content, time: now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0') }
     list.push(msg)
     uni.setStorageSync(this._key, JSON.stringify(list))
     return list
@@ -863,7 +864,7 @@ export const chatService = {
   reply() {
     const list = this._getList()
     const now = new Date()
-    const msg = { id: 'msg_' + list.length, from: 'service', content: pick(autoReplies), time: now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0') }
+    const msg = { id: uid(), from: 'service', content: pick(autoReplies), time: now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0') }
     list.push(msg)
     uni.setStorageSync(this._key, JSON.stringify(list))
     return list
@@ -884,10 +885,6 @@ export const campaignService = {
   detail(id) { return campaignData.find(c => c.id === id) || null }
 }
 
-// ========== 缓存层 ==========
-const _cache = {}
-function cacheGet(key) { return _cache[key] }
-function cacheSet(key, val) { _cache[key] = val; return val }
 
 // ========== 签到积分 Mock ==========
 const pointsData = {

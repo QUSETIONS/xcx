@@ -163,13 +163,13 @@ export function getPriceSuggestion(category_id, quote_type) {
 
   const avgMin = Math.round(mins.reduce((a, b) => a + b, 0) / mins.length)
   const avgMax = Math.round(maxs.reduce((a, b) => a + b, 0) / maxs.length)
+  // avg 与 min/max 同源计算，保证落在 [min, max] 区间内
   const avg = Math.round((avgMin + avgMax) / 2)
-  const overallAvg = Math.round(sameCategory.reduce((s, d) => s + (d.budget_min + d.budget_max) / 2, 0) / sameCategory.length / 100)
 
   let level = '合理'
   let tip = `该分类平均预算 ¥${avgMin}-¥${avgMax}，建议在此区间内报价`
 
-  return { min: avgMin, max: avgMax, avg: overallAvg, level, tip }
+  return { min: avgMin, max: avgMax, avg, level, tip }
 }
 
 // ========== 需求质量评分 ==========

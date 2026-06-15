@@ -94,7 +94,7 @@ function checkout() {
   uni.navigateTo({ url: `/pages/mall/order-confirm?id=${first._id}` })
 }
 
-function goMall() { uni.switchTab({ url: '/pages/mall/index' }) }
+function goMall() { uni.switchTab({ url: '/pages/mall/list' }) }
 </script>
 
 <style scoped>

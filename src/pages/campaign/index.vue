@@ -104,7 +104,7 @@ function joinCampaign(c) {
     invite: '/pages/user/index',
     task: '',
     rank: '/pages/dashboard/index',
-    discount: '/pages/mall/index'
+    discount: '/pages/mall/list'
   }
   if (c.type === 'invite') { uni.showToast({ title: '分享链接已复制', icon: 'none' }); return }
   if (c.type === 'task') { uni.pageScrollTo({ scrollTop: 9999 }); return }
