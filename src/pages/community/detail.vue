@@ -2,10 +2,10 @@
   <view class="page" v-if="post">
     <!-- 作者信息 -->
     <view class="post-header">
-      <view class="author-avatar">
+      <view class="author-avatar" @tap="goProfile">
         <text class="avatar-text">{{ post.author.nickname[0] }}</text>
       </view>
-      <view class="author-info">
+      <view class="author-info" @tap="goProfile">
         <text class="author-name">{{ post.author.nickname }}</text>
         <text class="author-meta">{{ post.author.company }} · {{ formatTime(post.created_at) }}</text>
       </view>
@@ -126,6 +126,12 @@ function submitComment() {
 }
 
 onLoad((q) => { postId.value = q.id; loadDetail() })
+
+function goProfile() {
+  if (post.value && post.value.author) {
+    uni.navigateTo({ url: '/pages/profile/index?id=' + post.value.author.id })
+  }
+}
 </script>
 
 <style lang="scss" scoped>

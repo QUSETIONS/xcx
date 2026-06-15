@@ -55,10 +55,10 @@
         <view class="post-item card-press" v-for="item in postList" :key="item._id" @tap="goDetail(item._id)">
           <!-- 作者 -->
           <view class="post-author">
-            <view class="author-avatar" :style="{ background: getAvatarColor(item.author.id) }">
+            <view class="author-avatar" :style="{ background: getAvatarColor(item.author.id) }" @tap.stop="goProfile(item.author.id)">
               <text class="avatar-text">{{ item.author.nickname[0] }}</text>
             </view>
-            <view class="author-info">
+            <view class="author-info" @tap.stop="goProfile(item.author.id)">
               <text class="author-name">{{ item.author.nickname }}</text>
               <text class="author-meta">{{ item.author.company }} · {{ formatTime(item.created_at) }}</text>
             </view>
@@ -163,6 +163,7 @@ function likePost(item) {
 function goDetail(id) { uni.navigateTo({ url: `/pages/community/detail?id=${id}` }) }
 function goPublish() { uni.navigateTo({ url: '/pages/community/post' }) }
 function goNotify() { uni.navigateTo({ url: '/pages/message/index' }) }
+function goProfile(id) { uni.navigateTo({ url: '/pages/profile/index?id=' + id }) }
 function sharePost() { uni.showModal({ title: '分享', content: '点击右上角「...」分享', showCancel: false }) }
 
 loadList(true)
