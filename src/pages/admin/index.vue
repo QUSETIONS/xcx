@@ -48,18 +48,17 @@ onMounted(() => {
   todayDemands.value = menuItems.value[0].count
   todayLeads.value = menuItems.value[1].count
   todayOrders.value = menuItems.value[2].count
-  setTimeout(() => { animated.value = true }, 100)
 })
 
 function goPage(url) { uni.navigateTo({ url }) }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .page { min-height: 100vh; background: #F5F6FA; padding: 24rpx; padding-bottom: 120rpx; }
 .header { margin-bottom: 24rpx; }
 .header-title { font-size: 40rpx; font-weight: bold; color: rgba(0,0,0,0.85); }
 
-.menu-grid { display: flex; flex-wrap: wrap; gap: 16rpx; margin-bottom: 24rpx; opacity: 0; }
+.menu-grid { display: flex; flex-wrap: wrap; margin-bottom: 24rpx; opacity: 0; }
 .animate-in { opacity: 1; transition: opacity 0.5s ease-out; }
 .menu-item { width: calc(50% - 8rpx); background: #FFFFFF; border-radius: 20rpx; padding: 24rpx; display: flex; flex-direction: column; align-items: center; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04); opacity: 0; }
 .fade-in { opacity: 1; animation: fadeInUp 0.4s ease-out both; }

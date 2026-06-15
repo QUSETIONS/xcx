@@ -32,7 +32,7 @@ async function doAdminLogin() {
 .login-logo { font-size: 120rpx; display: block; margin-bottom: $space-4; }
 .login-title { font-size: $font-3xl; font-weight: $weight-black; color: $text-primary; display: block; margin-bottom: $space-2; }
 .login-subtitle { font-size: $font-md; color: $text-tertiary; }
-.login-actions { width: 100%; display: flex; flex-direction: column; gap: $space-3; }
+.login-actions { width: 100%; display: flex; flex-direction: column; }
 .login-actions .btn-glow { width: 100%; }
 .login-tip { text-align: center; font-size: $font-sm; color: $text-tertiary; margin-top: $space-4; }
 </style>

@@ -112,12 +112,12 @@ function download() {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .detail-page { min-height: 100vh; background: #F5F6FA; padding: 24rpx; padding-bottom: 160rpx; }
 
 .info-card { background: #FFFFFF; border-radius: 20rpx; padding: 24rpx; margin-bottom: 12rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04); }
 .info-title { font-size: 36rpx; font-weight: bold; color: rgba(0,0,0,0.85); display: block; margin-bottom: 16rpx; }
-.info-tags { display: flex; gap: 8rpx; }
+.info-tags { display: flex; }
 .tag { font-size: 22rpx; color: rgba(0,0,0,0.6); background: #F5F6FA; padding: 8rpx 16rpx; border-radius: 12rpx; }
 
 .stats-card { display: flex; background: #FFFFFF; border-radius: 20rpx; padding: 24rpx; margin-bottom: 12rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04); }
@@ -129,7 +129,7 @@ function download() {
 .card-label { font-size: 28rpx; font-weight: bold; color: rgba(0,0,0,0.85); display: block; margin-bottom: 16rpx; }
 .desc-text { font-size: 28rpx; color: rgba(0,0,0,0.6); line-height: 1.7; }
 
-.preview-box { display: flex; align-items: center; gap: 16rpx; padding: 24rpx; background: #F5F6FA; border-radius: 16rpx; }
+.preview-box { display: flex; align-items: center; padding: 24rpx; background: #F5F6FA; border-radius: 16rpx; }
 .preview-icon { font-size: 48rpx; }
 .preview-name { font-size: 24rpx; color: rgba(0,0,0,0.6); }
 
@@ -137,7 +137,7 @@ function download() {
 .tips-title { font-size: 26rpx; font-weight: bold; color: rgba(0,0,0,0.85); display: block; margin-bottom: 12rpx; }
 .tips-item { font-size: 24rpx; color: rgba(0,0,0,0.5); line-height: 2; display: block; }
 
-.action-bar { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 12rpx; padding: 16rpx 24rpx; padding-bottom: calc(16rpx + env(safe-area-inset-bottom)); background: #FFFFFF; border-top: 1rpx solid rgba(0,0,0,0.06); box-shadow: 0 -4rpx 12rpx rgba(0,0,0,0.04); }
+.action-bar { position: fixed; bottom: 0; left: 0; right: 0; display: flex; padding: 16rpx 24rpx; padding-bottom: calc(16rpx + env(safe-area-inset-bottom)); background: #FFFFFF; border-top: 1rpx solid rgba(0,0,0,0.06); box-shadow: 0 -4rpx 12rpx rgba(0,0,0,0.04); }
 .collect-btn { padding: 20rpx 32rpx; background: #F5F6FA; border-radius: 24rpx; font-size: 28rpx; color: rgba(0,0,0,0.6); }
 .download-btn { flex: 1; background: linear-gradient(135deg, #FF6B35, #FF9A5C); border-radius: 24rpx; text-align: center; padding: 20rpx; }
 .download-btn text { font-size: 28rpx; color: #FFFFFF; font-weight: bold; }

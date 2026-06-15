@@ -128,49 +128,49 @@ function submitComment() {
 onLoad((q) => { postId.value = q.id; loadDetail() })
 </script>
 
-<style lang="scss">
-.page { min-height: 100vh; background: #0A0A0F; padding: 24rpx; padding-bottom: 160rpx; }
+<style lang="scss" scoped>
+.page { min-height: 100vh; background: #F5F6FA; padding: 24rpx; padding-bottom: 160rpx; }
 
-.post-header { display: flex; align-items: center; gap: 16rpx; margin-bottom: 16rpx; }
+.post-header { display: flex; align-items: center; margin-bottom: 16rpx; }
 .author-avatar { width: 80rpx; height: 80rpx; border-radius: 50%; background: linear-gradient(135deg, #6366F1, #8B5CF6); display: flex; align-items: center; justify-content: center; }
-.avatar-text { font-size: 28rpx; color: #fff; font-weight: bold; }
+.avatar-text { font-size: 28rpx; color: #333333; font-weight: bold; }
 .author-info { flex: 1; }
-.author-name { font-size: 30rpx; font-weight: bold; color: rgba(255,255,255,0.95); display: block; }
-.author-meta { font-size: 22rpx; color: rgba(255,255,255,0.5); }
+.author-name { font-size: 30rpx; font-weight: bold; color: rgba(0,0,0,0.85); display: block; }
+.author-meta { font-size: 22rpx; color: rgba(0,0,0,0.5); }
 .follow-btn { padding: 8rpx 24rpx; background: rgba(255,107,53,0.15); border: 1rpx solid rgba(255,107,53,0.25); border-radius: 24rpx; }
 .follow-btn text { font-size: 24rpx; color: #FF6B35; }
 
 .post-topic { font-size: 24rpx; color: #FF9A5C; background: rgba(255,107,53,0.12); padding: 8rpx 16rpx; border-radius: 8rpx; display: inline-flex; margin-bottom: 16rpx; }
 
-.post-content { font-size: 32rpx; color: rgba(255,255,255,0.95); line-height: 1.7; display: block; margin-bottom: 24rpx; }
+.post-content { font-size: 32rpx; color: rgba(0,0,0,0.85); line-height: 1.7; display: block; margin-bottom: 24rpx; }
 
-.post-stats { display: flex; gap: 24rpx; padding: 16rpx 0; border-bottom: 1rpx solid rgba(255,255,255,0.1); margin-bottom: 16rpx; }
+.post-stats { display: flex; padding: 16rpx 0; border-bottom: 1rpx solid rgba(0,0,0,0.06); margin-bottom: 16rpx; }
 .stats-item { font-size: 24rpx; color: rgba(255,255,255,0.6); }
 
-.post-actions { display: flex; gap: 32rpx; margin-bottom: 32rpx; }
-.action-btn { display: flex; align-items: center; gap: 8rpx; padding: 12rpx 24rpx; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 24rpx; }
+.post-actions { display: flex; margin-bottom: 32rpx; }
+.action-btn { display: flex; align-items: center; padding: 12rpx 24rpx; background: #FFFFFF; border: 1rpx solid rgba(0,0,0,0.06); border-radius: 24rpx; }
 .action-btn.liked { background: rgba(255,107,53,0.15); border-color: rgba(255,107,53,0.25); }
 .action-icon { font-size: 24rpx; }
-.action-text { font-size: 24rpx; color: rgba(255,255,255,0.65); }
+.action-text { font-size: 24rpx; color: rgba(0,0,0,0.6); }
 
 .comments-section { margin-top: 32rpx; }
-.comments-title { font-size: 28rpx; font-weight: bold; color: rgba(255,255,255,0.95); display: block; margin-bottom: 16rpx; }
-.comment-list { display: flex; flex-direction: column; gap: 16rpx; }
-.comment-item { display: flex; gap: 12rpx; }
-.comment-avatar { width: 48rpx; height: 48rpx; border-radius: 50%; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; }
-.comment-avatar .avatar-text { font-size: 20rpx; color: rgba(255,255,255,0.65); }
+.comments-title { font-size: 28rpx; font-weight: bold; color: rgba(0,0,0,0.85); display: block; margin-bottom: 16rpx; }
+.comment-list { display: flex; flex-direction: column; }
+.comment-item { display: flex; }
+.comment-avatar { width: 48rpx; height: 48rpx; border-radius: 50%; background: #FFFFFF; display: flex; align-items: center; justify-content: center; }
+.comment-avatar .avatar-text { font-size: 20rpx; color: rgba(0,0,0,0.6); }
 .comment-body { flex: 1; }
-.comment-author { font-size: 24rpx; font-weight: bold; color: rgba(255,255,255,0.85); display: block; margin-bottom: 4rpx; }
+.comment-author { font-size: 24rpx; font-weight: bold; color: rgba(0,0,0,0.7); display: block; margin-bottom: 4rpx; }
 .comment-content { font-size: 26rpx; color: rgba(255,255,255,0.75); display: block; margin-bottom: 8rpx; line-height: 1.5; }
-.comment-meta { display: flex; gap: 16rpx; }
-.comment-time { font-size: 20rpx; color: rgba(255,255,255,0.4); }
-.comment-likes { font-size: 20rpx; color: rgba(255,255,255,0.5); }
-.no-comments { text-align: center; padding: 32rpx; font-size: 24rpx; color: rgba(255,255,255,0.5); }
+.comment-meta { display: flex; }
+.comment-time { font-size: 20rpx; color: rgba(0,0,0,0.4); }
+.comment-likes { font-size: 20rpx; color: rgba(0,0,0,0.5); }
+.no-comments { text-align: center; padding: 32rpx; font-size: 24rpx; color: rgba(0,0,0,0.5); }
 
-.comment-bar { position: fixed; bottom: 0; left: 0; right: 0; display: flex; align-items: center; gap: 12rpx; padding: 16rpx 24rpx; background: #12121A; border-top: 1rpx solid rgba(255,255,255,0.1); }
-.comment-input { flex: 1; height: 64rpx; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 32rpx; padding: 16rpx 20rpx; font-size: 26rpx; color: rgba(255,255,255,0.95); }
+.comment-bar { position: fixed; bottom: 0; left: 0; right: 0; display: flex; align-items: center; padding: 16rpx 24rpx; background: #12121A; border-top: 1rpx solid rgba(0,0,0,0.06); }
+.comment-input { flex: 1; height: 64rpx; background: #FFFFFF; border: 1rpx solid rgba(0,0,0,0.06); border-radius: 32rpx; padding: 16rpx 20rpx; font-size: 26rpx; color: rgba(0,0,0,0.85); }
 .send-btn { padding: 16rpx 32rpx; background: linear-gradient(135deg, #FF6B35, #FF9A5C); border-radius: 32rpx; }
-.send-btn text { font-size: 26rpx; color: #fff; font-weight: bold; }
+.send-btn text { font-size: 26rpx; color: #333333; font-weight: bold; }
 
 .empty { text-align: center; padding: 64rpx; }
 .empty-icon { font-size: 80rpx; display: block; margin-bottom: 16rpx; }

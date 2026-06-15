@@ -46,7 +46,6 @@ const animated = ref(false)
 onMounted(() => {
   const res = resourceService.list({ page: 1, pageSize: 20 })
   list.value = res.list
-  setTimeout(() => { animated.value = true }, 100)
 })
 
 function getFileIcon(type) {
@@ -58,17 +57,17 @@ function goDetail(id) { uni.navigateTo({ url: `/pages/resource/detail?id=${id}` 
 function onRefresh() { refreshing.value = true; const res = resourceService.list({ page: 1, pageSize: 20 }); list.value = res.list; refreshing.value = false }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .page { min-height: 100vh; background: #F5F6FA; padding-bottom: 40rpx; }
 
 .header { padding: 24rpx; }
 .header-title { font-size: 40rpx; font-weight: bold; color: rgba(0,0,0,0.85); }
 
 .list-scroll { height: calc(100vh - 80rpx); padding: 0 24rpx; }
-.resource-list { display: flex; flex-direction: column; gap: 12rpx; opacity: 0; }
+.resource-list { display: flex; flex-direction: column; opacity: 0; }
 .animate-in { opacity: 1; transition: opacity 0.5s ease-out; }
 
-.resource-item { display: flex; align-items: flex-start; gap: 16rpx; background: #FFFFFF; border-radius: 16rpx; padding: 20rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04); opacity: 0; }
+.resource-item { display: flex; align-items: flex-start; background: #FFFFFF; border-radius: 16rpx; padding: 20rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04); opacity: 0; }
 .fade-in { opacity: 1; animation: fadeInUp 0.4s ease-out both; }
 
 .resource-icon-box { width: 56rpx; height: 56rpx; background: #F5F6FA; border-radius: 14rpx; display: flex; align-items: center; justify-content: center; }
@@ -77,10 +76,10 @@ function onRefresh() { refreshing.value = true; const res = resourceService.list
 .resource-main { flex: 1; }
 .resource-title { font-size: 28rpx; font-weight: bold; color: rgba(0,0,0,0.85); display: block; margin-bottom: 8rpx; }
 .resource-summary { font-size: 24rpx; color: rgba(0,0,0,0.5); display: block; margin-bottom: 12rpx; line-height: 1.5; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-.resource-meta { display: flex; gap: 8rpx; align-items: center; margin-bottom: 8rpx; }
+.resource-meta { display: flex; align-items: center; margin-bottom: 8rpx; }
 .meta-tag { font-size: 20rpx; color: #FF6B35; background: rgba(255,107,53,0.1); padding: 4rpx 12rpx; border-radius: 8rpx; }
 .meta-type { font-size: 20rpx; color: rgba(0,0,0,0.4); }
-.resource-stats { display: flex; gap: 16rpx; }
+.resource-stats { display: flex; }
 .resource-stats text { font-size: 22rpx; color: rgba(0,0,0,0.4); }
 
 .resource-price { display: flex; align-items: center; }

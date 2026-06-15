@@ -56,7 +56,6 @@ const filteredList = computed(() => {
   return messages.value.filter(m => m.type === currentTab.value)
 })
 
-onMounted(() => { setTimeout(() => { animated.value = true }, 100) })
 
 function getIcon(type) {
   const map = { system: '📢', interact: '💬' }
@@ -71,21 +70,21 @@ function readMsg(item) {
 function onRefresh() { refreshing.value = true; refreshing.value = false }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .page { min-height: 100vh; background: #F5F6FA; padding-bottom: 40rpx; }
 
 .header { padding: 24rpx; }
 .header-title { font-size: 40rpx; font-weight: bold; color: rgba(0,0,0,0.85); }
 
-.tab-bar { display: flex; gap: 12rpx; padding: 0 24rpx 16rpx; }
+.tab-bar { display: flex; padding: 0 24rpx 16rpx; }
 .tab-item { padding: 12rpx 24rpx; background: #FFFFFF; border-radius: 20rpx; font-size: 26rpx; color: rgba(0,0,0,0.6); box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04); }
 .tab-item.active { background: rgba(255,107,53,0.1); color: #FF6B35; font-weight: bold; }
 
 .list-scroll { height: calc(100vh - 160rpx); padding: 0 24rpx; }
-.msg-list { display: flex; flex-direction: column; gap: 12rpx; opacity: 0; }
+.msg-list { display: flex; flex-direction: column; opacity: 0; }
 .animate-in { opacity: 1; transition: opacity 0.5s ease-out; }
 
-.msg-item { display: flex; align-items: flex-start; gap: 16rpx; background: #FFFFFF; border-radius: 16rpx; padding: 20rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04); opacity: 0; position: relative; }
+.msg-item { margin-bottom: 12rpx; display: flex; align-items: flex-start; background: #FFFFFF; border-radius: 16rpx; padding: 20rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04); opacity: 0; position: relative; }
 .fade-in { opacity: 1; animation: fadeInUp 0.4s ease-out both; }
 .msg-item.unread { background: rgba(255,107,53,0.02); border-left: 4rpx solid #FF6B35; }
 

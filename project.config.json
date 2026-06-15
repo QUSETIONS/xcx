@@ -2,6 +2,7 @@
   "appid": "wx3ce308487062b482",
   "projectname": "qiye-ku",
   "description": "企业库 - 企业资源对接平台",
+  "isGameTourist": false,
   "setting": {
     "urlCheck": true,
     "es6": true,

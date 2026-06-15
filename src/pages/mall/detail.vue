@@ -123,7 +123,7 @@ onLoad((q) => { productId.value = q.id; loadDetail() })
 .price-card, .benefits-card, .notice-card, .desc-card { padding: $space-4; margin-bottom: $space-3; }
 .card-label { font-size: $font-base; font-weight: $weight-semibold; color: $text-secondary; display: block; margin-bottom: $space-3; }
 
-.price-main { display: flex; align-items: baseline; gap: $space-1; margin-bottom: $space-3; }
+.price-main { display: flex; align-items: baseline; margin-bottom: $space-3; }
 .price-current { font-size: $font-2xl; font-weight: $weight-black; }
 .price-unit { font-size: $font-sm; color: $text-tertiary; }
 
@@ -132,8 +132,8 @@ onLoad((q) => { productId.value = q.id; loadDetail() })
 .price-market { font-size: $font-sm; color: $text-tertiary; text-decoration: line-through; }
 .price-save { font-size: $font-sm; color: $color-success; font-weight: $weight-semibold; }
 
-.benefit-list { display: flex; flex-direction: column; gap: $space-2; }
-.benefit-item { display: flex; align-items: center; gap: $space-2; }
+.benefit-list { display: flex; flex-direction: column; }
+.benefit-item { display: flex; align-items: center; }
 .benefit-check { width: 32rpx; height: 32rpx; background: rgba(16,185,129,0.15); border-radius: $radius-sm; display: flex; align-items: center; justify-content: center; }
 .benefit-check text { font-size: 20rpx; color: $color-success; }
 .benefit-text { font-size: $font-sm; color: $text-secondary; }

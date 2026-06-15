@@ -89,34 +89,34 @@ async function submit() {
 }
 </script>
 
-<style lang="scss">
-.page { min-height: 100vh; background: #0A0A0F; padding: 24rpx; padding-bottom: 160rpx; }
+<style lang="scss" scoped>
+.page { min-height: 100vh; background: #F5F6FA; padding: 24rpx; padding-bottom: 160rpx; }
 
 .section { margin-bottom: 24rpx; }
-.section-title { font-size: 28rpx; font-weight: bold; color: rgba(255,255,255,0.95); display: block; margin-bottom: 12rpx; }
+.section-title { font-size: 28rpx; font-weight: bold; color: rgba(0,0,0,0.85); display: block; margin-bottom: 12rpx; }
 
 .topic-scroll { white-space: nowrap; }
-.topic-list { display: flex; gap: 12rpx; }
-.topic-item { padding: 12rpx 24rpx; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 24rpx; font-size: 26rpx; color: rgba(255,255,255,0.65); }
+.topic-list { display: flex; }
+.topic-item { padding: 12rpx 24rpx; background: #FFFFFF; border: 1rpx solid rgba(0,0,0,0.06); border-radius: 24rpx; font-size: 26rpx; color: rgba(0,0,0,0.6); }
 .topic-item.active { background: rgba(255,107,53,0.15); border-color: rgba(255,107,53,0.25); color: #FF6B35; }
 
-.content-input { width: 100%; height: 300rpx; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 16rpx; padding: 20rpx; font-size: 28rpx; color: rgba(255,255,255,0.95); line-height: 1.6; }
-.word-count { font-size: 22rpx; color: rgba(255,255,255,0.4); text-align: right; display: block; margin-top: 8rpx; }
+.content-input { width: 100%; height: 300rpx; background: #FFFFFF; border: 1rpx solid rgba(0,0,0,0.06); border-radius: 16rpx; padding: 20rpx; font-size: 28rpx; color: rgba(0,0,0,0.85); line-height: 1.6; }
+.word-count { font-size: 22rpx; color: rgba(0,0,0,0.4); text-align: right; display: block; margin-top: 8rpx; }
 
-.image-grid { display: flex; flex-wrap: wrap; gap: 12rpx; }
-.image-item { width: 200rpx; height: 200rpx; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 12rpx; display: flex; align-items: center; justify-content: center; position: relative; }
+.image-grid { display: flex; flex-wrap: wrap; }
+.image-item { width: 200rpx; height: 200rpx; background: #FFFFFF; border: 1rpx solid rgba(0,0,0,0.06); border-radius: 12rpx; display: flex; align-items: center; justify-content: center; position: relative; }
 .image-placeholder { font-size: 48rpx; }
 .image-delete { position: absolute; top: 8rpx; right: 8rpx; width: 40rpx; height: 40rpx; background: rgba(0,0,0,0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.image-delete text { font-size: 20rpx; color: #fff; }
+.image-delete text { font-size: 20rpx; color: #333333; }
 .image-add { width: 200rpx; height: 200rpx; background: rgba(255,255,255,0.04); border: 2rpx dashed rgba(255,255,255,0.15); border-radius: 12rpx; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .add-icon { font-size: 48rpx; color: rgba(255,255,255,0.3); }
-.add-text { font-size: 22rpx; color: rgba(255,255,255,0.4); margin-top: 8rpx; }
+.add-text { font-size: 22rpx; color: rgba(0,0,0,0.4); margin-top: 8rpx; }
 
 .notice { background: rgba(245,158,11,0.08); border: 1rpx solid rgba(245,158,11,0.15); border-radius: 16rpx; padding: 20rpx; margin-bottom: 24rpx; }
 .notice-title { font-size: 26rpx; font-weight: bold; color: #FBBF24; display: block; margin-bottom: 12rpx; }
 .notice-item { font-size: 24rpx; color: rgba(255,255,255,0.6); display: block; margin-bottom: 8rpx; }
 
-.submit-bar { position: fixed; bottom: 0; left: 0; right: 0; padding: 24rpx; background: #12121A; border-top: 1rpx solid rgba(255,255,255,0.1); }
-.submit-btn { width: 100%; height: 80rpx; background: linear-gradient(135deg, #FF6B35, #FF9A5C); border-radius: 40rpx; font-size: 32rpx; font-weight: bold; color: #fff; border: none; }
+.submit-bar { position: fixed; bottom: 0; left: 0; right: 0; padding: 24rpx; background: #12121A; border-top: 1rpx solid rgba(0,0,0,0.06); }
+.submit-btn { width: 100%; height: 80rpx; background: linear-gradient(135deg, #FF6B35, #FF9A5C); border-radius: 40rpx; font-size: 32rpx; font-weight: bold; color: #333333; border: none; }
 .submit-btn[disabled] { opacity: 0.5; }
 </style>

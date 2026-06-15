@@ -169,7 +169,6 @@ const showSortPicker = ref(false)
 onMounted(() => {
   loadHistory()
   loadList(true)
-  setTimeout(() => { animated.value = true }, 100)
 })
 
 function loadHistory() {
@@ -223,7 +222,7 @@ function selectRegion(r) { currentRegion.value = r; showRegionPicker.value = fal
 function selectSort(v) { currentSort.value = v; showSortPicker.value = false; loadList(true) }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .page { min-height: 100vh; background: #F5F6FA; padding-bottom: 120rpx; }
 
 .header { padding: 24rpx 24rpx 8rpx; display: flex; justify-content: space-between; align-items: center; }
@@ -232,7 +231,7 @@ function selectSort(v) { currentSort.value = v; showSortPicker.value = false; lo
 .search-btn { width: 48rpx; height: 48rpx; }
 .icon-sm { width: 28rpx; height: 28rpx; }
 
-.search-row { display: flex; align-items: center; gap: 12rpx; margin: 8rpx 24rpx 12rpx; }
+.search-row { display: flex; align-items: center; margin: 8rpx 24rpx 12rpx; }
 .search-box { flex: 1; display: flex; align-items: center; background: #FFFFFF; border-radius: 24rpx; padding: 16rpx 20rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04); }
 .search-box.focused { border: 2rpx solid #FF6B35; }
 .search-icon { width: 24rpx; height: 24rpx; }
@@ -240,22 +239,22 @@ function selectSort(v) { currentSort.value = v; showSortPicker.value = false; lo
 .search-clear { font-size: 24rpx; color: rgba(0,0,0,0.4); padding: 4rpx; }
 .search-btn text { font-size: 28rpx; color: #FF6B35; }
 
-.filter-bar { display: flex; gap: 12rpx; margin-bottom: 12rpx; padding: 0 24rpx; }
-.filter-item { display: flex; align-items: center; gap: 4rpx; padding: 10rpx 20rpx; background: #FFFFFF; border-radius: 20rpx; font-size: 24rpx; color: rgba(0,0,0,0.6); box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04); }
+.filter-bar { display: flex; margin-bottom: 12rpx; padding: 0 24rpx; }
+.filter-item { display: flex; align-items: center; padding: 10rpx 20rpx; background: #FFFFFF; border-radius: 20rpx; font-size: 24rpx; color: rgba(0,0,0,0.6); box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04); }
 .filter-item.active { background: rgba(255,107,53,0.1); color: #FF6B35; }
 .filter-arrow { font-size: 16rpx; }
 
 .recommend-tags { margin: 0 24rpx 12rpx; }
 .recommend-title { font-size: 24rpx; color: rgba(0,0,0,0.5); margin-bottom: 8rpx; display: block; }
-.tags-wrap { display: flex; flex-wrap: wrap; gap: 8rpx; }
+.tags-wrap { display: flex; flex-wrap: wrap; }
 .hot-tag { font-size: 22rpx; color: rgba(0,0,0,0.6); background: #FFFFFF; padding: 8rpx 16rpx; border-radius: 16rpx; box-shadow: 0 2rpx 6rpx rgba(0,0,0,0.04); }
 
 .search-history { padding: 16rpx 24rpx; }
 .history-title { font-size: 24rpx; color: rgba(0,0,0,0.5); margin-bottom: 12rpx; display: block; }
-.history-tags { display: flex; flex-wrap: wrap; gap: 8rpx; }
+.history-tags { display: flex; flex-wrap: wrap; }
 .history-tag { font-size: 24rpx; color: rgba(0,0,0,0.6); background: #FFFFFF; padding: 10rpx 20rpx; border-radius: 20rpx; }
 
-.skeleton-list { display: flex; flex-direction: column; gap: 12rpx; padding: 0 24rpx; }
+.skeleton-list { display: flex; flex-direction: column; padding: 0 24rpx; }
 .skeleton-item { background: #FFFFFF; border-radius: 20rpx; padding: 20rpx; }
 .skeleton-tags { width: 120rpx; height: 24rpx; background: #F0F1F5; border-radius: 8rpx; margin-bottom: 12rpx; animation: pulse 1.5s infinite; }
 .skeleton-title { width: 80%; height: 30rpx; background: #F0F1F5; border-radius: 8rpx; margin-bottom: 12rpx; animation: pulse 1.5s infinite; }
@@ -263,12 +262,12 @@ function selectSort(v) { currentSort.value = v; showSortPicker.value = false; lo
 
 .list-scroll { height: calc(100vh - 220rpx); padding: 0 24rpx; }
 
-.demand-list { display: flex; flex-direction: column; gap: 12rpx; opacity: 0; }
+.demand-list { display: flex; flex-direction: column; opacity: 0; }
 .animate-in { opacity: 1; transition: opacity 0.5s ease-out; }
-.demand-item { background: #FFFFFF; border-radius: 20rpx; padding: 20rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04); opacity: 0; }
+.demand-item { margin-bottom: 12rpx; background: #FFFFFF; border-radius: 20rpx; padding: 20rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04); opacity: 0; }
 .fade-in { opacity: 1; animation: fadeInUp 0.4s ease-out both; }
 
-.item-top { display: flex; gap: 8rpx; align-items: center; margin-bottom: 12rpx; }
+.item-top { display: flex; align-items: center; margin-bottom: 12rpx; }
 .item-cat-tag { font-size: 20rpx; color: #FF6B35; background: rgba(255,107,53,0.1); padding: 4rpx 12rpx; border-radius: 8rpx; }
 .item-quote-tag { font-size: 20rpx; color: #6366F1; background: rgba(99,102,241,0.1); padding: 4rpx 12rpx; border-radius: 8rpx; }
 .item-time { font-size: 20rpx; color: rgba(0,0,0,0.4); margin-left: auto; }
@@ -277,7 +276,7 @@ function selectSort(v) { currentSort.value = v; showSortPicker.value = false; lo
 .item-company { font-size: 24rpx; color: rgba(0,0,0,0.6); }
 .item-region { font-size: 22rpx; color: rgba(0,0,0,0.4); }
 .item-bottom { display: flex; justify-content: space-between; align-items: center; }
-.item-stats { display: flex; gap: 20rpx; }
+.item-stats { display: flex; }
 .stat-box { display: flex; flex-direction: column; align-items: center; }
 .stat-val { font-size: 26rpx; font-weight: bold; color: rgba(0,0,0,0.85); }
 .stat-label { font-size: 18rpx; color: rgba(0,0,0,0.4); }
@@ -299,8 +298,8 @@ function selectSort(v) { currentSort.value = v; showSortPicker.value = false; lo
 .picker-panel { width: 100%; padding: 32rpx; background: #FFFFFF; border-radius: 32rpx 32rpx 0 0; }
 .picker-header { display: flex; justify-content: space-between; margin-bottom: 24rpx; font-size: 32rpx; font-weight: bold; color: rgba(0,0,0,0.85); }
 .picker-close { color: rgba(0,0,0,0.4); padding: 4rpx; }
-.picker-grid { display: flex; flex-wrap: wrap; gap: 12rpx; }
-.picker-list { display: flex; flex-direction: column; gap: 8rpx; }
+.picker-grid { display: flex; flex-wrap: wrap; }
+.picker-list { display: flex; flex-direction: column; }
 .picker-opt { padding: 14rpx 28rpx; border-radius: 20rpx; font-size: 26rpx; background: #F5F6FA; color: rgba(0,0,0,0.6); }
 .picker-opt.active { background: rgba(255,107,53,0.1); color: #FF6B35; font-weight: bold; }
 

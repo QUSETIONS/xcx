@@ -85,7 +85,6 @@ onMounted(() => {
   myDemandsCount.value = demandService.myDemands().total
   myLeadsCount.value = leadService.myLeads().total
   myFavoritesCount.value = favoriteService.list().total
-  setTimeout(() => { animated.value = true }, 100)
 })
 
 function goPage(path) {
@@ -96,11 +95,11 @@ function goAdmin() { uni.navigateTo({ url: '/pages/admin/index' }) }
 function goSettings() { uni.showToast({ title: '设置功能开发中', icon: 'none' }) }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .page { min-height: 100vh; background: #F5F6FA; padding: 24rpx; padding-bottom: 120rpx; }
 
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24rpx; }
-.user-info { display: flex; align-items: center; gap: 16rpx; }
+.user-info { display: flex; align-items: center; }
 .avatar-box { width: 96rpx; height: 96rpx; border-radius: 50%; background: linear-gradient(135deg, #FF6B35, #FF9A5C); padding: 4rpx; }
 .avatar { width: 100%; height: 100%; border-radius: 50%; }
 .nickname { font-size: 36rpx; font-weight: bold; color: rgba(0,0,0,0.85); display: block; }
@@ -117,7 +116,7 @@ function goSettings() { uni.showToast({ title: '设置功能开发中', icon: 'n
 
 .menu-section { margin-bottom: 24rpx; }
 .section-title { font-size: 28rpx; font-weight: bold; color: rgba(0,0,0,0.85); display: block; margin-bottom: 16rpx; }
-.menu-grid { display: flex; flex-wrap: wrap; gap: 12rpx; }
+.menu-grid { display: flex; flex-wrap: wrap; }
 .menu-item { width: calc(33.33% - 8rpx); display: flex; flex-direction: column; align-items: center; padding: 20rpx 0; background: #FFFFFF; border-radius: 16rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04); opacity: 0; }
 .fade-in { opacity: 1; animation: fadeInUp 0.4s ease-out both; }
 .menu-icon-box { width: 56rpx; height: 56rpx; border-radius: 14rpx; display: flex; align-items: center; justify-content: center; margin-bottom: 8rpx; }
@@ -130,7 +129,7 @@ function goSettings() { uni.showToast({ title: '设置功能开发中', icon: 'n
 .menu-icon { width: 28rpx; height: 28rpx; }
 .menu-label { font-size: 24rpx; color: rgba(0,0,0,0.7); }
 
-.admin-card { display: flex; align-items: center; gap: 16rpx; background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.1)); border: 2rpx solid rgba(99,102,241,0.2); border-radius: 20rpx; padding: 20rpx; }
+.admin-card { display: flex; align-items: center; background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.1)); border: 2rpx solid rgba(99,102,241,0.2); border-radius: 20rpx; padding: 20rpx; }
 .admin-icon-box { width: 56rpx; height: 56rpx; background: linear-gradient(135deg, #6366F1, #8B5CF6); border-radius: 14rpx; display: flex; align-items: center; justify-content: center; }
 .admin-icon { width: 28rpx; height: 28rpx; }
 .admin-info { flex: 1; }

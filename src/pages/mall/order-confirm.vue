@@ -91,7 +91,7 @@ async function submitOrder() {
 .goods-card, .contact-card, .summary-card { padding: $space-4; margin-bottom: $space-3; }
 .card-label { font-size: $font-base; font-weight: $weight-semibold; color: $text-secondary; display: block; margin-bottom: $space-3; }
 
-.goods-item { display: flex; gap: $space-3; }
+.goods-item { display: flex; }
 .goods-icon-box { width: 72rpx; height: 72rpx; border-radius: $radius-lg; display: flex; align-items: center; justify-content: center; }
 .goods-icon { font-size: 36rpx; }
 .goods-info { flex: 1; }

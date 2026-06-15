@@ -35,22 +35,21 @@ const list = ref([])
 const refreshing = ref(false)
 const animated = ref(false)
 
-onMounted(() => { loadList(); setTimeout(() => { animated.value = true }, 100) })
 function loadList() { list.value = orderService.myOrders().list }
 function formatDate(t) { if (!t) return ''; const d = new Date(t); return `${d.getMonth()+1}/${d.getDate()}` }
 function goMall() { uni.switchTab({ url: '/pages/mall/list' }) }
 function onRefresh() { refreshing.value = true; loadList(); refreshing.value = false }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .page { min-height: 100vh; background: #F5F6FA; padding-bottom: 120rpx; }
 .header { padding: 24rpx; }
 .header-title { font-size: 36rpx; font-weight: bold; color: rgba(0,0,0,0.85); }
 
 .list-scroll { height: calc(100vh - 80rpx); padding: 0 24rpx; }
-.order-list { display: flex; flex-direction: column; gap: 12rpx; opacity: 0; }
+.order-list { display: flex; flex-direction: column; opacity: 0; }
 .animate-in { opacity: 1; transition: opacity 0.5s ease-out; }
-.order-item { background: #FFFFFF; border-radius: 16rpx; padding: 20rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04); opacity: 0; }
+.order-item { margin-bottom: 12rpx; background: #FFFFFF; border-radius: 16rpx; padding: 20rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04); opacity: 0; }
 .fade-in { opacity: 1; animation: fadeInUp 0.4s ease-out both; }
 
 .order-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12rpx; }

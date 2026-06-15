@@ -169,59 +169,59 @@ loadList(true)
 loadHotPosts()
 </script>
 
-<style lang="scss">
-.page { min-height: 100vh; background: #0A0A0F; padding-bottom: 120rpx; }
+<style lang="scss" scoped>
+.page { min-height: 100vh; background: #F5F6FA; padding-bottom: 120rpx; }
 
 .header { display: flex; justify-content: space-between; align-items: center; padding: 24rpx 24rpx 16rpx; }
-.header-title { font-size: 40rpx; font-weight: bold; color: rgba(255,255,255,0.95); }
+.header-title { font-size: 40rpx; font-weight: bold; color: rgba(0,0,0,0.85); }
 .header-right { display: flex; }
-.notify-btn { width: 64rpx; height: 64rpx; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 20rpx; display: flex; align-items: center; justify-content: center; position: relative; font-size: 28rpx; }
+.notify-btn { width: 64rpx; height: 64rpx; background: #FFFFFF; border: 1rpx solid rgba(0,0,0,0.06); border-radius: 20rpx; display: flex; align-items: center; justify-content: center; position: relative; font-size: 28rpx; }
 .notify-dot { position: absolute; top: 12rpx; right: 12rpx; width: 12rpx; height: 12rpx; background: #EF4444; border-radius: 50%; }
 
 .topic-scroll { padding: 0 24rpx 12rpx; }
-.topic-list { display: flex; gap: 12rpx; }
-.topic-item { display: flex; align-items: center; gap: 4rpx; padding: 10rpx 24rpx; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 24rpx; font-size: 24rpx; color: rgba(255,255,255,0.65); white-space: nowrap; }
+.topic-list { display: flex; }
+.topic-item { display: flex; align-items: center; padding: 10rpx 24rpx; background: #FFFFFF; border: 1rpx solid rgba(0,0,0,0.06); border-radius: 24rpx; font-size: 24rpx; color: rgba(0,0,0,0.6); white-space: nowrap; }
 .topic-item.active { background: rgba(255,107,53,0.15); border-color: rgba(255,107,53,0.25); color: #FF6B35; }
 .topic-count { font-size: 16rpx; color: #EF4444; background: rgba(239,68,68,0.15); padding: 2rpx 8rpx; border-radius: 8rpx; }
 
 .hot-section { margin: 0 24rpx 12rpx; }
-.hot-title { font-size: 28rpx; font-weight: bold; color: rgba(255,255,255,0.95); display: block; margin-bottom: 12rpx; }
+.hot-title { font-size: 28rpx; font-weight: bold; color: rgba(0,0,0,0.85); display: block; margin-bottom: 12rpx; }
 .hot-scroll { white-space: nowrap; }
-.hot-list { display: inline-flex; gap: 12rpx; }
+.hot-list { display: inline-flex; }
 .hot-card { width: 320rpx; background: rgba(255,107,53,0.08); border: 1rpx solid rgba(255,107,53,0.15); border-radius: 16rpx; padding: 16rpx; display: inline-block; }
-.hot-header { display: flex; align-items: center; gap: 8rpx; margin-bottom: 8rpx; }
+.hot-header { display: flex; align-items: center; margin-bottom: 8rpx; }
 .hot-avatar { width: 36rpx; height: 36rpx; border-radius: 50%; background: linear-gradient(135deg, #FF6B35, #FF9A5C); display: flex; align-items: center; justify-content: center; }
-.hot-avatar text { font-size: 18rpx; color: #fff; font-weight: bold; }
-.hot-author { font-size: 22rpx; color: rgba(255,255,255,0.65); }
-.hot-content { font-size: 24rpx; color: rgba(255,255,255,0.85); display: block; margin-bottom: 8rpx; white-space: normal; line-height: 1.4; }
-.hot-stats { display: flex; gap: 16rpx; }
-.hot-stats text { font-size: 20rpx; color: rgba(255,255,255,0.5); }
+.hot-avatar text { font-size: 18rpx; color: #333333; font-weight: bold; }
+.hot-author { font-size: 22rpx; color: rgba(0,0,0,0.6); }
+.hot-content { font-size: 24rpx; color: rgba(0,0,0,0.7); display: block; margin-bottom: 8rpx; white-space: normal; line-height: 1.4; }
+.hot-stats { display: flex; }
+.hot-stats text { font-size: 20rpx; color: rgba(0,0,0,0.5); }
 
-.tab-bar { display: flex; gap: 24rpx; padding: 12rpx 24rpx; }
-.tab-item { font-size: 28rpx; color: rgba(255,255,255,0.5); padding-bottom: 8rpx; }
+.tab-bar { display: flex; padding: 12rpx 24rpx; }
+.tab-item { font-size: 28rpx; color: rgba(0,0,0,0.5); padding-bottom: 8rpx; }
 .tab-item.active { color: #FF6B35; font-weight: bold; border-bottom: 4rpx solid #FF6B35; }
 
 .list-scroll { height: calc(100vh - 340rpx); padding: 0 24rpx; }
-.post-list { display: flex; flex-direction: column; gap: 16rpx; }
-.post-item { background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 20rpx; padding: 24rpx; }
+.post-list { display: flex; flex-direction: column; }
+.post-item { margin-bottom: 12rpx; background: #FFFFFF; border: 1rpx solid rgba(0,0,0,0.06); border-radius: 20rpx; padding: 24rpx; }
 
-.post-author { display: flex; align-items: center; gap: 12rpx; margin-bottom: 16rpx; }
+.post-author { display: flex; align-items: center; margin-bottom: 16rpx; }
 .author-avatar { width: 64rpx; height: 64rpx; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.avatar-text { font-size: 24rpx; color: #fff; font-weight: bold; }
+.avatar-text { font-size: 24rpx; color: #333333; font-weight: bold; }
 .author-info { flex: 1; }
-.author-name { font-size: 26rpx; font-weight: bold; color: rgba(255,255,255,0.95); display: block; }
-.author-meta { font-size: 20rpx; color: rgba(255,255,255,0.45); }
+.author-name { font-size: 26rpx; font-weight: bold; color: rgba(0,0,0,0.85); display: block; }
+.author-meta { font-size: 20rpx; color: rgba(0,0,0,0.4); }
 .post-topic { font-size: 20rpx; color: #FF9A5C; background: rgba(255,107,53,0.12); padding: 4rpx 12rpx; border-radius: 8rpx; }
 
-.post-content { font-size: 28rpx; color: rgba(255,255,255,0.85); line-height: 1.6; display: block; margin-bottom: 16rpx; }
+.post-content { font-size: 28rpx; color: rgba(0,0,0,0.7); line-height: 1.6; display: block; margin-bottom: 16rpx; }
 
-.post-actions { display: flex; gap: 32rpx; }
-.action-btn { display: flex; align-items: center; gap: 6rpx; }
+.post-actions { display: flex; }
+.action-btn { display: flex; align-items: center; }
 .action-btn.liked .action-num { color: #FF6B35; }
 .action-icon { font-size: 28rpx; }
-.action-num { font-size: 24rpx; color: rgba(255,255,255,0.5); }
+.action-num { font-size: 24rpx; color: rgba(0,0,0,0.5); }
 
-.loading, .end { text-align: center; padding: 32rpx; font-size: 24rpx; color: rgba(255,255,255,0.5); }
+.loading, .end { text-align: center; padding: 32rpx; font-size: 24rpx; color: rgba(0,0,0,0.5); }
 
 .fab-btn { position: fixed; right: 32rpx; bottom: 160rpx; width: 96rpx; height: 96rpx; background: linear-gradient(135deg, #FF6B35, #FF9A5C); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8rpx 32rpx rgba(255,107,53,0.4); z-index: 100; }
 .fab-icon { font-size: 36rpx; }

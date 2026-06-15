@@ -207,10 +207,10 @@ function submitForm() {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .publish-page { min-height: 100vh; background: #F5F6FA; padding-bottom: 160rpx; }
 
-.notice-bar { display: flex; align-items: center; gap: 8rpx; padding: 16rpx 24rpx; margin: 16rpx 24rpx 0; background: rgba(245,158,11,0.1); border: 1rpx solid rgba(245,158,11,0.2); border-radius: 16rpx; }
+.notice-bar { display: flex; align-items: center; padding: 16rpx 24rpx; margin: 16rpx 24rpx 0; background: rgba(245,158,11,0.1); border: 1rpx solid rgba(245,158,11,0.2); border-radius: 16rpx; }
 .notice-icon { font-size: 28rpx; }
 .notice-text { flex: 1; font-size: 22rpx; color: #F59E0B; }
 .notice-link { font-size: 22rpx; color: #FF6B35; }
@@ -225,15 +225,15 @@ function submitForm() {
 .placeholder { color: rgba(0,0,0,0.35); }
 .select-arrow { color: rgba(0,0,0,0.3); }
 
-.quote-row { display: flex; gap: 12rpx; }
+.quote-row { display: flex; }
 .quote-opt { padding: 12rpx 24rpx; background: #F5F6FA; border-radius: 16rpx; font-size: 24rpx; color: rgba(0,0,0,0.6); }
 .quote-opt.active { background: rgba(255,107,53,0.1); color: #FF6B35; font-weight: bold; }
 
-.budget-row { display: flex; align-items: center; gap: 12rpx; }
+.budget-row { display: flex; align-items: center; }
 .budget-input { flex: 1; font-size: 28rpx; color: rgba(0,0,0,0.85); padding: 12rpx; background: #F5F6FA; border-radius: 12rpx; text-align: center; }
 .budget-sep { color: rgba(0,0,0,0.3); }
 
-.bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 12rpx; padding: 16rpx 24rpx; padding-bottom: calc(16rpx + env(safe-area-inset-bottom)); background: #FFFFFF; border-top: 1rpx solid rgba(0,0,0,0.06); box-shadow: 0 -4rpx 12rpx rgba(0,0,0,0.04); }
+.bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; display: flex; padding: 16rpx 24rpx; padding-bottom: calc(16rpx + env(safe-area-inset-bottom)); background: #FFFFFF; border-top: 1rpx solid rgba(0,0,0,0.06); box-shadow: 0 -4rpx 12rpx rgba(0,0,0,0.04); }
 .draft-btn { padding: 20rpx 40rpx; background: #F5F6FA; border-radius: 24rpx; font-size: 28rpx; color: rgba(0,0,0,0.6); }
 .submit-btn { flex: 1; padding: 20rpx; background: linear-gradient(135deg, #FF6B35, #FF9A5C); border-radius: 24rpx; text-align: center; }
 .submit-btn text { font-size: 28rpx; color: #FFFFFF; font-weight: bold; }
@@ -242,7 +242,7 @@ function submitForm() {
 .picker-panel { width: 100%; padding: 32rpx; background: #FFFFFF; border-radius: 32rpx 32rpx 0 0; }
 .picker-header { display: flex; justify-content: space-between; margin-bottom: 24rpx; font-size: 32rpx; font-weight: bold; color: rgba(0,0,0,0.85); }
 .picker-close { color: rgba(0,0,0,0.4); padding: 4rpx; }
-.picker-grid { display: flex; flex-wrap: wrap; gap: 12rpx; }
+.picker-grid { display: flex; flex-wrap: wrap; }
 .picker-opt { padding: 14rpx 28rpx; border-radius: 20rpx; font-size: 26rpx; background: #F5F6FA; color: rgba(0,0,0,0.6); }
 .picker-opt.active { background: rgba(255,107,53,0.1); color: #FF6B35; font-weight: bold; }
 
