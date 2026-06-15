@@ -432,10 +432,65 @@ export const orderService = {
     orderData.unshift(item)
     return item
   },
-  myOrders() {
-    return { list: orderData, total: orderData.length }
+  myOrders(params = {}) {
+    const { status } = params
+    let list = [...orderData]
+    if (status && status !== 'all') {
+      // 分组：待处理（created/paid/confirmed）服务中（serving）已完成（completed）
+      if (status === 'pending') list = list.filter(o => ['created', 'paid', 'confirmed'].includes(o.status))
+      else list = list.filter(o => o.status === status)
+    }
+    return { list, total: list.length }
   },
-  detail(id) { return orderData.find(o => o._id === id) || null }
+  detail(id) { return orderData.find(o => o._id === id) || null },
+  updateStatus(id, status) {
+    const o = orderData.find(o => o._id === id)
+    if (o) o.status = status
+    return o
+  }
+}
+
+// ========== 购物车 ==========
+export const cartService = {
+  _key: 'qiye_ku_cart',
+  _getList() {
+    try { return JSON.parse(uni.getStorageSync(this._key) || '[]') } catch { return [] }
+  },
+  _save(list) { uni.setStorageSync(this._key, JSON.stringify(list)) },
+  add(product) {
+    const list = this._getList()
+    const idx = list.findIndex(i => i._id === product._id)
+    if (idx > -1) {
+      list[idx].quantity += 1
+    } else {
+      list.unshift({ _id: product._id, title: product.title, price: product.price, service_type: product.service_type, quantity: 1 })
+    }
+    this._save(list)
+    return list
+  },
+  updateQty(id, quantity) {
+    const list = this._getList()
+    const idx = list.findIndex(i => i._id === id)
+    if (idx > -1) {
+      if (quantity <= 0) { list.splice(idx, 1) }
+      else { list[idx].quantity = quantity }
+    }
+    this._save(list)
+    return list
+  },
+  remove(id) {
+    const list = this._getList().filter(i => i._id !== id)
+    this._save(list)
+    return list
+  },
+  clear() { this._save([]) },
+  list() { return this._getList() },
+  count() {
+    return this._getList().reduce((s, i) => s + i.quantity, 0)
+  },
+  total() {
+    return this._getList().reduce((s, i) => s + i.price * i.quantity, 0)
+  }
 }
 
 export const resourceService = {
@@ -797,7 +852,8 @@ export const mockService = {
   coupon: couponService,
   follow: followService,
   deal: dealService,
-  notify: notifyService
+  notify: notifyService,
+  cart: cartService
 }
 
 export default mockService

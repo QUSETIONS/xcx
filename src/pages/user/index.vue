@@ -122,6 +122,8 @@ const menuItems = [
   { label: '消息中心', path: '/pages/message/index', icon: '🔔' },
   { label: '积分签到', path: '/pages/points/index', icon: '🎁' },
   { label: '优惠券', path: '/pages/coupon/index', icon: '🎫' },
+  { label: '我的订单', path: '/pages/order/index', icon: '📦' },
+  { label: '购物车', path: '/pages/cart/index', icon: '🛒' },
   { label: '成交管理', path: '/pages/deals/index', icon: '🤝' },
   { label: '我的关注', path: '/pages/follow/index', icon: '👥' },
   { label: '消息中心', path: '/pages/message/index', icon: '🔔' },

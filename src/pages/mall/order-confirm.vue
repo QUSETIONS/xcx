@@ -169,7 +169,7 @@ async function submitOrder() {
     }
     uni.setStorageSync('last_order_contact', { name: form.value.contact_name, phone: form.value.phone })
     uni.showToast({ title: '下单成功', icon: 'success' })
-    setTimeout(() => uni.switchTab({ url: '/pages/user/index' }), 1500)
+    setTimeout(() => uni.redirectTo({ url: '/pages/order/index' }), 1500)
   } finally { submitting.value = false }
 }
 </script>

@@ -49,6 +49,8 @@
     <view class="action-bar glass-card-strong">
       <view class="action-btn" @tap="toggleFavorite"><text class="action-icon">{{ isFavorited ? '❤️' : '🤍' }}</text><text class="action-text">收藏</text></view>
       <view class="action-btn" @tap="share"><text class="action-icon">🔗</text><text class="action-text">分享</text></view>
+      <view class="action-btn cart-entry" @tap="goCart"><text class="action-icon">🛒</text><text class="action-text">购物车</text></view>
+      <view class="add-cart-btn" @tap="addToCart"><text>加入购物车</text></view>
       <button class="btn-glow" @tap="buyNow"><text>立即购买</text></button>
     </view>
   </view>
@@ -58,7 +60,7 @@
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { SERVICE_TYPES } from '@/config/constants'
-import { productService, favoriteService } from '@/mock/service'
+import { productService, favoriteService, cartService } from '@/mock/service'
 import { trackBrowse } from '@/mock/smart'
 
 const productId = ref('')
@@ -107,6 +109,11 @@ function toggleFavorite() {
 
 function share() { uni.showModal({ title: '分享商品', content: '点击右上角「...」分享', showCancel: false }) }
 function buyNow() { uni.navigateTo({ url: `/pages/mall/order-confirm?id=${productId.value}` }) }
+function addToCart() {
+  cartService.add(product.value)
+  uni.showToast({ title: '已加入购物车', icon: 'success' })
+}
+function goCart() { uni.navigateTo({ url: '/pages/cart/index' }) }
 
 onLoad((q) => { productId.value = q.id; loadDetail() })
 </script>
@@ -148,5 +155,7 @@ onLoad((q) => { productId.value = q.id; loadDetail() })
 .action-btn { display: flex; flex-direction: column; align-items: center; }
 .action-icon { font-size: 36rpx; }
 .action-text { font-size: $font-xs; color: $text-tertiary; }
-.btn-glow { flex: 1; }
+.add-cart-btn { background: rgba(255,154,92,0.95); border-radius: $radius-full; padding: 18rpx 20rpx; }
+.add-cart-btn text { font-size: $font-sm; color: #FFFFFF; font-weight: $weight-semibold; }
+.btn-glow { flex: 1; margin-left: $space-2; }
 </style>
