@@ -3,14 +3,14 @@
     <view class="header">
       <text class="header-title">需求管理</text>
       <view class="header-actions">
-        <view class="search-box" @tap="showSearch = true"><text>🔍 搜索</text></view>
-        <view class="filter-btn" :class="{ active: statusFilter }" @tap="showStatusPicker = true"><text>{{ statusFilter || '全部' }}</text></view>
+        <view class="filter-btn" :class="{ active: statusFilter }" @tap="showStatusPicker = true"><text>{{ statusFilter ? statusMap[statusFilter] : '全部' }}</text></view>
       </view>
     </view>
 
     <scroll-view class="list-scroll" scroll-y :refresher-enabled="true" :refresher-triggered="refreshing" @refresherrefresh="onRefresh">
-      <view class="demand-list">
-        <view class="demand-item" v-for="item in filteredList" :key="item._id" @tap="goDetail(item._id)">
+      <view class="demand-list" :class="{ 'animate-in': animated }">
+        <view class="demand-item" v-for="(item, idx) in filteredList" :key="item._id" @tap="goDetail(item._id)"
+          :class="{ 'fade-in': animated }" :style="{ animationDelay: (idx * 0.08) + 's' }">
           <view class="item-top">
             <text class="item-title">{{ item.title }}</text>
             <view class="status-tag" :class="'status-' + item.status"><text>{{ statusMap[item.status] || item.status }}</text></view>
@@ -20,8 +20,8 @@
             <text class="item-region">{{ item.region }}</text>
           </view>
           <view class="item-stats">
-            <text>👁 {{ item.view_count }}</text>
-            <text>🤝 {{ item.lead_count }}</text>
+            <view class="stat-box"><text>👁 {{ item.view_count }}</text></view>
+            <view class="stat-box"><text>🤝 {{ item.lead_count }}</text></view>
             <text class="item-time">{{ formatDate(item.publish_time) }}</text>
           </view>
           <view class="item-actions">
@@ -37,15 +37,18 @@
 
     <view v-if="showStatusPicker" class="picker-mask" @tap="showStatusPicker = false">
       <view class="picker-panel" @tap.stop>
-        <view class="picker-opt" :class="{ active: !statusFilter }" @tap="statusFilter = ''; showStatusPicker = false"><text>全部</text></view>
-        <view class="picker-opt" :class="{ active: statusFilter === k }" v-for="(v, k) in statusMap" :key="k" @tap="statusFilter = k; showStatusPicker = false"><text>{{ v }}</text></view>
+        <view class="picker-header"><text>选择状态</text></view>
+        <view class="picker-grid">
+          <view class="picker-opt" :class="{ active: !statusFilter }" @tap="statusFilter = ''; showStatusPicker = false"><text>全部</text></view>
+          <view class="picker-opt" :class="{ active: statusFilter === k }" v-for="(v, k) in statusMap" :key="k" @tap="statusFilter = k; showStatusPicker = false"><text>{{ v }}</text></view>
+        </view>
       </view>
     </view>
   </view>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { DEMAND_STATUS } from '@/config/constants'
 import { demandService } from '@/mock/service'
 
@@ -53,7 +56,7 @@ const statusMap = DEMAND_STATUS
 const statusFilter = ref('')
 const refreshing = ref(false)
 const showStatusPicker = ref(false)
-const showSearch = ref(false)
+const animated = ref(false)
 
 const allDemands = ref(demandService.list({ pageSize: 50, sort: 'latest' }).list)
 const filteredList = computed(() => {
@@ -62,24 +65,22 @@ const filteredList = computed(() => {
   return list
 })
 
+onMounted(() => { setTimeout(() => { animated.value = true }, 100) })
 function formatDate(t) { if (!t) return ''; const d = new Date(t); return `${d.getMonth()+1}/${d.getDate()}` }
 function onRefresh() { refreshing.value = true; allDemands.value = demandService.list({ pageSize: 50, sort: 'latest' }).list; refreshing.value = false }
 function goDetail(id) { uni.navigateTo({ url: `/pages/demand/detail?id=${id}` }) }
 
 function editDemand(item) { uni.showToast({ title: '编辑功能开发中', icon: 'none' }) }
-
 function offlineDemand(item) {
   uni.showModal({ title: '确认下架', content: `确定要下架「${item.title}」吗？`, success: (res) => {
     if (res.confirm) { item.status = 'offline'; uni.showToast({ title: '已下架', icon: 'success' }) }
   }})
 }
-
 function publishDemand(item) {
   uni.showModal({ title: '确认上架', content: `确定要上架「${item.title}」吗？`, success: (res) => {
     if (res.confirm) { item.status = 'published'; uni.showToast({ title: '已上架', icon: 'success' }) }
   }})
 }
-
 function deleteDemand(item) {
   uni.showModal({ title: '确认删除', content: `确定要删除「${item.title}」吗？`, success: (res) => {
     if (res.confirm) {
@@ -91,39 +92,46 @@ function deleteDemand(item) {
 }
 </script>
 
-<style lang="scss" scoped>
-.page { min-height: 100vh; background: #0A0A0F; padding-bottom: 140rpx; }
+<style lang="scss">
+.page { min-height: 100vh; background: #F5F6FA; padding-bottom: 120rpx; }
 .header { padding: 24rpx; }
-.header-title { font-size: 36rpx; font-weight: bold; color: rgba(255,255,255,0.95); display: block; margin-bottom: 16rpx; }
+.header-title { font-size: 36rpx; font-weight: bold; color: rgba(0,0,0,0.85); display: block; margin-bottom: 16rpx; }
 .header-actions { display: flex; gap: 12rpx; }
-.search-box, .filter-btn { padding: 10rpx 20rpx; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 20rpx; font-size: 24rpx; color: rgba(255,255,255,0.65); }
-.filter-btn.active { background: rgba(255,107,53,0.15); border-color: rgba(255,107,53,0.25); color: #FF6B35; }
+.filter-btn { padding: 10rpx 20rpx; background: #FFFFFF; border-radius: 20rpx; font-size: 24rpx; color: rgba(0,0,0,0.6); box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04); }
+.filter-btn.active { background: rgba(255,107,53,0.1); color: #FF6B35; }
 
 .list-scroll { height: calc(100vh - 160rpx); padding: 0 24rpx; }
-.demand-list { display: flex; flex-direction: column; gap: 12rpx; }
-.demand-item { background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 16rpx; padding: 20rpx; }
-.item-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8rpx; }
-.item-title { font-size: 28rpx; font-weight: bold; color: rgba(255,255,255,0.95); flex: 1; }
-.status-tag { font-size: 20rpx; padding: 4rpx 12rpx; border-radius: 8rpx; }
-.status-published { background: rgba(16,185,129,0.15); color: #34D399; }
-.status-pending { background: rgba(245,158,11,0.15); color: #FBBF24; }
-.status-draft { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
-.status-offline { background: rgba(239,68,68,0.15); color: #F87171; }
-.item-meta { display: flex; justify-content: space-between; margin-bottom: 8rpx; }
-.item-company { font-size: 24rpx; color: rgba(255,255,255,0.65); }
-.item-region { font-size: 22rpx; color: rgba(255,255,255,0.5); }
-.item-stats { display: flex; gap: 16rpx; margin-bottom: 12rpx; }
-.item-stats text { font-size: 22rpx; color: rgba(255,255,255,0.5); }
-.item-time { margin-left: auto; }
-.item-actions { display: flex; gap: 12rpx; padding-top: 12rpx; border-top: 1rpx solid rgba(255,255,255,0.06); }
-.action-btn { padding: 8rpx 16rpx; background: rgba(255,255,255,0.06); border-radius: 12rpx; font-size: 22rpx; color: rgba(255,255,255,0.65); }
-.action-btn.success { background: rgba(16,185,129,0.15); color: #34D399; }
-.action-btn.warn { background: rgba(245,158,11,0.15); color: #FBBF24; }
-.action-btn.danger { background: rgba(239,68,68,0.15); color: #F87171; }
-.empty { text-align: center; padding: 64rpx; font-size: 28rpx; color: rgba(255,255,255,0.5); }
+.demand-list { display: flex; flex-direction: column; gap: 12rpx; opacity: 0; }
+.animate-in { opacity: 1; transition: opacity 0.5s ease-out; }
+.demand-item { background: #FFFFFF; border-radius: 16rpx; padding: 20rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04); opacity: 0; }
+.fade-in { opacity: 1; animation: fadeInUp 0.4s ease-out both; }
 
-.picker-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 400; display: flex; align-items: flex-end; justify-content: center; padding: 24rpx; }
-.picker-panel { display: flex; flex-wrap: wrap; gap: 12rpx; background: #1A1A26; border-radius: 24rpx; padding: 24rpx; width: 100%; }
-.picker-opt { padding: 14rpx 28rpx; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 20rpx; font-size: 26rpx; color: rgba(255,255,255,0.65); }
-.picker-opt.active { background: rgba(255,107,53,0.15); border-color: rgba(255,107,53,0.25); color: #FF6B35; }
+.item-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8rpx; }
+.item-title { font-size: 28rpx; font-weight: bold; color: rgba(0,0,0,0.85); flex: 1; }
+.status-tag { font-size: 20rpx; padding: 4rpx 12rpx; border-radius: 8rpx; }
+.status-published { background: rgba(16,185,129,0.1); color: #10B981; }
+.status-pending { background: rgba(245,158,11,0.1); color: #F59E0B; }
+.status-draft { background: #F5F6FA; color: rgba(0,0,0,0.5); }
+.status-offline { background: rgba(239,68,68,0.1); color: #EF4444; }
+.item-meta { display: flex; justify-content: space-between; margin-bottom: 8rpx; }
+.item-company { font-size: 24rpx; color: rgba(0,0,0,0.6); }
+.item-region { font-size: 22rpx; color: rgba(0,0,0,0.4); }
+.item-stats { display: flex; gap: 16rpx; margin-bottom: 12rpx; }
+.stat-box text { font-size: 22rpx; color: rgba(0,0,0,0.5); }
+.item-time { margin-left: auto; font-size: 22rpx; color: rgba(0,0,0,0.4); }
+.item-actions { display: flex; gap: 12rpx; padding-top: 12rpx; border-top: 1rpx solid #F5F6FA; }
+.action-btn { padding: 8rpx 16rpx; background: #F5F6FA; border-radius: 12rpx; font-size: 22rpx; color: rgba(0,0,0,0.6); }
+.action-btn.success { background: rgba(16,185,129,0.1); color: #10B981; }
+.action-btn.warn { background: rgba(245,158,11,0.1); color: #F59E0B; }
+.action-btn.danger { background: rgba(239,68,68,0.1); color: #EF4444; }
+.empty { text-align: center; padding: 64rpx; font-size: 28rpx; color: rgba(0,0,0,0.5); }
+
+.picker-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 400; display: flex; align-items: flex-end; }
+.picker-panel { width: 100%; padding: 32rpx; background: #FFFFFF; border-radius: 32rpx 32rpx 0 0; }
+.picker-header { font-size: 32rpx; font-weight: bold; color: rgba(0,0,0,0.85); margin-bottom: 24rpx; }
+.picker-grid { display: flex; flex-wrap: wrap; gap: 12rpx; }
+.picker-opt { padding: 14rpx 28rpx; border-radius: 20rpx; font-size: 26rpx; background: #F5F6FA; color: rgba(0,0,0,0.6); }
+.picker-opt.active { background: rgba(255,107,53,0.1); color: #FF6B35; font-weight: bold; }
+
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20rpx); } to { opacity: 1; transform: translateY(0); } }
 </style>
