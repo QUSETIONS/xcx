@@ -52,6 +52,30 @@
       </view>
     </view>
 
+    <!-- 无障碍与语言 -->
+    <view class="section">
+      <text class="section-title">显示与语言</text>
+      <view class="card">
+        <view class="cell" @tap="showLanguagePicker">
+          <text class="cell-icon">🌍</text>
+          <text class="cell-label">语言</text>
+          <text class="cell-value">{{ currentLocaleLabel }}</text>
+          <text class="cell-arrow">›</text>
+        </view>
+        <view class="cell" @tap="showFontPicker">
+          <text class="cell-icon">🔤</text>
+          <text class="cell-label">字体大小</text>
+          <text class="cell-value">{{ fontLabel }}</text>
+          <text class="cell-arrow">›</text>
+        </view>
+        <view class="cell">
+          <text class="cell-icon">🎨</text>
+          <text class="cell-label">高对比度</text>
+          <switch :checked="contrast" @change="onToggleContrast" color="#FF6B35"/>
+        </view>
+      </view>
+    </view>
+
     <!-- 通用 -->
     <view class="section">
       <text class="section-title">通用</text>
@@ -113,6 +137,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { verifyService, memberService } from '@/mock/service'
+import { locale, locales, setLocale } from '@/i18n'
+import { fontScales, fontScale, setFontScale, highContrast, toggleContrast, currentFontLabel } from '@/utils/accessibility'
 
 const nickname = ref('创业者')
 const cacheSize = ref('0 KB')
@@ -124,12 +150,41 @@ const verifyText = computed(() => ({ none: '未认证', pending: '审核中', ve
 const verifyClass = computed(() => ({ none: 'gray', pending: 'orange', verified: 'green' }[verifyStatus.value]))
 const memberText = computed(() => ({ free: '普通会员', pro: '专业版', enterprise: '企业版' }[memberInfo.value.tier] || '普通会员'))
 
+// i18n / 无障碍
+const currentLocaleLabel = computed(() => locales.find(l => l.value === locale.value)?.label || '简体中文')
+const fontLabel = computed(() => currentFontLabel.value)
+const contrast = computed(() => highContrast.value)
+
 onMounted(() => {
   verifyStatus.value = verifyService.status()
   memberInfo.value = memberService.current()
   nickname.value = uni.getStorageSync('qiye_ku_nickname') || '创业者'
   calcCache()
 })
+
+function showLanguagePicker() {
+  uni.showActionSheet({
+    itemList: locales.map(l => l.label),
+    success: (r) => {
+      const picked = locales[r.tapIndex]
+      if (picked) { setLocale(picked.value); uni.showToast({ title: '已切换', icon: 'success' }) }
+    }
+  })
+}
+
+function showFontPicker() {
+  uni.showActionSheet({
+    itemList: fontScales.map(f => f.label),
+    success: (r) => {
+      const picked = fontScales[r.tapIndex]
+      if (picked) { setFontScale(picked.value); uni.showToast({ title: '已应用', icon: 'success' }) }
+    }
+  })
+}
+
+function onToggleContrast(e) {
+  if (e.detail.value !== highContrast.value) toggleContrast()
+}
 
 function calcCache() {
   try {

@@ -33,8 +33,10 @@ const uni = {
   // ===== Toast / Modal（测试中不报错即可）=====
   showToast: vi.fn(),
   showModal: vi.fn(({ success } = {}) => { if (success) success({ confirm: true }) }),
+  showActionSheet: vi.fn(({ success, itemList } = {}) => { if (success) success({ tapIndex: 0 }) }),
   showLoading: vi.fn(),
   hideLoading: vi.fn(),
+  vibrateShort: vi.fn(),
 
   // ===== 导航（测试中不报错即可）=====
   navigateTo: vi.fn(),

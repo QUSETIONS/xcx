@@ -82,8 +82,8 @@
     <!-- 推荐需求 -->
     <view class="section">
       <view class="section-header">
-        <text class="section-title">为你推荐</text>
-        <text class="section-more" @tap="goDemandList">查看全部</text>
+        <text class="section-title">{{ t('home.recommend') }}</text>
+        <text class="section-more" @tap="goDemandList">{{ t('common.more') }}</text>
       </view>
       <view class="demand-list" v-if="hotDemands.length">
         <view class="demand-item card-press" v-for="item in hotDemands" :key="item._id" @tap="goDemandDetail(item._id)">
@@ -129,6 +129,7 @@ import { ref } from 'vue'
 import { DEMAND_CATEGORIES, QUOTE_TYPES } from '@/config/constants'
 import { demandService, productService } from '@/mock/service'
 import { getRecommendedDemands, getRecommendedProducts } from '@/mock/smart'
+import { t } from '@/i18n'
 
 const todayDemands = ref(128)
 const activeLeads = ref(56)
