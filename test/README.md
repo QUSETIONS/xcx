@@ -36,15 +36,18 @@ app/
 ## 测试结果
 
 ```
-Test Files  2 passed (2)
-     Tests  35 passed (35)
+Test Files  4 passed (4)
+     Tests  72 passed (72)
 
 Coverage
-  smart.js    90.23% statements | 100% functions
-  service.js  73.46% statements
+  smart.js    90%+ statements | 100% functions
+  service.js  73%+ statements
 ```
 
-> 测试过程中发现并修复了 `scoreDemandQuality` 的一个真实 bug：未选择报价方式时错误地给 10 分预算分，已修正为 0 分并提示用户选择。
+> 测试过程中发现并修复了 3 个真实 bug：
+> 1. `scoreDemandQuality`：未选择报价方式时错误给 10 分预算分 → 修正为 0 分
+> 2. `memberService.current()`：无存储时返回 null 导致访问崩溃 → 返回默认 free 套餐
+> 3. `favoriteService.toggle()`：取消收藏时未持久化，重启后收藏仍在 → 补上 setStorageSync
 
 ## CI
 

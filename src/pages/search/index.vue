@@ -85,8 +85,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { searchService } from '@/mock/service'
+import { debounce } from '@/utils/util'
 
 const keyword = ref('')
 const searched = ref(false)
@@ -100,6 +101,12 @@ onMounted(() => {
   history.value = searchService.history()
   hotKeywords.value = searchService.hotKeywords()
 })
+
+// 输入防抖：用户停止输入 400ms 后自动搜索（已搜索状态下）
+const debouncedSearch = debounce(() => {
+  if (searched.value && keyword.value.trim()) doSearch()
+}, 400)
+watch(keyword, () => { debouncedSearch() })
 
 function doSearch() {
   const kw = keyword.value.trim()

@@ -18,11 +18,6 @@
     { "path": "pages/user/my-leads", "style": { "navigationBarTitleText": "我的对接", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
     { "path": "pages/user/my-orders", "style": { "navigationBarTitleText": "我的订单", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
     { "path": "pages/user/my-favorites", "style": { "navigationBarTitleText": "我的收藏", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
-    { "path": "pages/admin/index", "style": { "navigationBarTitleText": "后台管理", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
-    { "path": "pages/admin/demand-manage", "style": { "navigationBarTitleText": "需求管理", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
-    { "path": "pages/admin/lead-manage", "style": { "navigationBarTitleText": "对接管理", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
-    { "path": "pages/admin/order-manage", "style": { "navigationBarTitleText": "订单管理", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
-    { "path": "pages/admin/product-manage", "style": { "navigationBarTitleText": "商品管理", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
     { "path": "pages/message/index", "style": { "navigationBarTitleText": "消息中心", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
     { "path": "pages/dashboard/index", "style": { "navigationBarTitleText": "数据看板", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
     { "path": "pages/points/index", "style": { "navigationBarTitleText": "积分中心", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
@@ -37,9 +32,34 @@
     { "path": "pages/member/index", "style": { "navigationBarTitleText": "会员中心", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
     { "path": "pages/campaign/index", "style": { "navigationBarTitleText": "活动中心", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
     { "path": "pages/chat/index", "style": { "navigationBarTitleText": "在线客服", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
-    { "path": "pages/settings/index", "style": { "navigationBarTitleText": "设置", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
-    { "path": "pages/admin/screen", "style": { "navigationBarTitleText": "运营数据中心", "navigationBarBackgroundColor": "#0F172A", "navigationBarTextStyle": "white" } }
+    { "path": "pages/settings/index", "style": { "navigationBarTitleText": "设置", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } }
   ],
+  "subPackages": [
+    {
+      "root": "pages/admin",
+      "pages": [
+        { "path": "index", "style": { "navigationBarTitleText": "后台管理", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
+        { "path": "demand-manage", "style": { "navigationBarTitleText": "需求管理", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
+        { "path": "lead-manage", "style": { "navigationBarTitleText": "对接管理", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
+        { "path": "order-manage", "style": { "navigationBarTitleText": "订单管理", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
+        { "path": "product-manage", "style": { "navigationBarTitleText": "商品管理", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
+        { "path": "screen", "style": { "navigationBarTitleText": "运营数据中心", "navigationBarBackgroundColor": "#0F172A", "navigationBarTextStyle": "white" } }
+      ]
+    },
+    {
+      "root": "pages/resource",
+      "pages": [
+        { "path": "list", "style": { "navigationBarTitleText": "资料库", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
+        { "path": "detail", "style": { "navigationBarTitleText": "资料详情", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } }
+      ]
+    }
+  ],
+  "preloadRule": {
+    "pages/user/index": {
+      "network": "all",
+      "packages": ["pages/admin", "pages/resource"]
+    }
+  },
   "globalStyle": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "企动库",

@@ -518,7 +518,7 @@ export const favoriteService = {
   toggle(params) {
     const list = this._getList()
     const idx = list.findIndex(f => f.targetType === params.targetType && f.targetId === params.targetId)
-    if (idx > -1) { list.splice(idx, 1); return { isFavorited: false } }
+    if (idx > -1) { list.splice(idx, 1); uni.setStorageSync(this._key, JSON.stringify(list)); return { isFavorited: false } }
     else { list.push(params); uni.setStorageSync(this._key, JSON.stringify(list)); return { isFavorited: true } }
   },
   list(params = {}) {
@@ -818,7 +818,10 @@ const memberTiers = [
 export const memberService = {
   tiers() { return memberTiers },
   current() {
-    try { return JSON.parse(uni.getStorageSync('qiye_ku_member') || 'null') } catch { return { tier: 'free', expire: null } }
+    try {
+      const info = JSON.parse(uni.getStorageSync('qiye_ku_member') || 'null')
+      return info || { tier: 'free', expire: null }
+    } catch { return { tier: 'free', expire: null } }
   },
   subscribe(tierId) {
     const tier = memberTiers.find(t => t.id === tierId)
