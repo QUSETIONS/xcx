@@ -10,6 +10,10 @@
           <text class="company">{{ userInfo.company || '完善资料获更多曝光' }}</text>
         </view>
       </view>
+      <view class="header-actions">
+        <text class="header-icon" @tap="goScreen">📊</text>
+        <text class="header-icon" @tap="goSettings">⚙️</text>
+      </view>
     </view>
 
     <!-- 信用卡片 -->
@@ -147,6 +151,8 @@ function goPage(path) {
 }
 function goPoints() { uni.navigateTo({ url: '/pages/points/index' }) }
 function goDashboard() { uni.navigateTo({ url: '/pages/dashboard/index' }) }
+function goSettings() { uni.navigateTo({ url: '/pages/settings/index' }) }
+function goScreen() { uni.navigateTo({ url: '/pages/admin/screen' }) }
 function goAdmin() { uni.navigateTo({ url: '/pages/admin/index' }) }
 </script>
 
@@ -154,6 +160,8 @@ function goAdmin() { uni.navigateTo({ url: '/pages/admin/index' }) }
 .page { background: #F5F6FA; padding: 24rpx; padding-bottom: 120rpx; min-height: 100vh; }
 
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24rpx; }
+.header-actions { display: flex; align-items: center; }
+.header-icon { font-size: 40rpx; margin-left: 24rpx; padding: 8rpx; }
 .user-info { display: flex; align-items: center; }
 .avatar-box { width: 88rpx; height: 88rpx; border-radius: 50%; background: linear-gradient(135deg, #FF6B35, #FF9A5C); display: flex; align-items: center; justify-content: center; margin-right: 16rpx; }
 .avatar-text { font-size: 36rpx; color: #FFFFFF; font-weight: bold; }

@@ -36,7 +36,9 @@
     { "path": "pages/search/index", "style": { "navigationBarTitleText": "搜索", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
     { "path": "pages/member/index", "style": { "navigationBarTitleText": "会员中心", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
     { "path": "pages/campaign/index", "style": { "navigationBarTitleText": "活动中心", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
-    { "path": "pages/chat/index", "style": { "navigationBarTitleText": "在线客服", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } }
+    { "path": "pages/chat/index", "style": { "navigationBarTitleText": "在线客服", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
+    { "path": "pages/settings/index", "style": { "navigationBarTitleText": "设置", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
+    { "path": "pages/admin/screen", "style": { "navigationBarTitleText": "运营数据中心", "navigationBarBackgroundColor": "#0F172A", "navigationBarTextStyle": "white" } }
   ],
   "globalStyle": {
     "navigationBarTextStyle": "black",

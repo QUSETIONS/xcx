@@ -1,5 +1,7 @@
 <template>
   <view class="page">
+    <skeleton type="card" :rows="4" v-if="loading" />
+    <block v-else>
     <!-- 概览卡片 -->
     <view class="overview-card">
       <text class="overview-title">数据概览</text>
@@ -108,6 +110,7 @@
     </view>
 
     <view style="height: 40rpx;"></view>
+    </block>
   </view>
 </template>
 
@@ -122,12 +125,15 @@ const trend = ref({})
 const credit = ref({})
 const period = ref(7)
 const maxViews = ref(1)
+const loading = ref(true)
 
 onMounted(() => {
   overview.value = dashboardService.overview()
   categoryStats.value = dashboardService.categoryStats()
   credit.value = reviewService.userCreditScore()
   loadTrend()
+  // 模拟加载延迟展示骨架屏
+  setTimeout(() => { loading.value = false }, 600)
 })
 
 function loadTrend() {
