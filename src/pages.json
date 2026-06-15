@@ -10,8 +10,6 @@
     { "path": "pages/mall/list", "style": { "navigationBarTitleText": "商城", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
     { "path": "pages/mall/detail", "style": { "navigationBarTitleText": "商品详情", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
     { "path": "pages/mall/order-confirm", "style": { "navigationBarTitleText": "订单确认", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
-    { "path": "pages/resource/list", "style": { "navigationBarTitleText": "资料库", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
-    { "path": "pages/resource/detail", "style": { "navigationBarTitleText": "资料详情", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
     { "path": "pages/user/index", "style": { "navigationBarTitleText": "我的", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
     { "path": "pages/user/login", "style": { "navigationBarTitleText": "登录", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
     { "path": "pages/user/my-demands", "style": { "navigationBarTitleText": "我的需求", "navigationBarBackgroundColor": "#FFFFFF", "navigationBarTextStyle": "black" } },
