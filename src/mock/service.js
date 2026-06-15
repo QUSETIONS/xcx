@@ -94,6 +94,8 @@ const orderData = Array.from({ length: 8 }, (_, i) => ({
 }))
 
 // ========== 对接 Mock ==========
+const LeadStatusValues = ['new', 'contacted', 'deal', 'invalid']
+
 const leadData = Array.from({ length: 10 }, (_, i) => ({
   _id: `lead_${i + 1}`,
   demand_id: demandData[i]._id,
@@ -106,7 +108,6 @@ const leadData = Array.from({ length: 10 }, (_, i) => ({
   status: pick(LeadStatusValues),
   created_at: new Date(Date.now() - randInt(1, 15) * 86400000).toISOString()
 }))
-const LeadStatusValues = ['new', 'contacted', 'deal', 'invalid']
 
 // ========== 资料 Mock ==========
 const resourceData = Array.from({ length: 15 }, (_, i) => ({
