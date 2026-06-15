@@ -797,6 +797,90 @@ export const verifyService = {
   }
 }
 
+// ========== 会员体系 Mock ==========
+const memberTiers = [
+  {
+    id: 'free', name: '普通会员', price: 0, period: '永久',
+    color: '#94A3B8', icon: '👤',
+    privileges: ['每日发布3条需求', '基础搜索', '社区发帖']
+  },
+  {
+    id: 'pro', name: '专业版', price: 29900, period: '年', original: 59900,
+    color: '#FF6B35', icon: '⭐', hot: true,
+    privileges: ['无限发布需求', '需求优先推荐', '智能价格建议', '数据看板', '专属客服', '认证加速']
+  },
+  {
+    id: 'enterprise', name: '企业版', price: 99900, period: '年', original: 199900,
+    color: '#6366F1', icon: '👑',
+    privileges: ['专业版全部权益', '专属客户经理', '定制营销方案', 'API接口接入', '团队多人协作', '白皮书定制']
+  }
+]
+export const memberService = {
+  tiers() { return memberTiers },
+  current() {
+    try { return JSON.parse(uni.getStorageSync('qiye_ku_member') || 'null') } catch { return { tier: 'free', expire: null } }
+  },
+  subscribe(tierId) {
+    const tier = memberTiers.find(t => t.id === tierId)
+    if (!tier) return null
+    const info = { tier: tierId, name: tier.name, expire: '2027-06-16', subscribed_at: new Date().toISOString() }
+    uni.setStorageSync('qiye_ku_member', JSON.stringify(info))
+    return info
+  }
+}
+
+// ========== 客服IM Mock ==========
+const seedMessages = [
+  { id: 'm1', from: 'service', content: '您好，欢迎来到企业库，我是您的专属客服，有什么可以帮您？', time: '10:00' },
+  { id: 'm2', from: 'user', content: '我想了解一下专业版会员的权益', time: '10:02' },
+  { id: 'm3', from: 'service', content: '专业版年费299元，包含无限发布需求、优先推荐、数据看板等6大权益，现在开通还赠送100积分哦～', time: '10:03' }
+]
+const autoReplies = [
+  '收到您的消息，稍等为您处理～',
+  '这个问题我帮您查一下，请稍候',
+  '已为您记录反馈，客服将在24小时内跟进',
+  '感谢您的咨询，还有其他问题可以随时问我～',
+  '好的，已为您加急处理！'
+]
+export const chatService = {
+  _key: 'qiye_ku_chat',
+  _getList() {
+    try { const list = JSON.parse(uni.getStorageSync(this._key) || 'null'); return list || seedMessages.map(m => ({ ...m })) } catch { return seedMessages.map(m => ({ ...m })) }
+  },
+  list() { return this._getList() },
+  send(content) {
+    const list = this._getList()
+    const now = new Date()
+    const msg = { id: 'msg_' + list.length, from: 'user', content, time: now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0') }
+    list.push(msg)
+    uni.setStorageSync(this._key, JSON.stringify(list))
+    return list
+  },
+  // 模拟客服自动回复
+  reply() {
+    const list = this._getList()
+    const now = new Date()
+    const msg = { id: 'msg_' + list.length, from: 'service', content: pick(autoReplies), time: now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0') }
+    list.push(msg)
+    uni.setStorageSync(this._key, JSON.stringify(list))
+    return list
+  }
+}
+
+// ========== 活动营销 Mock ==========
+const campaignData = [
+  { id: 'c1', title: '新人专享 · 首单立减50元', desc: '注册即可领取新人礼包', cover: '🎁', tag: '限时', color: '#FF6B35', end: '3天后', type: 'coupon' },
+  { id: 'c2', title: '专业版会员5折抢购', desc: '年卡直降300元，仅限本周', cover: '⭐', tag: '热卖', color: '#6366F1', end: '5天后', type: 'member' },
+  { id: 'c3', title: '邀请好友得现金奖励', desc: '每邀请1位好友注册得20元', cover: '👥', tag: '长期', color: '#10B981', end: '长期有效', type: 'invite' },
+  { id: 'c4', title: '需求方专属 · 发布赢积分', desc: '发布需求即送50积分，上不封顶', cover: '🚀', tag: '活动', color: '#F59E0B', end: '15天后', type: 'task' },
+  { id: 'c5', title: '服务方PK赛 · 接单排行榜', desc: 'TOP10服务商瓜分万元奖金', cover: '🏆', tag: '赛事', color: '#EC4899', end: '20天后', type: 'rank' },
+  { id: 'c6', title: '520营销季 · 全场服务8折', desc: '精选服务限时特惠', cover: '💝', tag: '特惠', color: '#3B82F6', end: '7天后', type: 'discount' }
+]
+export const campaignService = {
+  list() { return campaignData },
+  detail(id) { return campaignData.find(c => c.id === id) || null }
+}
+
 // ========== 缓存层 ==========
 const _cache = {}
 function cacheGet(key) { return _cache[key] }
@@ -902,7 +986,10 @@ export const mockService = {
   notify: notifyService,
   cart: cartService,
   search: searchService,
-  verify: verifyService
+  verify: verifyService,
+  member: memberService,
+  chat: chatService,
+  campaign: campaignService
 }
 
 export default mockService

@@ -140,7 +140,7 @@ function cancelOrder(id) {
     }
   })
 }
-function contactService() { uni.showToast({ title: '客服热线：400-xxx', icon: 'none' }) }
+function contactService() { uni.navigateTo({ url: '/pages/chat/index' }) }
 function review() { uni.navigateTo({ url: '/pages/deals/index' }) }
 function buyAgain() { uni.switchTab({ url: '/pages/mall/index' }) }
 function goMall() { uni.switchTab({ url: '/pages/mall/index' }) }

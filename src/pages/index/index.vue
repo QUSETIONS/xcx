@@ -17,11 +17,19 @@
         </view>
       </swiper-item>
       <swiper-item>
-        <view class="banner banner-purple" @tap="goMallList">
+        <view class="banner banner-purple" @tap="goMember">
           <text class="banner-eyebrow">👑 会员专区</text>
           <text class="banner-title">解锁全部功能</text>
           <text class="banner-desc">优先对接 · 精准匹配 · 专属服务</text>
           <view class="banner-action"><text>了解详情</text></view>
+        </view>
+      </swiper-item>
+      <swiper-item>
+        <view class="banner banner-green" @tap="goCampaign">
+          <text class="banner-eyebrow">🎉 活动中心</text>
+          <text class="banner-title">做任务赢积分</text>
+          <text class="banner-desc">限时秒杀 · 新人礼包 · 邀请有奖</text>
+          <view class="banner-action"><text>立即参与</text></view>
         </view>
       </swiper-item>
     </swiper>
@@ -141,6 +149,8 @@ function getServiceIcon(type) {
 function formatQuote(type) { return QUOTE_TYPES.find(q => q.value === type)?.label || '面议' }
 
 function goSearch() { uni.navigateTo({ url: '/pages/search/index' }) }
+function goMember() { uni.navigateTo({ url: '/pages/member/index' }) }
+function goCampaign() { uni.navigateTo({ url: '/pages/campaign/index' }) }
 function goDemandList() { uni.switchTab({ url: '/pages/demand/list' }) }
 function goMallList() { uni.switchTab({ url: '/pages/mall/list' }) }
 function goCommunity() { uni.switchTab({ url: '/pages/community/index' }) }
@@ -163,6 +173,7 @@ function goProductDetail(id) { uni.navigateTo({ url: '/pages/mall/detail?id=' + 
 .banner { height: 100%; padding: 32rpx; display: flex; flex-direction: column; justify-content: center; }
 .banner-orange { background: linear-gradient(135deg, #FF6B35, #FF9A5C); }
 .banner-purple { background: linear-gradient(135deg, #6366F1, #8B5CF6); }
+.banner-green { background: linear-gradient(135deg, #10B981, #34D399); }
 .banner-eyebrow { font-size: 24rpx; color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.2); padding: 4rpx 16rpx; border-radius: 8rpx; align-self: flex-start; }
 .banner-title { font-size: 40rpx; font-weight: bold; color: #fff; margin: 12rpx 0; }
 .banner-desc { font-size: 24rpx; color: rgba(255,255,255,0.8); }
