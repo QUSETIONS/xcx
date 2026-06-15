@@ -76,6 +76,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { onLoad } from '@dcloudio/uni-app'
 import { communityService } from '@/mock/service'
 
 const postId = ref('')

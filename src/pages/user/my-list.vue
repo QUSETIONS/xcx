@@ -10,6 +10,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { onLoad } from '@dcloudio/uni-app'
 import { demandService, leadService, orderService, favoriteService } from '@/mock/service'
 
 const list = ref([])

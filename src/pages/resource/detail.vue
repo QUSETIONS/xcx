@@ -57,6 +57,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { onLoad } from '@dcloudio/uni-app'
 import { resourceService, favoriteService } from '@/mock/service'
 
 const resource = ref(null)

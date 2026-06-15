@@ -56,6 +56,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { onLoad } from '@dcloudio/uni-app'
 import { SERVICE_TYPES } from '@/config/constants'
 import { productService, favoriteService } from '@/mock/service'
 

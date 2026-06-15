@@ -90,6 +90,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { onLoad } from '@dcloudio/uni-app'
 import { QUOTE_TYPES } from '@/config/constants'
 import { demandService, leadService, favoriteService } from '@/mock/service'
 
