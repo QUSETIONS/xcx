@@ -2,20 +2,20 @@
   <view class="publish-page">
     <view class="notice-bar">
       <text class="notice-icon">💡</text>
-      <text class="notice-text">发布后将在大厅展示，审核通过后即可对接</text>
+      <text class="notice-text">{{ isEdit ? '编辑后需重新审核' : '发布后将在大厅展示，审核通过后即可对接' }}</text>
       <text class="notice-link" @tap="showHelp = true">须知 ›</text>
     </view>
 
     <view class="form-wrap">
       <view class="form-card">
         <text class="form-label">需求标题 *</text>
-        <input class="form-input" v-model="form.title" placeholder="简洁描述您的需求" maxlength="100" />
+        <input class="form-input" v-model="form.title" placeholder="简洁描述您的需求" maxlength="100"/>
         <text class="form-count">{{ form.title.length }}/100</text>
       </view>
 
       <view class="form-card">
         <text class="form-label">公司/项目名称 *</text>
-        <input class="form-input" v-model="form.company_name" placeholder="请输入公司或项目名称" />
+        <input class="form-input" v-model="form.company_name" placeholder="请输入公司或项目名称"/>
       </view>
 
       <view class="form-card">
@@ -46,44 +46,45 @@
       <view v-if="form.quote_type === 'self'" class="form-card">
         <text class="form-label">预算区间（元）</text>
         <view class="budget-row">
-          <input class="budget-input" type="digit" v-model="budgetMin" placeholder="最低" />
+          <input class="budget-input" type="digit" v-model="budgetMin" placeholder="最低"/>
           <text class="budget-sep">—</text>
-          <input class="budget-input" type="digit" v-model="budgetMax" placeholder="最高" />
+          <input class="budget-input" type="digit" v-model="budgetMax" placeholder="最高"/>
         </view>
       </view>
 
       <view class="form-card">
         <text class="form-label">需求详情 *</text>
-        <textarea class="form-area" v-model="form.description" placeholder="请详细描述需求，包含要求、时间节点、交付物等" maxlength="500" />
-        <text class="form-count">{{ form.description.length }}/500</text>
+        <textarea class="form-textarea" v-model="form.description" placeholder="详细描述您的需求，包括具体要求、时间节点、交付物等" maxlength="2000"/>
+        <text class="form-count">{{ form.description.length }}/2000</text>
       </view>
 
       <view class="form-card">
         <text class="form-label">联系人 *</text>
-        <input class="form-input" v-model="form.contact_name" placeholder="请输入联系人" />
+        <input class="form-input" v-model="form.contact_name" placeholder="您的称呼"/>
       </view>
 
       <view class="form-card">
         <text class="form-label">联系电话 *</text>
-        <input class="form-input" type="number" v-model="form.contact_phone" placeholder="请输入电话" />
+        <input class="form-input" type="tel" v-model="form.contact_phone" placeholder="手机号码" maxlength="11"/>
+      </view>
+
+      <view class="form-card">
+        <text class="form-label">微信号</text>
+        <input class="form-input" v-model="form.contact_wechat" placeholder="选填"/>
       </view>
     </view>
 
-    <view class="submit-wrap">
-      <view class="submit-row">
-        <button class="draft-btn" @tap="saveDraft">存草稿</button>
-        <button class="pub-btn" @tap="submitForm" :disabled="submitting">
-          {{ submitting ? '发布中...' : '发布需求' }}
-        </button>
-      </view>
+    <view class="bottom-bar">
+      <view class="draft-btn" @tap="saveDraft"><text>保存草稿</text></view>
+      <view class="submit-btn" @tap="submitForm"><text>{{ isEdit ? '保存修改' : '发布需求' }}</text></view>
     </view>
 
     <!-- 地区选择 -->
     <view v-if="showRegionPicker" class="picker-mask" @tap="showRegionPicker = false">
       <view class="picker-panel" @tap.stop>
         <view class="picker-header"><text>选择地区</text><text class="picker-close" @tap="showRegionPicker = false">✕</text></view>
-        <view class="picker-options">
-          <view class="picker-opt" :class="{ active: form.region === r }" v-for="r in regions" :key="r" @tap="form.region = r; showRegionPicker = false">{{ r }}</view>
+        <view class="picker-grid">
+          <view class="picker-opt" :class="{ active: form.region === r }" v-for="r in regions" :key="r" @tap="form.region = r; showRegionPicker = false"><text>{{ r }}</text></view>
         </view>
       </view>
     </view>
@@ -92,8 +93,8 @@
     <view v-if="showCategoryPicker" class="picker-mask" @tap="showCategoryPicker = false">
       <view class="picker-panel" @tap.stop>
         <view class="picker-header"><text>选择分类</text><text class="picker-close" @tap="showCategoryPicker = false">✕</text></view>
-        <view class="picker-options">
-          <view class="picker-opt" :class="{ active: form.category_id === cat.id }" v-for="cat in categories" :key="cat.id" @tap="form.category_id = cat.id; form.category_name = cat.name; showCategoryPicker = false">{{ cat.icon }} {{ cat.name }}</view>
+        <view class="picker-grid">
+          <view class="picker-opt" :class="{ active: form.category_id === c.id }" v-for="c in categories" :key="c.id" @tap="form.category_id = c.id; form.category_name = c.name; showCategoryPicker = false"><text>{{ c.name }}</text></view>
         </view>
       </view>
     </view>
@@ -124,6 +125,9 @@ const categories = DEMAND_CATEGORIES
 const regions = REGIONS
 const quoteTypes = QUOTE_TYPES
 
+const isEdit = ref(false)
+const editId = ref(null)
+
 const form = ref({ title: '', company_name: '', region: '', category_id: '', category_name: '', quote_type: 'negotiate', budget_min: null, budget_max: null, description: '', contact_name: '', contact_phone: '', contact_wechat: '' })
 const budgetMin = ref('')
 const budgetMax = ref('')
@@ -132,27 +136,55 @@ const showCategoryPicker = ref(false)
 const showHelp = ref(false)
 const submitting = ref(false)
 
-// 恢复草稿
-try {
-  const draft = uni.getStorageSync('demand_draft')
-  if (draft) { Object.assign(form.value, draft.form); budgetMin.value = draft.budgetMin || ''; budgetMax.value = draft.budgetMax || '' }
-} catch {}
-
-// 恢复联系方式
-try {
-  const last = uni.getStorageSync('last_demand_contact')
-  if (last && !form.value.contact_name) { form.value.contact_name = last.name || ''; form.value.contact_phone = last.phone || '' }
-} catch {}
+// 检查是否编辑模式
+const pages = getCurrentPages()
+const currentPage = pages[pages.length - 1]
+if (currentPage?.options?.id) {
+  isEdit.value = true
+  editId.value = currentPage.options.id
+  const detail = demandService.detail(editId.value)
+  if (detail) {
+    Object.assign(form.value, {
+      title: detail.title,
+      company_name: detail.company_name,
+      region: detail.region,
+      category_id: detail.category_id,
+      category_name: detail.category_name,
+      quote_type: detail.quote_type || 'negotiate',
+      description: detail.description || '',
+      contact_name: detail.contact_name || '',
+      contact_phone: detail.phone || '',
+      contact_wechat: detail.wechat || ''
+    })
+    if (detail.budget_min) budgetMin.value = (detail.budget_min / 100).toString()
+    if (detail.budget_max) budgetMax.value = (detail.budget_max / 100).toString()
+  }
+} else {
+  // 恢复草稿
+  try {
+    const draft = uni.getStorageSync('demand_draft')
+    if (draft) { Object.assign(form.value, draft.form); budgetMin.value = draft.budgetMin || ''; budgetMax.value = draft.budgetMax || '' }
+  } catch {}
+  // 恢复联系方式
+  try {
+    const last = uni.getStorageSync('last_demand_contact')
+    if (last && !form.value.contact_name) { form.value.contact_name = last.name || ''; form.value.contact_phone = last.phone || '' }
+  } catch {}
+}
 
 function saveDraft() {
-  uni.setStorageSync('demand_draft', { form: { ...form.value }, budgetMin: budgetMin.value, budgetMax: budgetMax.value, savedAt: new Date().toISOString() })
+  uni.setStorageSync('demand_draft', { form: { ...form.value }, budgetMin: budgetMin.value, budgetMax: budgetMax.value })
   uni.showToast({ title: '草稿已保存', icon: 'success' })
 }
 
-async function submitForm() {
+function submitForm() {
   const required = ['title', 'company_name', 'region', 'category_id', 'description', 'contact_name', 'contact_phone']
   for (const f of required) {
     if (!form.value[f]?.toString().trim()) { uni.showToast({ title: '请填写完整信息', icon: 'none' }); return }
+  }
+  // 手机号格式验证
+  if (!/^1[3-9]\d{9}$/.test(form.value.contact_phone)) {
+    uni.showToast({ title: '请输入正确的手机号', icon: 'none' }); return
   }
   if (form.value.quote_type === 'self' && budgetMin.value) {
     form.value.budget_min = Math.round(parseFloat(budgetMin.value) * 100)
@@ -160,54 +192,60 @@ async function submitForm() {
   }
   submitting.value = true
   try {
-    demandService.create({ ...form.value, created_by: 'demo_user_001' })
-    uni.setStorageSync('last_demand_contact', { name: form.value.contact_name, phone: form.value.contact_phone })
-    uni.removeStorageSync('demand_draft')
-    uni.showToast({ title: '发布成功', icon: 'success' })
-    setTimeout(() => uni.switchTab({ url: '/pages/demand/list' }), 1500)
+    if (isEdit.value) {
+      demandService.update(editId.value, { ...form.value })
+      uni.showToast({ title: '修改成功', icon: 'success' })
+      setTimeout(() => uni.navigateBack(), 1500)
+    } else {
+      demandService.create({ ...form.value, created_by: 'demo_user_001' })
+      uni.setStorageSync('last_demand_contact', { name: form.value.contact_name, phone: form.value.contact_phone })
+      uni.removeStorageSync('demand_draft')
+      uni.showToast({ title: '发布成功', icon: 'success' })
+      setTimeout(() => uni.switchTab({ url: '/pages/demand/list' }), 1500)
+    }
   } finally { submitting.value = false }
 }
 </script>
 
 <style lang="scss">
-.publish-page { min-height: 100vh; background: #0A0A0F; padding-bottom: 160rpx; }
+.publish-page { min-height: 100vh; background: #F5F6FA; padding-bottom: 160rpx; }
 
 .notice-bar { display: flex; align-items: center; gap: 8rpx; padding: 16rpx 24rpx; margin: 16rpx 24rpx 0; background: rgba(245,158,11,0.1); border: 1rpx solid rgba(245,158,11,0.2); border-radius: 16rpx; }
 .notice-icon { font-size: 28rpx; }
-.notice-text { flex: 1; font-size: 22rpx; color: #FBBF24; }
+.notice-text { flex: 1; font-size: 22rpx; color: #F59E0B; }
 .notice-link { font-size: 22rpx; color: #FF6B35; }
 
 .form-wrap { padding: 16rpx 24rpx; }
-.form-card { background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 20rpx; padding: 24rpx; margin-bottom: 12rpx; }
-.form-label { font-size: 28rpx; font-weight: 600; color: rgba(255,255,255,0.95); display: block; margin-bottom: 12rpx; }
-.form-input { width: 100%; height: 76rpx; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 12rpx; padding: 0 20rpx; font-size: 28rpx; color: rgba(255,255,255,0.95); }
-.form-count { font-size: 22rpx; color: rgba(255,255,255,0.35); text-align: right; display: block; margin-top: 8rpx; }
-.form-select { display: flex; justify-content: space-between; align-items: center; height: 76rpx; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 12rpx; padding: 0 20rpx; font-size: 28rpx; color: rgba(255,255,255,0.95); }
-.placeholder { color: rgba(255,255,255,0.35); }
-.select-arrow { color: rgba(255,255,255,0.4); }
-.form-area { width: 100%; height: 200rpx; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 12rpx; padding: 16rpx 20rpx; font-size: 28rpx; color: rgba(255,255,255,0.95); }
+.form-card { background: #FFFFFF; border-radius: 16rpx; padding: 20rpx; margin-bottom: 12rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04); }
+.form-label { font-size: 26rpx; font-weight: bold; color: rgba(0,0,0,0.85); display: block; margin-bottom: 12rpx; }
+.form-input { font-size: 28rpx; color: rgba(0,0,0,0.85); padding: 12rpx 0; border-bottom: 1rpx solid #F5F6FA; }
+.form-textarea { font-size: 28rpx; color: rgba(0,0,0,0.85); width: 100%; min-height: 200rpx; padding: 12rpx 0; }
+.form-count { font-size: 20rpx; color: rgba(0,0,0,0.35); display: block; text-align: right; margin-top: 4rpx; }
+.form-select { display: flex; justify-content: space-between; align-items: center; padding: 12rpx 0; border-bottom: 1rpx solid #F5F6FA; }
+.placeholder { color: rgba(0,0,0,0.35); }
+.select-arrow { color: rgba(0,0,0,0.3); }
 
 .quote-row { display: flex; gap: 12rpx; }
-.quote-opt { flex: 1; height: 76rpx; border: 1rpx solid rgba(255,255,255,0.1); border-radius: 12rpx; display: flex; align-items: center; justify-content: center; font-size: 28rpx; color: rgba(255,255,255,0.65); background: rgba(255,255,255,0.04); }
-.quote-opt.active { border-color: #FF6B35; color: #FF6B35; background: rgba(255,107,53,0.1); }
+.quote-opt { padding: 12rpx 24rpx; background: #F5F6FA; border-radius: 16rpx; font-size: 24rpx; color: rgba(0,0,0,0.6); }
+.quote-opt.active { background: rgba(255,107,53,0.1); color: #FF6B35; font-weight: bold; }
 
-.budget-row { display: flex; align-items: center; gap: 16rpx; }
-.budget-input { flex: 1; height: 76rpx; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 12rpx; padding: 0 20rpx; font-size: 28rpx; text-align: center; color: rgba(255,255,255,0.95); }
-.budget-sep { color: rgba(255,255,255,0.4); }
+.budget-row { display: flex; align-items: center; gap: 12rpx; }
+.budget-input { flex: 1; font-size: 28rpx; color: rgba(0,0,0,0.85); padding: 12rpx; background: #F5F6FA; border-radius: 12rpx; text-align: center; }
+.budget-sep { color: rgba(0,0,0,0.3); }
 
-.submit-wrap { position: fixed; bottom: 0; left: 0; right: 0; padding: 24rpx; background: #12121A; border-top: 1rpx solid rgba(255,255,255,0.08); }
-.submit-row { display: flex; gap: 16rpx; }
-.draft-btn { flex: 1; padding: 20rpx; border-radius: 48rpx; font-size: 28rpx; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.65); border: none; }
-.pub-btn { flex: 2; padding: 20rpx; border-radius: 48rpx; font-size: 28rpx; background: linear-gradient(135deg, #FF6B35, #FF9A5C); color: #fff; border: none; font-weight: bold; }
+.bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 12rpx; padding: 16rpx 24rpx; padding-bottom: calc(16rpx + env(safe-area-inset-bottom)); background: #FFFFFF; border-top: 1rpx solid rgba(0,0,0,0.06); box-shadow: 0 -4rpx 12rpx rgba(0,0,0,0.04); }
+.draft-btn { padding: 20rpx 40rpx; background: #F5F6FA; border-radius: 24rpx; font-size: 28rpx; color: rgba(0,0,0,0.6); }
+.submit-btn { flex: 1; padding: 20rpx; background: linear-gradient(135deg, #FF6B35, #FF9A5C); border-radius: 24rpx; text-align: center; }
+.submit-btn text { font-size: 28rpx; color: #FFFFFF; font-weight: bold; }
 
-.picker-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 400; display: flex; align-items: flex-end; }
-.picker-panel { width: 100%; background: #1A1A26; border-radius: 32rpx 32rpx 0 0; padding: 32rpx; }
-.picker-header { display: flex; justify-content: space-between; margin-bottom: 24rpx; font-size: 32rpx; font-weight: bold; color: rgba(255,255,255,0.95); }
-.picker-close { color: rgba(255,255,255,0.5); padding: 4rpx; }
-.picker-options { display: flex; flex-wrap: wrap; gap: 12rpx; }
-.picker-opt { padding: 14rpx 28rpx; border-radius: 24rpx; font-size: 28rpx; background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.65); }
-.picker-opt.active { background: rgba(255,107,53,0.15); color: #FF6B35; }
+.picker-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 400; display: flex; align-items: flex-end; }
+.picker-panel { width: 100%; padding: 32rpx; background: #FFFFFF; border-radius: 32rpx 32rpx 0 0; }
+.picker-header { display: flex; justify-content: space-between; margin-bottom: 24rpx; font-size: 32rpx; font-weight: bold; color: rgba(0,0,0,0.85); }
+.picker-close { color: rgba(0,0,0,0.4); padding: 4rpx; }
+.picker-grid { display: flex; flex-wrap: wrap; gap: 12rpx; }
+.picker-opt { padding: 14rpx 28rpx; border-radius: 20rpx; font-size: 26rpx; background: #F5F6FA; color: rgba(0,0,0,0.6); }
+.picker-opt.active { background: rgba(255,107,53,0.1); color: #FF6B35; font-weight: bold; }
 
-.help-list { padding: 8rpx 0; }
-.help-item { font-size: 26rpx; color: rgba(255,255,255,0.65); display: block; margin-bottom: 12rpx; line-height: 1.6; }
+.help-list { padding: 12rpx 0; }
+.help-item { font-size: 24rpx; color: rgba(0,0,0,0.6); line-height: 2; }
 </style>

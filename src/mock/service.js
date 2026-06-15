@@ -262,6 +262,14 @@ export const demandService = {
     demandData.unshift(item)
     return item
   },
+  update(id, data) {
+    const idx = demandData.findIndex(d => d._id === id)
+    if (idx > -1) {
+      demandData[idx] = { ...demandData[idx], ...data, status: 'pending', updated_at: new Date().toISOString() }
+      return demandData[idx]
+    }
+    return null
+  },
   myDemands(params = {}) {
     return { list: demandData.filter(d => d.created_by === 'demo_user_001').slice(0, 5), total: 5 }
   }

@@ -70,7 +70,7 @@ function formatDate(t) { if (!t) return ''; const d = new Date(t); return `${d.g
 function onRefresh() { refreshing.value = true; allDemands.value = demandService.list({ pageSize: 50, sort: 'latest' }).list; refreshing.value = false }
 function goDetail(id) { uni.navigateTo({ url: `/pages/demand/detail?id=${id}` }) }
 
-function editDemand(item) { uni.showToast({ title: '编辑功能开发中', icon: 'none' }) }
+function editDemand(item) { uni.navigateTo({ url: `/pages/demand/publish?id=${item._id}` }) }
 function offlineDemand(item) {
   uni.showModal({ title: '确认下架', content: `确定要下架「${item.title}」吗？`, success: (res) => {
     if (res.confirm) { item.status = 'offline'; uni.showToast({ title: '已下架', icon: 'success' }) }

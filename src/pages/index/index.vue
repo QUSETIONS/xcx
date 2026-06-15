@@ -233,7 +233,7 @@ function goDemandList() { uni.switchTab({ url: '/pages/demand/list' }) }
 function goMallList() { uni.switchTab({ url: '/pages/mall/list' }) }
 function goCommunity() { uni.switchTab({ url: '/pages/community/index' }) }
 function goDemandPublish() { uni.switchTab({ url: '/pages/demand/publish' }) }
-function goNotify() { uni.showToast({ title: '消息中心开发中', icon: 'none' }) }
+function goNotify() { uni.navigateTo({ url: '/pages/message/index' }) }
 function goDemandByCategory(cat) { uni.switchTab({ url: '/pages/demand/list?category=' + cat.id }) }
 function goZone(type) { uni.switchTab({ url: `/pages/demand/list?zone=${type}` }) }
 function goDemandDetail(id) { uni.navigateTo({ url: `/pages/demand/detail?id=${id}` }) }
