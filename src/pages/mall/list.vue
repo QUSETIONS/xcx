@@ -1,6 +1,12 @@
 <template>
-  <view class="mall-page">
-    <!-- 分类滚动 -->
+  <view class="page">
+    <view class="header">
+      <text class="header-title">商城</text>
+      <view class="header-actions">
+        <view class="search-btn" @tap="goSearch"><text>🔍</text></view>
+      </view>
+    </view>
+
     <scroll-view scroll-x class="cat-scroll">
       <view class="cat-list">
         <view class="cat-item" :class="{ active: !currentType }" @tap="selectType(null)"><text>全部</text></view>
@@ -10,33 +16,28 @@
       </view>
     </scroll-view>
 
-    <!-- 商品网格 -->
     <scroll-view class="list-scroll" scroll-y @scrolltolower="loadMore"
       :refresher-enabled="true" :refresher-triggered="refreshing" @refresherrefresh="onRefresh">
       <view class="product-grid">
-        <view class="product-item glass-card" v-for="item in productList" :key="item._id" @tap="goDetail(item._id)">
-          <!-- 服务类型图标 -->
+        <view class="product-item" v-for="item in productList" :key="item._id" @tap="goDetail(item._id)">
           <view class="product-icon-box" :style="{ background: getIconBg(item.service_type) }">
             <text class="product-icon">{{ getServiceIcon(item.service_type) }}</text>
           </view>
-
-          <!-- 服务信息 -->
           <text class="product-title">{{ item.title }}</text>
           <text class="product-type">{{ serviceTypes[item.service_type] }}</text>
-
-          <!-- 价格 -->
           <view class="price-row">
             <text class="price-current">¥{{ (item.price / 100).toFixed(0) }}</text>
             <text class="price-market">¥{{ (item.market_price / 100).toFixed(0) }}</text>
           </view>
-
-          <!-- 销量标签 -->
           <view class="sales-tag"><text>{{ item.sale_count }}人已购</text></view>
         </view>
       </view>
-
-      <view v-if="loading" class="loading-state"><text>加载中...</text></view>
-      <view v-if="noMore && productList.length" class="end-state"><text>— 已加载全部 —</text></view>
+      <view v-if="loading" class="loading"><text>加载中...</text></view>
+      <view v-if="noMore && productList.length" class="end"><text>— 已加载全部 —</text></view>
+      <view v-if="!productList.length && !loading" class="empty">
+        <text class="empty-icon">🛒</text>
+        <text>暂无商品</text>
+      </view>
     </scroll-view>
   </view>
 </template>
@@ -84,34 +85,37 @@ function loadMore() { if (!loading.value && !noMore.value) { page.value++; loadL
 function onRefresh() { refreshing.value = true; loadList(true) }
 function selectType(t) { currentType.value = t; loadList(true) }
 function goDetail(id) { uni.navigateTo({ url: `/pages/mall/detail?id=${id}` }) }
+function goSearch() { uni.showToast({ title: '搜索功能开发中', icon: 'none' }) }
 
 loadList(true)
 </script>
 
 <style lang="scss" scoped>
-.mall-page { min-height: 100vh; background: $bg-primary; padding-bottom: 140rpx; }
+.page { min-height: 100vh; background: #0A0A0F; padding-bottom: 140rpx; }
 
-.cat-scroll { padding: $space-3 $space-4; }
-.cat-list { display: flex; gap: $space-2; }
-.cat-item { padding: 12rpx 28rpx; background: $glass-bg; border: 1rpx solid $glass-border; border-radius: $radius-full; font-size: $font-sm; color: $text-secondary; white-space: nowrap; }
-.cat-item.active { background: rgba(255,107,53,0.15); border-color: rgba(255,107,53,0.25); color: $color-primary; }
+.header { padding: 24rpx; display: flex; justify-content: space-between; align-items: center; }
+.header-title { font-size: 40rpx; font-weight: bold; color: rgba(255,255,255,0.95); }
+.search-btn { width: 64rpx; height: 64rpx; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 20rpx; display: flex; align-items: center; justify-content: center; font-size: 28rpx; }
 
-.list-scroll { height: calc(100vh - 120rpx); padding: 0 $space-4; }
-.product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: $space-3; }
-.product-item { padding: $space-4; display: flex; flex-direction: column; }
+.cat-scroll { padding: 0 24rpx 16rpx; }
+.cat-list { display: flex; gap: 12rpx; }
+.cat-item { padding: 10rpx 24rpx; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 24rpx; font-size: 24rpx; color: rgba(255,255,255,0.65); white-space: nowrap; }
+.cat-item.active { background: rgba(255,107,53,0.15); border-color: rgba(255,107,53,0.25); color: #FF6B35; }
 
-.product-icon-box { width: 80rpx; height: 80rpx; border-radius: $radius-lg; display: flex; align-items: center; justify-content: center; margin-bottom: $space-3; }
-.product-icon { font-size: 40rpx; }
+.list-scroll { height: calc(100vh - 180rpx); padding: 0 24rpx; }
+.product-grid { display: flex; flex-wrap: wrap; gap: 12rpx; }
+.product-item { width: calc(50% - 6rpx); background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 20rpx; padding: 20rpx; }
+.product-icon-box { width: 72rpx; height: 72rpx; border-radius: 18rpx; display: flex; align-items: center; justify-content: center; margin-bottom: 12rpx; }
+.product-icon { font-size: 36rpx; }
+.product-title { font-size: 28rpx; font-weight: bold; color: rgba(255,255,255,0.95); display: block; margin-bottom: 4rpx; }
+.product-type { font-size: 22rpx; color: rgba(255,255,255,0.5); display: block; margin-bottom: 12rpx; }
+.price-row { display: flex; align-items: baseline; gap: 8rpx; margin-bottom: 8rpx; }
+.price-current { font-size: 32rpx; font-weight: bold; color: #FF6B35; }
+.price-market { font-size: 22rpx; color: rgba(255,255,255,0.4); text-decoration: line-through; }
+.sales-tag { background: rgba(16,185,129,0.12); border-radius: 8rpx; padding: 4rpx 12rpx; display: inline-flex; }
+.sales-tag text { font-size: 20rpx; color: #34D399; }
 
-.product-title { font-size: $font-base; font-weight: $weight-semibold; color: $text-primary; margin-bottom: $space-1; line-height: 1.3; }
-.product-type { font-size: $font-xs; color: $text-tertiary; margin-bottom: $space-3; }
-
-.price-row { display: flex; align-items: baseline; gap: $space-2; margin-bottom: $space-2; }
-.price-current { font-size: $font-lg; font-weight: $weight-bold; color: $color-primary; }
-.price-market { font-size: $font-xs; color: $text-tertiary; text-decoration: line-through; }
-
-.sales-tag { align-self: flex-start; background: rgba(16,185,129,0.12); border-radius: $radius-sm; padding: 4rpx 12rpx; }
-.sales-tag text { font-size: $font-xs; color: $color-success; }
-
-.loading-state, .end-state { text-align: center; padding: $space-6; font-size: $font-sm; color: $text-tertiary; }
+.loading, .end { text-align: center; padding: 32rpx; font-size: 24rpx; color: rgba(255,255,255,0.5); }
+.empty { text-align: center; padding: 64rpx; }
+.empty-icon { font-size: 64rpx; display: block; margin-bottom: 16rpx; }
 </style>

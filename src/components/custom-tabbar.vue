@@ -18,20 +18,24 @@ defineProps({
 })
 
 const tabs = [
-  { key: 'home', label: '首页', icon: '🏠', path: '/pages/index/index' },
-  { key: 'demand', label: '需求', icon: '📋', path: '/pages/demand/list' },
-  { key: 'community', label: '社区', icon: '💬', path: '/pages/community/index' },
-  { key: 'publish', label: '发布', icon: '', path: '/pages/demand/publish' },
-  { key: 'mall', label: '商城', icon: '🛒', path: '/pages/mall/list' },
-  { key: 'user', label: '我的', icon: '👤', path: '/pages/user/index' }
+  { key: 'home', label: '首页', icon: '🏠', path: '/pages/index/index', isTab: true },
+  { key: 'demand', label: '需求', icon: '📋', path: '/pages/demand/list', isTab: true },
+  { key: 'community', label: '社区', icon: '💬', path: '/pages/community/index', isTab: true },
+  { key: 'publish', label: '发布', icon: '', path: '/pages/demand/publish', isTab: false },
+  { key: 'mall', label: '商城', icon: '🛒', path: '/pages/mall/list', isTab: true },
+  { key: 'user', label: '我的', icon: '👤', path: '/pages/user/index', isTab: true }
 ]
 
 function switchTab(item) {
-  uni.switchTab({ url: item.path })
+  if (item.isTab) {
+    uni.switchTab({ url: item.path })
+  } else {
+    uni.navigateTo({ url: item.path })
+  }
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .tabbar {
   position: fixed; bottom: 0; left: 0; right: 0;
   height: 110rpx; padding-bottom: env(safe-area-inset-bottom);
