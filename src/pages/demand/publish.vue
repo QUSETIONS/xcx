@@ -169,45 +169,45 @@ async function submitForm() {
 }
 </script>
 
-<style lang="scss" scoped>
-.publish-page { min-height: 100vh; background: #f5f5f5; padding-bottom: 160rpx; }
+<style lang="scss">
+.publish-page { min-height: 100vh; background: #0A0A0F; padding-bottom: 160rpx; }
 
-.notice-bar { display: flex; align-items: center; gap: 8rpx; padding: 16rpx 24rpx; margin: 16rpx 24rpx 0; background: #FFF7E6; border-radius: 16rpx; }
+.notice-bar { display: flex; align-items: center; gap: 8rpx; padding: 16rpx 24rpx; margin: 16rpx 24rpx 0; background: rgba(245,158,11,0.1); border: 1rpx solid rgba(245,158,11,0.2); border-radius: 16rpx; }
 .notice-icon { font-size: 28rpx; }
-.notice-text { flex: 1; font-size: 22rpx; color: #8C6D1F; }
+.notice-text { flex: 1; font-size: 22rpx; color: #FBBF24; }
 .notice-link { font-size: 22rpx; color: #FF6B35; }
 
 .form-wrap { padding: 16rpx 24rpx; }
-.form-card { background: #fff; border-radius: 20rpx; padding: 24rpx; margin-bottom: 12rpx; }
-.form-label { font-size: 28rpx; font-weight: 600; color: #333; display: block; margin-bottom: 12rpx; }
-.form-input { width: 100%; height: 76rpx; border: 2rpx solid #eee; border-radius: 12rpx; padding: 0 20rpx; font-size: 28rpx; }
-.form-count { font-size: 22rpx; color: #bbb; text-align: right; display: block; margin-top: 8rpx; }
-.form-select { display: flex; justify-content: space-between; align-items: center; height: 76rpx; border: 2rpx solid #eee; border-radius: 12rpx; padding: 0 20rpx; font-size: 28rpx; }
-.placeholder { color: #999; }
-.select-arrow { color: #ccc; }
-.form-area { width: 100%; height: 200rpx; border: 2rpx solid #eee; border-radius: 12rpx; padding: 16rpx 20rpx; font-size: 28rpx; }
+.form-card { background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 20rpx; padding: 24rpx; margin-bottom: 12rpx; }
+.form-label { font-size: 28rpx; font-weight: 600; color: rgba(255,255,255,0.95); display: block; margin-bottom: 12rpx; }
+.form-input { width: 100%; height: 76rpx; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 12rpx; padding: 0 20rpx; font-size: 28rpx; color: rgba(255,255,255,0.95); }
+.form-count { font-size: 22rpx; color: rgba(255,255,255,0.35); text-align: right; display: block; margin-top: 8rpx; }
+.form-select { display: flex; justify-content: space-between; align-items: center; height: 76rpx; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 12rpx; padding: 0 20rpx; font-size: 28rpx; color: rgba(255,255,255,0.95); }
+.placeholder { color: rgba(255,255,255,0.35); }
+.select-arrow { color: rgba(255,255,255,0.4); }
+.form-area { width: 100%; height: 200rpx; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 12rpx; padding: 16rpx 20rpx; font-size: 28rpx; color: rgba(255,255,255,0.95); }
 
 .quote-row { display: flex; gap: 12rpx; }
-.quote-opt { flex: 1; height: 76rpx; border: 2rpx solid #eee; border-radius: 12rpx; display: flex; align-items: center; justify-content: center; font-size: 28rpx; color: #666; }
-.quote-opt.active { border-color: #FF6B35; color: #FF6B35; background: #FF6B3510; }
+.quote-opt { flex: 1; height: 76rpx; border: 1rpx solid rgba(255,255,255,0.1); border-radius: 12rpx; display: flex; align-items: center; justify-content: center; font-size: 28rpx; color: rgba(255,255,255,0.65); background: rgba(255,255,255,0.04); }
+.quote-opt.active { border-color: #FF6B35; color: #FF6B35; background: rgba(255,107,53,0.1); }
 
 .budget-row { display: flex; align-items: center; gap: 16rpx; }
-.budget-input { flex: 1; height: 76rpx; border: 2rpx solid #eee; border-radius: 12rpx; padding: 0 20rpx; font-size: 28rpx; text-align: center; }
-.budget-sep { color: #999; }
+.budget-input { flex: 1; height: 76rpx; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 12rpx; padding: 0 20rpx; font-size: 28rpx; text-align: center; color: rgba(255,255,255,0.95); }
+.budget-sep { color: rgba(255,255,255,0.4); }
 
-.submit-wrap { position: fixed; bottom: 0; left: 0; right: 0; padding: 24rpx; background: #fff; }
+.submit-wrap { position: fixed; bottom: 0; left: 0; right: 0; padding: 24rpx; background: #12121A; border-top: 1rpx solid rgba(255,255,255,0.08); }
 .submit-row { display: flex; gap: 16rpx; }
-.draft-btn { flex: 1; padding: 20rpx; border-radius: 48rpx; font-size: 28rpx; background: #f5f5f5; color: #666; border: none; }
-.pub-btn { flex: 2; padding: 20rpx; border-radius: 48rpx; font-size: 28rpx; background: #FF6B35; color: #fff; border: none; }
+.draft-btn { flex: 1; padding: 20rpx; border-radius: 48rpx; font-size: 28rpx; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.65); border: none; }
+.pub-btn { flex: 2; padding: 20rpx; border-radius: 48rpx; font-size: 28rpx; background: linear-gradient(135deg, #FF6B35, #FF9A5C); color: #fff; border: none; font-weight: bold; }
 
-.picker-mask { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 999; display: flex; align-items: flex-end; }
-.picker-panel { width: 100%; background: #fff; border-radius: 32rpx 32rpx 0 0; padding: 32rpx; }
-.picker-header { display: flex; justify-content: space-between; margin-bottom: 24rpx; font-size: 32rpx; font-weight: 600; }
-.picker-close { color: #999; padding: 4rpx; }
+.picker-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 400; display: flex; align-items: flex-end; }
+.picker-panel { width: 100%; background: #1A1A26; border-radius: 32rpx 32rpx 0 0; padding: 32rpx; }
+.picker-header { display: flex; justify-content: space-between; margin-bottom: 24rpx; font-size: 32rpx; font-weight: bold; color: rgba(255,255,255,0.95); }
+.picker-close { color: rgba(255,255,255,0.5); padding: 4rpx; }
 .picker-options { display: flex; flex-wrap: wrap; gap: 12rpx; }
-.picker-opt { padding: 12rpx 28rpx; border-radius: 28rpx; font-size: 28rpx; background: #f5f5f5; color: #666; }
-.picker-opt.active { background: #FF6B3518; color: #FF6B35; font-weight: 600; }
+.picker-opt { padding: 14rpx 28rpx; border-radius: 24rpx; font-size: 28rpx; background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.65); }
+.picker-opt.active { background: rgba(255,107,53,0.15); color: #FF6B35; }
 
 .help-list { padding: 8rpx 0; }
-.help-item { font-size: 26rpx; color: #666; display: block; margin-bottom: 12rpx; line-height: 1.6; }
+.help-item { font-size: 26rpx; color: rgba(255,255,255,0.65); display: block; margin-bottom: 12rpx; line-height: 1.6; }
 </style>

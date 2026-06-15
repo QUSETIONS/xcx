@@ -1,13 +1,22 @@
 <template>
   <view class="page">
     <view class="header">
-      <view class="search-box" @tap="goSearch">
-        <text class="search-icon">🔍</text>
-        <text class="search-hint">{{ keyword || '搜索需求' }}</text>
+      <view class="search-row">
+        <view class="search-box" :class="{ focused: searchFocused }">
+          <text class="search-icon">🔍</text>
+          <input class="search-input" v-model="keyword" placeholder="搜索需求" @confirm="doSearch" @focus="searchFocused = true" @blur="searchFocused = false" />
+          <text class="search-clear" v-if="keyword" @tap="clearSearch">✕</text>
+        </view>
+        <text class="search-btn" @tap="doSearch">搜索</text>
       </view>
       <view class="filter-bar">
         <view class="filter-item" :class="{ active: currentCat }" @tap="showCatPicker = true">
           <text>{{ currentCatName || '分类' }}</text>
+          <text class="filter-arrow">▾</text>
+        </view>
+        <view class="filter-item" :class="{ active: currentRegion }" @tap="showRegionPicker = true">
+          <text>{{ currentRegion || '地区' }}</text>
+          <text class="filter-arrow">▾</text>
         </view>
         <view class="filter-item" :class="{ active: currentSort !== 'latest' }" @tap="showSortPicker = true">
           <text>{{ sortLabel }}</text>
@@ -17,36 +26,72 @@
 
     <scroll-view class="list-scroll" scroll-y @scrolltolower="loadMore"
       :refresher-enabled="true" :refresher-triggered="refreshing" @refresherrefresh="onRefresh">
-      <view class="demand-list">
-        <view class="demand-item" v-for="item in demandList" :key="item._id" @tap="goDetail(item._id)">
+
+      <!-- 搜索历史 -->
+      <view class="search-history" v-if="!demandList.length && !loading && searchHistory.length">
+        <text class="history-title">搜索历史</text>
+        <view class="history-tags">
+          <text class="history-tag" v-for="(h, i) in searchHistory" :key="i" @tap="useHistory(h)">{{ h }}</text>
+        </view>
+      </view>
+
+      <!-- 推荐标签 -->
+      <view class="recommend-tags" v-if="!keyword && demandList.length">
+        <text class="recommend-title">热门搜索</text>
+        <view class="tags-wrap">
+          <text class="hot-tag" v-for="t in hotKeywords" :key="t" @tap="searchTag(t)">{{ t }}</text>
+        </view>
+      </view>
+
+      <!-- 骨架屏 -->
+      <view class="skeleton-list" v-if="loading && !demandList.length">
+        <view class="skeleton-item" v-for="i in 4" :key="i">
+          <view class="skeleton-tags"/>
+          <view class="skeleton-title"/>
+          <view class="skeleton-meta"/>
+        </view>
+      </view>
+
+      <!-- 列表 -->
+      <view class="demand-list" v-else>
+        <view class="demand-item" v-for="(item, idx) in demandList" :key="item._id" @tap="goDetail(item._id)">
           <view class="item-top">
             <text class="item-cat">{{ item.category_name }}</text>
             <text class="item-quote">{{ formatQuote(item.quote_type) }}</text>
+            <text class="item-time">{{ formatTime(item.publish_time) }}</text>
           </view>
           <text class="item-title">{{ item.title }}</text>
-          <view class="item-meta">
+          <view class="item-company-row">
             <text class="item-company">{{ item.company_name }}</text>
             <text class="item-region">{{ item.region }}</text>
           </view>
-          <view class="item-stats">
-            <text>👁 {{ item.view_count }}</text>
-            <text>🤝 {{ item.lead_count }}</text>
-            <text>❤️ {{ item.favorite_count }}</text>
+          <view class="item-bottom">
+            <view class="item-stats">
+              <view class="stat-box"><text class="stat-val">{{ formatCount(item.view_count) }}</text><text class="stat-label">浏览</text></view>
+              <view class="stat-box"><text class="stat-val">{{ item.lead_count }}</text><text class="stat-label">对接</text></view>
+              <view class="stat-box"><text class="stat-val">{{ item.favorite_count }}</text><text class="stat-label">收藏</text></view>
+            </view>
+            <view class="heat-indicator" :style="{ background: getHeatColor(item) }">
+              <text>{{ getHeatLevel(item) }}</text>
+            </view>
           </view>
         </view>
       </view>
-      <view v-if="loading" class="loading"><text>加载中...</text></view>
+
+      <view v-if="loading && demandList.length" class="loading"><text>加载中...</text></view>
       <view v-if="noMore && demandList.length" class="end"><text>— 已加载全部 —</text></view>
       <view v-if="!demandList.length && !loading" class="empty">
         <text class="empty-icon">📭</text>
-        <text>暂无相关需求</text>
+        <text class="empty-text">暂无相关需求</text>
+        <text class="empty-hint" @tap="resetFilter">清空筛选</text>
       </view>
     </scroll-view>
 
+    <!-- 分类选择 -->
     <view v-if="showCatPicker" class="picker-mask" @tap="showCatPicker = false">
       <view class="picker-panel" @tap.stop>
-        <text class="picker-title">选择分类</text>
-        <view class="picker-options">
+        <view class="picker-header"><text>选择分类</text><text class="picker-close" @tap="showCatPicker = false">✕</text></view>
+        <view class="picker-grid">
           <view class="picker-opt" :class="{ active: !currentCat }" @tap="selectCat(null)"><text>全部</text></view>
           <view class="picker-opt" :class="{ active: currentCat === cat.id }" v-for="cat in categories" :key="cat.id" @tap="selectCat(cat.id)">
             <text>{{ cat.icon }} {{ cat.name }}</text>
@@ -55,12 +100,24 @@
       </view>
     </view>
 
+    <!-- 地区选择 -->
+    <view v-if="showRegionPicker" class="picker-mask" @tap="showRegionPicker = false">
+      <view class="picker-panel" @tap.stop>
+        <view class="picker-header"><text>选择地区</text><text class="picker-close" @tap="showRegionPicker = false">✕</text></view>
+        <view class="picker-grid">
+          <view class="picker-opt" :class="{ active: !currentRegion }" @tap="selectRegion(null)"><text>全部</text></view>
+          <view class="picker-opt" :class="{ active: currentRegion === r }" v-for="r in regions" :key="r" @tap="selectRegion(r)"><text>{{ r }}</text></view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 排序选择 -->
     <view v-if="showSortPicker" class="picker-mask" @tap="showSortPicker = false">
       <view class="picker-panel" @tap.stop>
-        <text class="picker-title">排序方式</text>
-        <view class="picker-options">
+        <view class="picker-header"><text>排序方式</text><text class="picker-close" @tap="showSortPicker = false">✕</text></view>
+        <view class="picker-list">
           <view class="picker-opt" :class="{ active: currentSort === s.value }" v-for="s in sortOptions" :key="s.value" @tap="selectSort(s.value)">
-            <text>{{ s.label }}</text>
+            <text>{{ s.icon }} {{ s.label }}</text>
           </view>
         </view>
       </view>
@@ -69,14 +126,25 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { DEMAND_CATEGORIES, QUOTE_TYPES } from '@/config/constants'
+import { ref, computed, onMounted } from 'vue'
+import { DEMAND_CATEGORIES, REGIONS, QUOTE_TYPES } from '@/config/constants'
 import { demandService } from '@/mock/service'
 
 const categories = DEMAND_CATEGORIES
-const sortOptions = [{ value: 'latest', label: '最新发布' }, { value: 'hot', label: '热度优先' }]
+const regions = REGIONS
+const sortOptions = [
+  { value: 'latest', label: '最新发布', icon: '🕐' },
+  { value: 'hot', label: '热度优先', icon: '🔥' },
+  { value: 'lead', label: '对接最多', icon: '🤝' }
+]
+
 const keyword = ref('')
+const searchFocused = ref(false)
+const searchHistory = ref([])
+const hotKeywords = ['短视频运营', '品牌营销', '私域流量', '达人合作', '活动策划']
+
 const currentCat = ref(null)
+const currentRegion = ref(null)
 const currentSort = ref('latest')
 const currentCatName = computed(() => categories.find(c => c.id === currentCat.value)?.name || '')
 const sortLabel = computed(() => sortOptions.find(s => s.value === currentSort.value)?.label || '排序')
@@ -87,15 +155,49 @@ const loading = ref(false)
 const refreshing = ref(false)
 const noMore = ref(false)
 const showCatPicker = ref(false)
+const showRegionPicker = ref(false)
 const showSortPicker = ref(false)
 
+onMounted(() => {
+  loadHistory()
+  loadList(true)
+  // 从首页带参数
+  const pages = getCurrentPages()
+  const cur = pages[pages.length - 1]
+  if (cur?.options?.category) { currentCat.value = cur.options.category }
+})
+
+function loadHistory() {
+  try { searchHistory.value = JSON.parse(uni.getStorageSync('demand_search_history') || '[]').slice(0, 5) } catch {}
+}
+function saveHistory(k) {
+  if (!k.trim()) return
+  const list = [k, ...searchHistory.value.filter(h => h !== k)].slice(0, 5)
+  searchHistory.value = list
+  uni.setStorageSync('demand_search_history', JSON.stringify(list))
+}
+
 function formatQuote(type) { return QUOTE_TYPES.find(q => q.value === type)?.label || '面议' }
+function formatTime(t) { if (!t) return ''; const diff = (Date.now() - new Date(t).getTime()) / 3600000; if (diff < 1) return '刚刚'; if (diff < 24) return Math.floor(diff) + '小时前'; return Math.floor(diff / 24) + '天前' }
+function formatCount(n) { if (n >= 10000) return (n/10000).toFixed(1) + 'w'; if (n >= 1000) return (n/1000).toFixed(1) + 'k'; return n }
+function getHeatColor(item) { const h = item.view_count + item.lead_count * 5; if (h > 500) return 'linear-gradient(90deg, #EF4444, #F87171)'; if (h > 200) return 'linear-gradient(90deg, #F59E0B, #FBBF24)'; return 'linear-gradient(90deg, #10B981, #34D399)' }
+function getHeatLevel(item) { const h = item.view_count + item.lead_count * 5; if (h > 500) return '🔥 爆'; if (h > 200) return '⚡ 热'; return '✓ 新' }
 
 function loadList(reset = false) {
   if (reset) { page.value = 1; noMore.value = false }
   loading.value = true
   try {
-    const res = demandService.list({ page: page.value, pageSize: 10, sort: currentSort.value, category_id: currentCat.value })
+    let res = demandService.list({
+      page: page.value, pageSize: 10,
+      sort: currentSort.value,
+      category_id: currentCat.value,
+      region: currentRegion.value,
+      keyword: keyword.value
+    })
+    // 智能排序：综合热度算法
+    if (currentSort.value === 'hot') {
+      res.list.sort((a, b) => (b.view_count + b.lead_count * 10) - (a.view_count + a.lead_count * 10))
+    }
     demandList.value = reset ? res.list : [...demandList.value, ...res.list]
     noMore.value = res.list.length < 10
   } finally { loading.value = false; refreshing.value = false }
@@ -103,45 +205,84 @@ function loadList(reset = false) {
 
 function loadMore() { if (!loading.value && !noMore.value) { page.value++; loadList() } }
 function onRefresh() { refreshing.value = true; loadList(true) }
-function goSearch() { uni.showToast({ title: '搜索功能开发中', icon: 'none' }) }
 function goDetail(id) { uni.navigateTo({ url: `/pages/demand/detail?id=${id}` }) }
-function selectCat(id) { currentCat.value = id; showCatPicker.value = false; loadList(true) }
-function selectSort(v) { currentSort.value = v; showSortPicker.value = false; loadList(true) }
 
-loadList(true)
+function doSearch() { saveHistory(keyword.value); loadList(true) }
+function clearSearch() { keyword.value = ''; loadList(true) }
+function useHistory(h) { keyword.value = h; doSearch() }
+function searchTag(t) { keyword.value = t; doSearch() }
+function resetFilter() { currentCat.value = null; currentRegion.value = null; keyword.value = ''; loadList(true) }
+
+function selectCat(id) { currentCat.value = id; showCatPicker.value = false; loadList(true) }
+function selectRegion(r) { currentRegion.value = r; showRegionPicker.value = false; loadList(true) }
+function selectSort(v) { currentSort.value = v; showSortPicker.value = false; loadList(true) }
 </script>
 
 <style lang="scss">
 .page { min-height: 100vh; background: #0A0A0F; padding-bottom: 120rpx; }
 .header { padding: 16rpx 24rpx; }
-.search-box { display: flex; align-items: center; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 24rpx; padding: 20rpx 24rpx; margin-bottom: 16rpx; }
+.search-row { display: flex; align-items: center; gap: 12rpx; margin-bottom: 12rpx; }
+.search-box { flex: 1; display: flex; align-items: center; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 24rpx; padding: 16rpx 20rpx; }
+.search-box.focused { border-color: #FF6B35; }
 .search-icon { font-size: 28rpx; }
-.search-hint { font-size: 28rpx; color: rgba(255,255,255,0.35); margin-left: 12rpx; }
+.search-input { flex: 1; font-size: 28rpx; color: rgba(255,255,255,0.95); margin: 0 12rpx; }
+.search-clear { font-size: 24rpx; color: rgba(255,255,255,0.5); padding: 4rpx; }
+.search-btn { font-size: 28rpx; color: #FF6B35; }
+
 .filter-bar { display: flex; gap: 12rpx; }
-.filter-item { padding: 10rpx 20rpx; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 20rpx; font-size: 24rpx; color: rgba(255,255,255,0.65); }
-.filter-item.active { background: rgba(255,107,53,0.15); border-color: rgba(255,107,53,0.2); color: #FF6B35; }
+.filter-item { display: flex; align-items: center; gap: 4rpx; padding: 10rpx 20rpx; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 20rpx; font-size: 24rpx; color: rgba(255,255,255,0.65); }
+.filter-item.active { background: rgba(255,107,53,0.15); border-color: rgba(255,107,53,0.25); color: #FF6B35; }
+.filter-arrow { font-size: 16rpx; }
 
 .list-scroll { height: calc(100vh - 180rpx); padding: 0 24rpx; }
+.recommend-tags { margin-bottom: 16rpx; }
+.recommend-title { font-size: 24rpx; color: rgba(255,255,255,0.5); margin-bottom: 8rpx; display: block; }
+.tags-wrap { display: flex; flex-wrap: wrap; gap: 8rpx; }
+.hot-tag { font-size: 22rpx; color: rgba(255,255,255,0.65); background: rgba(255,255,255,0.06); padding: 8rpx 16rpx; border-radius: 16rpx; }
+
+.search-history { padding: 16rpx 0; }
+.history-title { font-size: 24rpx; color: rgba(255,255,255,0.5); margin-bottom: 12rpx; display: block; }
+.history-tags { display: flex; flex-wrap: wrap; gap: 8rpx; }
+.history-tag { font-size: 24rpx; color: rgba(255,255,255,0.65); background: rgba(255,255,255,0.08); padding: 10rpx 20rpx; border-radius: 20rpx; }
+
+.skeleton-list { display: flex; flex-direction: column; gap: 12rpx; }
+.skeleton-item { background: rgba(255,255,255,0.06); border-radius: 20rpx; padding: 20rpx; }
+.skeleton-tags { width: 120rpx; height: 24rpx; background: rgba(255,255,255,0.1); border-radius: 8rpx; margin-bottom: 12rpx; animation: pulse 1.5s infinite; }
+.skeleton-title { width: 80%; height: 30rpx; background: rgba(255,255,255,0.1); border-radius: 8rpx; margin-bottom: 12rpx; animation: pulse 1.5s infinite; }
+.skeleton-meta { width: 60%; height: 24rpx; background: rgba(255,255,255,0.1); border-radius: 8rpx; animation: pulse 1.5s infinite; }
+
 .demand-list { display: flex; flex-direction: column; gap: 12rpx; }
 .demand-item { background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 20rpx; padding: 20rpx; }
-.item-top { display: flex; gap: 8rpx; margin-bottom: 12rpx; }
+.item-top { display: flex; gap: 8rpx; align-items: center; margin-bottom: 12rpx; }
 .item-cat { font-size: 20rpx; color: #FF9A5C; background: rgba(255,107,53,0.15); padding: 4rpx 12rpx; border-radius: 8rpx; }
 .item-quote { font-size: 20rpx; color: #F472B6; background: rgba(236,72,153,0.15); padding: 4rpx 12rpx; border-radius: 8rpx; }
+.item-time { font-size: 20rpx; color: rgba(255,255,255,0.4); margin-left: auto; }
 .item-title { font-size: 30rpx; font-weight: bold; color: rgba(255,255,255,0.95); display: block; margin-bottom: 12rpx; line-height: 1.4; }
-.item-meta { display: flex; justify-content: space-between; margin-bottom: 12rpx; }
+.item-company-row { display: flex; justify-content: space-between; margin-bottom: 16rpx; }
 .item-company { font-size: 24rpx; color: rgba(255,255,255,0.65); }
 .item-region { font-size: 22rpx; color: rgba(255,255,255,0.5); }
-.item-stats { display: flex; gap: 16rpx; }
-.item-stats text { font-size: 22rpx; color: rgba(255,255,255,0.5); }
+.item-bottom { display: flex; justify-content: space-between; align-items: center; }
+.item-stats { display: flex; gap: 20rpx; }
+.stat-box { display: flex; flex-direction: column; align-items: center; }
+.stat-val { font-size: 26rpx; font-weight: bold; color: rgba(255,255,255,0.95); }
+.stat-label { font-size: 18rpx; color: rgba(255,255,255,0.4); }
+.heat-indicator { padding: 4rpx 12rpx; border-radius: 12rpx; }
+.heat-indicator text { font-size: 20rpx; color: #fff; font-weight: bold; }
 
 .loading, .end { text-align: center; padding: 32rpx; font-size: 24rpx; color: rgba(255,255,255,0.5); }
 .empty { text-align: center; padding: 64rpx; }
 .empty-icon { font-size: 80rpx; display: block; margin-bottom: 16rpx; }
+.empty-text { font-size: 28rpx; color: rgba(255,255,255,0.65); display: block; margin-bottom: 16rpx; }
+.empty-hint { font-size: 24rpx; color: #FF6B35; }
 
 .picker-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 400; display: flex; align-items: flex-end; }
 .picker-panel { width: 100%; padding: 32rpx; background: #1A1A26; border-radius: 32rpx 32rpx 0 0; }
-.picker-title { font-size: 32rpx; font-weight: bold; color: rgba(255,255,255,0.95); display: block; margin-bottom: 24rpx; }
-.picker-options { display: flex; flex-wrap: wrap; gap: 12rpx; }
-.picker-opt { padding: 14rpx 32rpx; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 20rpx; font-size: 26rpx; color: rgba(255,255,255,0.65); }
-.picker-opt.active { background: rgba(255,107,53,0.15); border-color: rgba(255,107,53,0.2); color: #FF6B35; }
+.picker-header { display: flex; justify-content: space-between; margin-bottom: 24rpx; font-size: 32rpx; font-weight: bold; color: rgba(255,255,255,0.95); }
+.picker-close { color: rgba(255,255,255,0.5); padding: 4rpx; }
+.picker-grid { display: flex; flex-wrap: wrap; gap: 12rpx; }
+.picker-list { display: flex; flex-direction: column; gap: 8rpx; }
+.picker-opt { padding: 14rpx 28rpx; background: rgba(255,255,255,0.06); border: 1rpx solid rgba(255,255,255,0.1); border-radius: 20rpx; font-size: 26rpx; color: rgba(255,255,255,0.65); }
+.picker-opt.active { background: rgba(255,107,53,0.15); border-color: rgba(255,107,53,0.25); color: #FF6B35; }
+
+@keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
 </style>
