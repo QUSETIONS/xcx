@@ -207,8 +207,12 @@ export function scoreDemandQuality(form) {
     }
   } else if (form.quote_type === 'negotiate') {
     scores.budget = 8
+  } else if (form.quote_type === 'by_daren') {
+    scores.budget = 6
   } else {
-    scores.budget = 10
+    // 未选择报价方式
+    scores.budget = 0
+    tips.push('请选择报价方式')
   }
 
   // 联系方式
