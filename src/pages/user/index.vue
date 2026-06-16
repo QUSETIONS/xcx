@@ -6,8 +6,8 @@
           <text class="avatar-text">{{ userInfo.nickname ? userInfo.nickname[0] : 'U' }}</text>
         </view>
         <view class="user-text">
-          <text class="nickname">{{ userInfo.nickname || '创业者' }}</text>
-          <text class="company">{{ userInfo.company || '完善资料获更多曝光' }}</text>
+          <text class="nickname">{{ userInfo.nickname || t('user.defaultNickname') }}</text>
+          <text class="company">{{ userInfo.company || t('user.completeProfileHint') }}</text>
         </view>
       </view>
       <view class="header-actions">
@@ -52,17 +52,17 @@
     <view class="stats-panel">
       <view class="stat-item" @tap="goPage('/pages/user/my-demands')">
         <text class="stat-num">{{ myDemandsCount }}</text>
-        <text class="stat-label">我的需求</text>
+        <text class="stat-label">{{ t('user.myDemand') }}</text>
       </view>
       <view class="stat-divider"></view>
       <view class="stat-item" @tap="goPage('/pages/user/my-leads')">
         <text class="stat-num">{{ myLeadsCount }}</text>
-        <text class="stat-label">我的对接</text>
+        <text class="stat-label">{{ t('user.myLeads') }}</text>
       </view>
       <view class="stat-divider"></view>
       <view class="stat-item" @tap="goPage('/pages/user/my-favorites')">
         <text class="stat-num">{{ myFavoritesCount }}</text>
-        <text class="stat-label">我的收藏</text>
+        <text class="stat-label">{{ t('user.myFavorite') }}</text>
       </view>
     </view>
 
@@ -71,8 +71,8 @@
       <view class="dc-left">
         <text class="dc-icon">📊</text>
         <view class="dc-info">
-          <text class="dc-title">数据看板</text>
-          <text class="dc-desc">查看浏览、对接、成交趋势</text>
+          <text class="dc-title">{{ t('user.dashboard') }}</text>
+          <text class="dc-desc">{{ t('user.dashboardDesc') }}</text>
         </view>
       </view>
       <text class="dc-arrow">›</text>
@@ -80,7 +80,7 @@
 
     <!-- 功能入口 -->
     <view class="menu-section">
-      <text class="section-title">常用功能</text>
+      <text class="section-title">{{ t('user.commonFunctions') }}</text>
       <view class="menu-grid">
         <view class="menu-item card-press" v-for="(item, idx) in menuItems" :key="idx" @tap="goPage(item.path)">
           <view class="menu-icon-box" :class="'menu-color-' + (idx % 6)">
@@ -95,8 +95,8 @@
     <view class="admin-card" v-if="isAdmin" @tap="goAdmin">
       <view class="admin-icon-box"><text class="admin-icon">🛡️</text></view>
       <view class="admin-info">
-        <text class="admin-title">后台管理</text>
-        <text class="admin-desc">管理需求、对接、订单</text>
+        <text class="admin-title">{{ t('user.admin') }}</text>
+        <text class="admin-desc">{{ t('user.adminDesc') }}</text>
       </view>
       <text class="admin-arrow">›</text>
     </view>
@@ -104,7 +104,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { demandService, leadService, favoriteService, reviewService, pointsService, couponService, followService } from '@/mock/service'
 import { t } from '@/i18n'
 import { useNavTitle } from '@/hooks/useNavTitle'
@@ -120,23 +120,23 @@ const pointsBalance = ref(0)
 const couponCount = ref(0)
 const followCount = ref(0)
 
-const menuItems = [
-  { label: '我的需求', path: '/pages/user/my-demands', icon: '📋' },
-  { label: '成交管理', path: '/pages/deals/index', icon: '🤝' },
-  { label: '我的订单', path: '/pages/order/index', icon: '📦' },
-  { label: '购物车', path: '/pages/cart/index', icon: '🛒' },
-  { label: '会员中心', path: '/pages/member/index', icon: '⭐' },
-  { label: '活动中心', path: '/pages/campaign/index', icon: '🎉' },
-  { label: '我的收藏', path: '/pages/user/my-favorites', icon: '❤️' },
-  { label: '我的关注', path: '/pages/follow/index', icon: '👥' },
-  { label: '企业认证', path: '/pages/verify/index', icon: '🏛️' },
-  { label: '数据看板', path: '/pages/dashboard/index', icon: '📊' },
-  { label: '在线客服', path: '/pages/chat/index', icon: '💬' },
-  { label: '积分签到', path: '/pages/points/index', icon: '🎁' },
-  { label: '优惠券', path: '/pages/coupon/index', icon: '🎫' },
-  { label: '消息中心', path: '/pages/message/index', icon: '🔔' },
-  { label: '资料下载', path: '/pages/resource/list', icon: '📚' }
-]
+const menuItems = computed(() => [
+  { label: t('user.myDemand'), path: '/pages/user/my-demands', icon: '📋' },
+  { label: t('user.dealsManage'), path: '/pages/deals/index', icon: '🤝' },
+  { label: t('user.myOrder'), path: '/pages/order/index', icon: '📦' },
+  { label: t('mall.cart'), path: '/pages/cart/index', icon: '🛒' },
+  { label: t('user.member'), path: '/pages/member/index', icon: '⭐' },
+  { label: t('user.campaign'), path: '/pages/campaign/index', icon: '🎉' },
+  { label: t('user.myFavorite'), path: '/pages/user/my-favorites', icon: '❤️' },
+  { label: t('user.following'), path: '/pages/follow/index', icon: '👥' },
+  { label: t('user.verify'), path: '/pages/verify/index', icon: '🏛️' },
+  { label: t('user.dashboard'), path: '/pages/dashboard/index', icon: '📊' },
+  { label: t('user.onlineService'), path: '/pages/chat/index', icon: '💬' },
+  { label: t('user.pointsSign'), path: '/pages/points/index', icon: '🎁' },
+  { label: t('user.coupon'), path: '/pages/coupon/index', icon: '🎫' },
+  { label: t('user.message'), path: '/pages/message/index', icon: '🔔' },
+  { label: t('user.resource'), path: '/pages/resource/list', icon: '📚' }
+])
 
 onMounted(() => {
   myDemandsCount.value = demandService.myDemands().total
@@ -149,7 +149,7 @@ onMounted(() => {
 })
 
 function goPage(path) {
-  if (!path) { uni.showToast({ title: '功能开发中', icon: 'none' }); return }
+  if (!path) { uni.showToast({ title: t('user.featureWip'), icon: 'none' }); return }
   uni.navigateTo({ url: path })
 }
 function goPoints() { uni.navigateTo({ url: '/pages/points/index' }) }

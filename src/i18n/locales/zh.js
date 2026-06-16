@@ -352,7 +352,24 @@ export default {
     myFavorite: '我的收藏',
     member: '会员中心',
     settings: '设置',
-    logout: '退出登录'
+    logout: '退出登录',
+    myLeads: '我的对接',
+    dashboard: '数据看板',
+    dashboardDesc: '查看浏览、对接、成交趋势',
+    commonFunctions: '常用功能',
+    admin: '后台管理',
+    adminDesc: '管理需求、对接、订单',
+    defaultNickname: '创业者',
+    completeProfileHint: '完善资料获更多曝光',
+    featureWip: '功能开发中',
+    dealsManage: '成交管理',
+    campaign: '活动中心',
+    following: '我的关注',
+    verify: '企业认证',
+    onlineService: '在线客服',
+    pointsSign: '积分签到',
+    message: '消息中心',
+    resource: '资料下载'
   },
   // 会员
   member: {
