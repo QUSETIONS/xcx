@@ -9,7 +9,7 @@
         <text class="author-name">{{ post.author.nickname }}</text>
         <text class="author-meta">{{ post.author.company }} · {{ formatTime(post.created_at) }}</text>
       </view>
-      <view class="follow-btn" @tap="follow"><text>关注</text></view>
+      <view class="follow-btn" @tap="follow"><text>{{ t('community.follow') }}</text></view>
     </view>
 
     <!-- 话题标签 -->
@@ -22,30 +22,30 @@
 
     <!-- 互动数据 -->
     <view class="post-stats">
-      <text class="stats-item">👁 {{ post.view_count }} 浏览</text>
-      <text class="stats-item">❤️ {{ post.like_count }} 赞</text>
-      <text class="stats-item">💬 {{ post.comment_count }} 评论</text>
+      <text class="stats-item">👁 {{ post.view_count }} {{ t('community.views') }}</text>
+      <text class="stats-item">❤️ {{ post.like_count }} {{ t('community.like') }}</text>
+      <text class="stats-item">💬 {{ post.comment_count }} {{ t('community.comment') }}</text>
     </view>
 
     <!-- 操作栏 -->
     <view class="post-actions">
       <view class="action-btn" :class="{ liked: post._liked }" @tap="likePost">
         <text class="action-icon">{{ post._liked ? '❤️' : '🤍' }}</text>
-        <text class="action-text">赞</text>
+        <text class="action-text">{{ t('community.like') }}</text>
       </view>
       <view class="action-btn" @tap="share">
         <text class="action-icon">🔗</text>
-        <text class="action-text">分享</text>
+        <text class="action-text">{{ t('community.share') }}</text>
       </view>
       <view class="action-btn" @tap="collect">
         <text class="action-icon">⭐</text>
-        <text class="action-text">收藏</text>
+        <text class="action-text">{{ t('community.favorite') }}</text>
       </view>
     </view>
 
     <!-- 评论区 -->
     <view class="comments-section">
-      <text class="comments-title">全部评论 {{ comments.length }}</text>
+      <text class="comments-title">{{ t('community.allComments') }} {{ comments.length }}</text>
       <view class="comment-list">
         <view class="comment-item" v-for="item in comments" :key="item._id">
           <view class="comment-avatar">
@@ -60,18 +60,18 @@
             </view>
           </view>
         </view>
-        <view v-if="!comments.length" class="no-comments"><text>暂无评论，快来抢沙发吧</text></view>
+        <view v-if="!comments.length" class="no-comments"><text>{{ t('community.noComments') }}</text></view>
       </view>
     </view>
 
     <!-- 底部评论输入 -->
     <view class="comment-bar">
-      <input class="comment-input" v-model="commentText" placeholder="说点什么..." />
-      <view class="send-btn" @tap="submitComment"><text>发送</text></view>
+      <input class="comment-input" v-model="commentText" :placeholder="t('community.commentPlaceholder')" />
+      <view class="send-btn" @tap="submitComment"><text>{{ t('community.send') }}</text></view>
     </view>
   </view>
 
-  <view v-else class="empty"><text class="empty-icon">📭</text><text>帖子不存在</text></view>
+  <view v-else class="empty"><text class="empty-icon">📭</text><text>{{ t('community.notExist') }}</text></view>
 </template>
 
 <script setup>
@@ -80,6 +80,7 @@ import { onLoad } from '@dcloudio/uni-app'
 import { communityService } from '@/mock/service'
 import { formatRelativeTime as formatTime } from "@/utils/util"
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.communityDetail')
 
 const postId = ref('')
@@ -107,17 +108,17 @@ function likePost() {
   }
 }
 
-function follow() { uni.showToast({ title: '关注成功', icon: 'success' }) }
-function share() { uni.showModal({ title: '分享', content: '点击右上角「...」分享', showCancel: false }) }
-function collect() { uni.showToast({ title: '已收藏', icon: 'success' }) }
+function follow() { uni.showToast({ title: t('community.followSuccess'), icon: 'success' }) }
+function share() { uni.showModal({ title: t('community.share'), content: t('community.shareContent'), showCancel: false }) }
+function collect() { uni.showToast({ title: t('community.collected'), icon: 'success' }) }
 
 function submitComment() {
-  if (!commentText.value.trim()) { uni.showToast({ title: '请输入评论', icon: 'none' }); return }
+  if (!commentText.value.trim()) { uni.showToast({ title: t('community.enterComment'), icon: 'none' }); return }
   communityService.createComment(postId.value, commentText.value)
   comments.value = communityService.comments(postId.value)
   post.value.comment_count++
   commentText.value = ''
-  uni.showToast({ title: '评论成功', icon: 'success' })
+  uni.showToast({ title: t('community.commentSuccess'), icon: 'success' })
 }
 
 onLoad((q) => { postId.value = q.id; loadDetail() })

@@ -2,7 +2,7 @@
   <view class="page">
     <!-- 话题选择 -->
     <view class="section">
-      <text class="section-title">选择话题</text>
+      <text class="section-title">{{ t('community.selectTopic') }}</text>
       <scroll-view scroll-x class="topic-scroll">
         <view class="topic-list">
           <view class="topic-item" :class="{ active: selectedTopic === t.id }" v-for="t in topics" :key="t.id" @tap="selectedTopic = t.id">
@@ -14,14 +14,14 @@
 
     <!-- 内容输入 -->
     <view class="section">
-      <text class="section-title">分享你的见解</text>
-      <textarea class="content-input" v-model="content" placeholder="分享你的经验、见解或提问，与同行交流..." maxlength="1000" />
+      <text class="section-title">{{ t('community.shareInsight') }}</text>
+      <textarea class="content-input" v-model="content" :placeholder="t('community.contentPlaceholder')" maxlength="1000" />
       <text class="word-count">{{ content.length }}/1000</text>
     </view>
 
     <!-- 图片上传区域 -->
     <view class="section">
-      <text class="section-title">添加图片（可选）</text>
+      <text class="section-title">{{ t('community.addImages') }}</text>
       <view class="image-grid">
         <view class="image-item" v-for="(img, i) in images" :key="i">
           <text class="image-placeholder">📷</text>
@@ -29,23 +29,23 @@
         </view>
         <view class="image-add" v-if="images.length < 9" @tap="addImage">
           <text class="add-icon">+</text>
-          <text class="add-text">添加图片</text>
+          <text class="add-text">{{ t('community.addImage') }}</text>
         </view>
       </view>
     </view>
 
     <!-- 发布须知 -->
     <view class="notice">
-      <text class="notice-title">📢 发布须知</text>
-      <text class="notice-item">• 分享有价值的内容，帮助更多同行</text>
-      <text class="notice-item">• 禁止发布广告、营销等内容</text>
-      <text class="notice-item">• 尊重他人，理性讨论</text>
+      <text class="notice-title">📢 {{ t('community.noticeTitle') }}</text>
+      <text class="notice-item">• {{ t('community.notice1') }}</text>
+      <text class="notice-item">• {{ t('community.notice2') }}</text>
+      <text class="notice-item">• {{ t('community.notice3') }}</text>
     </view>
 
     <!-- 提交按钮 -->
     <view class="submit-bar">
       <button class="submit-btn" :disabled="!canSubmit || submitting" @tap="submit">
-        <text>{{ submitting ? '发布中...' : '发布动态' }}</text>
+        <text>{{ submitting ? t('community.publishing') : t('community.publish') }}</text>
       </button>
     </view>
   </view>
@@ -55,6 +55,7 @@
 import { ref, computed } from 'vue'
 import { communityService } from '@/mock/service'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.communityPost')
 
 const topics = ref(communityService.topics())
@@ -85,7 +86,7 @@ async function submit() {
       topic_id: selectedTopic.value,
       images: images.value
     })
-    uni.showToast({ title: '发布成功', icon: 'success' })
+    uni.showToast({ title: t('community.publishSuccess'), icon: 'success' })
     setTimeout(() => uni.navigateBack(), 1500)
   } finally { submitting.value = false }
 }

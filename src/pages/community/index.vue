@@ -14,7 +14,7 @@
     <!-- 话题横向滚动 -->
     <scroll-view scroll-x class="topic-scroll">
       <view class="topic-list">
-        <view class="topic-item" :class="{ active: !currentTopic }" @tap="selectTopic(null)"><text>🔥 全部</text></view>
+        <view class="topic-item" :class="{ active: !currentTopic }" @tap="selectTopic(null)"><text>🔥 {{ t('common.all') }}</text></view>
         <view class="topic-item" :class="{ active: currentTopic === t.id }" v-for="t in topics" :key="t.id" @tap="selectTopic(t.id)">
           <text>{{ t.icon }} {{ t.name }}</text>
           <text class="topic-count" v-if="t.hot">HOT</text>
@@ -85,8 +85,8 @@
           </view>
         </view>
       </view>
-      <view v-if="loading" class="loading"><text>加载中...</text></view>
-      <view v-if="noMore && postList.length" class="end"><text>— 已加载全部 —</text></view>
+      <view v-if="loading" class="loading"><text>{{ t('common.loading') }}</text></view>
+      <view v-if="noMore && postList.length" class="end"><text>— {{ t('listPage.noMore') }} —</text></view>
     </scroll-view>
 
     <!-- 发布按钮 -->
@@ -159,7 +159,7 @@ function goDetail(id) { uni.navigateTo({ url: `/pages/community/detail?id=${id}`
 function goPublish() { uni.navigateTo({ url: '/pages/community/post' }) }
 function goNotify() { uni.navigateTo({ url: '/pages/message/index' }) }
 function goProfile(id) { uni.navigateTo({ url: '/pages/profile/index?id=' + id }) }
-function sharePost() { uni.showModal({ title: '分享', content: '点击右上角「...」分享', showCancel: false }) }
+function sharePost() { uni.showModal({ title: t('community.share'), content: t('community.shareContent'), showCancel: false }) }
 
 loadList(true)
 loadHotPosts()
