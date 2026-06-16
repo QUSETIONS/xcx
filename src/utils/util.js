@@ -43,3 +43,48 @@ export function formatYuan(fen) {
 export function deepClone(obj) {
   return obj == null ? obj : JSON.parse(JSON.stringify(obj))
 }
+
+// ============ 日期格式化（统一实现，消除页面重复）============
+
+/**
+ * 短日期：M/D （如 6/16）
+ */
+export function formatDate(t) {
+  if (!t) return ''
+  const d = new Date(t)
+  return `${d.getMonth() + 1}/${d.getDate()}`
+}
+
+/**
+ * 完整日期时间：Y-M-D HH:mm （如 2026-06-16 10:30）
+ */
+export function formatDateTime(t) {
+  if (!t) return ''
+  const d = new Date(t)
+  const p = (n) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`
+}
+
+/**
+ * 完整日期：Y-M-D （如 2026-06-16）
+ */
+export function formatDateFull(t) {
+  if (!t) return ''
+  const d = new Date(t)
+  const p = (n) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
+}
+
+/**
+ * 相对时间：刚刚 / X小时前 / X天前 / M/D
+ */
+export function formatRelativeTime(t) {
+  if (!t) return ''
+  const diff = (Date.now() - new Date(t).getTime()) / 3600000
+  if (diff < 1) return '刚刚'
+  if (diff < 24) return Math.floor(diff) + '小时前'
+  if (diff < 168) return Math.floor(diff / 24) + '天前'
+  const d = new Date(t)
+  return `${d.getMonth() + 1}/${d.getDate()}`
+}
+

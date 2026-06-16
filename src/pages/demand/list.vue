@@ -136,6 +136,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { DEMAND_CATEGORIES, REGIONS, QUOTE_TYPES } from '@/config/constants'
 import { demandService } from '@/mock/service'
+import { formatRelativeTime as formatTime } from "@/utils/util"
 
 const categories = DEMAND_CATEGORIES
 const regions = REGIONS
@@ -182,29 +183,6 @@ function saveHistory(k) {
 }
 
 function formatQuote(type) { return QUOTE_TYPES.find(q => q.value === type)?.label || '面议' }
-function formatTime(t) { if (!t) return ''; const diff = (Date.now() - new Date(t).getTime()) / 3600000; if (diff < 1) return '刚刚'; if (diff < 24) return Math.floor(diff) + '小时前'; return Math.floor(diff / 24) + '天前' }
-function formatCount(n) { if (n >= 10000) return (n/10000).toFixed(1) + 'w'; if (n >= 1000) return (n/1000).toFixed(1) + 'k'; return n }
-function getHeatClass(item) { const h = item.view_count + item.lead_count * 5; if (h > 500) return 'heat-hot'; if (h > 200) return 'heat-medium'; return 'heat-normal' }
-function getHeatLevel(item) { const h = item.view_count + item.lead_count * 5; if (h > 500) return '🔥 爆'; if (h > 200) return '⚡ 热'; return '✓ 新' }
-
-function loadList(reset = false) {
-  if (reset) { page.value = 1; noMore.value = false }
-  loading.value = true
-  try {
-    let res = demandService.list({
-      page: page.value, pageSize: 10,
-      sort: currentSort.value,
-      category_id: currentCat.value,
-      region: currentRegion.value,
-      keyword: keyword.value
-    })
-    if (currentSort.value === 'hot') {
-      res.list.sort((a, b) => (b.view_count + b.lead_count * 10) - (a.view_count + a.lead_count * 10))
-    }
-    demandList.value = reset ? res.list : [...demandList.value, ...res.list]
-    noMore.value = res.list.length < 10
-  } finally { loading.value = false; refreshing.value = false }
-}
 
 function loadMore() { if (!loading.value && !noMore.value) { page.value++; loadList() } }
 function onRefresh() { refreshing.value = true; loadList(true) }

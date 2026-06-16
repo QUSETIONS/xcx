@@ -29,6 +29,7 @@
 import { ref, onMounted } from 'vue'
 import { ORDER_STATUS } from '@/config/constants'
 import { orderService } from '@/mock/service'
+import { formatDate } from "@/utils/util"
 
 const statusMap = ORDER_STATUS
 const list = ref([])
@@ -36,7 +37,6 @@ const refreshing = ref(false)
 const animated = ref(false)
 
 function loadList() { list.value = orderService.myOrders().list }
-function formatDate(t) { if (!t) return ''; const d = new Date(t); return `${d.getMonth()+1}/${d.getDate()}` }
 function goMall() { uni.switchTab({ url: '/pages/mall/list' }) }
 function onRefresh() { refreshing.value = true; loadList(); refreshing.value = false }
 </script>

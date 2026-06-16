@@ -75,6 +75,7 @@ import { ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { ORDER_STATUS } from '@/config/constants'
 import { orderService } from '@/mock/service'
+import { formatDateTime as formatTime } from "@/utils/util"
 
 const tab = ref('all')
 const orderList = ref([])
@@ -93,11 +94,6 @@ function getStatusText(s) { return ORDER_STATUS[s] || s }
 function getIcon(type) {
   const map = { member: '👑', linker: '🔗', survey: '📊', resource_pack: '📦', certification: '✅' }
   return map[type] || '📦'
-}
-function formatTime(t) {
-  if (!t) return ''
-  const d = new Date(t)
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`
 }
 
 // 状态流转

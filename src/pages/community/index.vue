@@ -97,6 +97,7 @@
 <script setup>
 import { ref } from 'vue'
 import { communityService } from '@/mock/service'
+import { formatRelativeTime as formatTime } from "@/utils/util"
 
 const topics = ref(communityService.topics())
 const currentTopic = ref(null)
@@ -121,15 +122,6 @@ function getAvatarColor(id) {
   return avatarColors[idx]
 }
 
-function formatTime(t) {
-  if (!t) return ''
-  const diff = (Date.now() - new Date(t).getTime()) / 3600000
-  if (diff < 1) return '刚刚'
-  if (diff < 24) return Math.floor(diff) + '小时前'
-  if (diff < 168) return Math.floor(diff / 24) + '天前'
-  const d = new Date(t)
-  return `${d.getMonth() + 1}/${d.getDate()}`
-}
 
 function loadList(reset = false) {
   if (reset) { page.value = 1; noMore.value = false }

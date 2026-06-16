@@ -100,7 +100,9 @@ const leadData = Array.from({ length: 10 }, (_, i) => ({
   _id: `lead_${i + 1}`,
   demand_id: demandData[i]._id,
   demand_title: demandData[i].title,
+  from_user_id: 'demo_user_001',
   user_id: 'demo_user_001',
+  demand_owner: demandData[i].created_by || 'demo_user_001',
   contact_name: '李总',
   phone: '139****9999',
   wechat: 'lead_wx_' + (i + 1),
@@ -309,7 +311,8 @@ export const leadService = {
   },
   // 需求方收到的对接（别人对接了我的需求）
   receivedLeads() {
-    return { list: leadData.filter(l => l.demand_owner === 'demo_user_001' || true).slice(0, 10), total: leadData.length }
+    const list = leadData.filter(l => l.demand_owner === 'demo_user_001').slice(0, 10)
+    return { list, total: list.length }
   },
   updateStatus(id, status) {
     const lead = leadData.find(l => l._id === id)
@@ -381,7 +384,8 @@ const notifyData = [
 // ========== 成交服务 ==========
 export const dealService = {
   myDeals() {
-    return { list: dealData.filter(d => d.owner_id === 'demo_user_001' || true), total: dealData.length }
+    const list = dealData.filter(d => d.owner_id === 'demo_user_001')
+    return { list, total: list.length }
   },
   updateStatus(id, status) {
     const deal = dealData.find(d => d._id === id)

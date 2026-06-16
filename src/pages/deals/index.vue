@@ -73,6 +73,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { dealService } from '@/mock/service'
+import { formatDate } from "@/utils/util"
 
 const tab = ref('all')
 const showReviewModal = ref(false)
@@ -88,7 +89,6 @@ const filteredList = computed(() => {
   return deals.value.filter(d => d.status === tab.value)
 })
 
-function formatDate(t) { if (!t) return ''; const d = new Date(t); return `${d.getMonth()+1}/${d.getDate()}` }
 
 function completeDeal(item) {
   uni.showModal({

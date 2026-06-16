@@ -45,6 +45,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { LEAD_STATUS } from '@/config/constants'
 import { leadService } from '@/mock/service'
+import { formatDate } from "@/utils/util"
 
 const statusMap = LEAD_STATUS
 const statusFilter = ref('')
@@ -59,7 +60,6 @@ const filteredList = computed(() => {
   return list
 })
 
-function formatDate(t) { if (!t) return ''; const d = new Date(t); return `${d.getMonth()+1}/${d.getDate()}` }
 function onRefresh() { refreshing.value = true; allLeads.value = leadService.myLeads().list; refreshing.value = false }
 function goDemand(id) { uni.navigateTo({ url: `/pages/demand/detail?id=${id}` }) }
 function updateStatus(item, newStatus) {

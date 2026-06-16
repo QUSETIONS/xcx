@@ -36,6 +36,7 @@
 import { ref, onMounted } from 'vue'
 import { DEMAND_STATUS } from '@/config/constants'
 import { demandService } from '@/mock/service'
+import { formatDate } from "@/utils/util"
 
 const statusMap = DEMAND_STATUS
 const list = ref([])
@@ -43,7 +44,6 @@ const refreshing = ref(false)
 const animated = ref(false)
 
 function loadList() { list.value = demandService.myDemands().list }
-function formatDate(t) { if (!t) return ''; const d = new Date(t); return `${d.getMonth()+1}/${d.getDate()}` }
 function goDetail(id) { uni.navigateTo({ url: `/pages/demand/detail?id=${id}` }) }
 function goPublish() { uni.navigateTo({ url: '/pages/demand/publish' }) }
 function onRefresh() { refreshing.value = true; loadList(); refreshing.value = false }

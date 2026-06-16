@@ -78,20 +78,13 @@
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { communityService } from '@/mock/service'
+import { formatRelativeTime as formatTime } from "@/utils/util"
 
 const postId = ref('')
 const post = ref(null)
 const comments = ref([])
 const commentText = ref('')
 
-function formatTime(t) {
-  if (!t) return ''
-  const diff = (Date.now() - new Date(t).getTime()) / 3600000
-  if (diff < 1) return '刚刚'
-  if (diff < 24) return Math.floor(diff) + '小时前'
-  const d = new Date(t)
-  return `${d.getMonth() + 1}/${d.getDate()}`
-}
 
 function loadDetail() {
   post.value = communityService.postDetail(postId.value)

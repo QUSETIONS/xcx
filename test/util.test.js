@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { debounce, throttle, formatYuan, deepClone } from '@/utils/util'
+import { debounce, throttle, formatYuan, deepClone, formatDate, formatDateTime, formatDateFull, formatRelativeTime } from '@/utils/util'
 
 describe('debounce - 防抖', () => {
   it('应在延迟后执行', async () => {
@@ -84,3 +84,32 @@ describe('deepClone - 深拷贝', () => {
     expect(deepClone(null)).toBeNull()
   })
 })
+
+describe('date 格式化', () => {
+  it('formatDate 返回 M/D', () => {
+    expect(formatDate('2026-06-16T10:30:00')).toBe('6/16')
+  })
+  it('formatDate 空值安全', () => {
+    expect(formatDate('')).toBe('')
+    expect(formatDate(null)).toBe('')
+  })
+  it('formatDateTime 返回 Y-M-D HH:mm', () => {
+    const r = formatDateTime('2026-06-16T09:05:00')
+    expect(r).toBe('2026-06-16 09:05')
+  })
+  it('formatDateFull 返回 Y-M-D 并补零', () => {
+    expect(formatDateFull('2026-06-16')).toBe('2026-06-16')
+  })
+  it('formatRelativeTime 刚刚/小时前/天前', () => {
+    const now = Date.now()
+    expect(formatRelativeTime(new Date(now).toISOString())).toBe('刚刚')
+    expect(formatRelativeTime(new Date(now - 3 * 3600000).toISOString())).toBe('3小时前')
+    expect(formatRelativeTime(new Date(now - 2 * 86400000).toISOString())).toBe('2天前')
+  })
+  it('formatRelativeTime 超过7天回退 M/D', () => {
+    const old = new Date(Date.now() - 10 * 86400000)
+    const r = formatRelativeTime(old.toISOString())
+    expect(r).toBe(`${old.getMonth() + 1}/${old.getDate()}`)
+  })
+})
+

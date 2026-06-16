@@ -85,6 +85,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { verifyService } from '@/mock/service'
+import { formatDateFull as formatTime } from "@/utils/util"
 
 const status = ref('none')
 const info = ref(null)
@@ -119,11 +120,6 @@ function simulateApprove() {
   uni.showToast({ title: '认证成功', icon: 'success' })
 }
 
-function formatTime(t) {
-  if (!t) return ''
-  const d = new Date(t)
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
-}
 </script>
 
 <style scoped>

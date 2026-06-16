@@ -51,6 +51,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { DEMAND_STATUS } from '@/config/constants'
 import { demandService } from '@/mock/service'
+import { formatDate } from "@/utils/util"
 
 const statusMap = DEMAND_STATUS
 const statusFilter = ref('')
@@ -65,7 +66,6 @@ const filteredList = computed(() => {
   return list
 })
 
-function formatDate(t) { if (!t) return ''; const d = new Date(t); return `${d.getMonth()+1}/${d.getDate()}` }
 function onRefresh() { refreshing.value = true; allDemands.value = demandService.list({ pageSize: 50, sort: 'latest' }).list; refreshing.value = false }
 function goDetail(id) { uni.navigateTo({ url: `/pages/demand/detail?id=${id}` }) }
 

@@ -27,6 +27,7 @@
 import { ref, onMounted } from 'vue'
 import { LEAD_STATUS } from '@/config/constants'
 import { leadService } from '@/mock/service'
+import { formatDate } from "@/utils/util"
 
 const statusMap = LEAD_STATUS
 const list = ref([])
@@ -34,7 +35,6 @@ const refreshing = ref(false)
 const animated = ref(false)
 
 function loadList() { list.value = leadService.myLeads().list }
-function formatDate(t) { if (!t) return ''; const d = new Date(t); return `${d.getMonth()+1}/${d.getDate()}` }
 function goDemand(id) { uni.navigateTo({ url: `/pages/demand/detail?id=${id}` }) }
 function onRefresh() { refreshing.value = true; loadList(); refreshing.value = false }
 </script>
