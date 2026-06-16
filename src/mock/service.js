@@ -3,7 +3,7 @@
  * 在没有真实后端时提供完整的数据模拟
  * 所有接口返回格式与真实 API 一致
  */
-import { DEMAND_CATEGORIES, REGIONS, QUOTE_TYPES } from '@/config/constants'
+import { DEMAND_CATEGORIES, REGIONS, QUOTE_TYPES, STORAGE_KEYS, THEME } from '@/config/constants'
 
 // ========== 工具函数 ==========
 const delay = (ms = 200) => new Promise(r => setTimeout(r, ms))
@@ -457,7 +457,7 @@ export const orderService = {
 
 // ========== 购物车 ==========
 export const cartService = {
-  _key: 'qiye_ku_cart',
+  _key: STORAGE_KEYS.CART,
   _getList() {
     try { return JSON.parse(uni.getStorageSync(this._key) || '[]') } catch { return [] }
   },
@@ -515,7 +515,7 @@ export const bannerService = {
 }
 
 export const favoriteService = {
-  _key: 'qiye_ku_favorites',
+  _key: STORAGE_KEYS.FAVORITES,
   _getList() {
     try { return JSON.parse(uni.getStorageSync(this._key) || '[]') } catch { return [] }
   },
@@ -594,7 +594,7 @@ const dashboardData = {
   category_stats: DEMAND_CATEGORIES.slice(0, 6).map(cat => ({
     name: cat.name,
     count: randInt(5, 50),
-    color: pick(['#FF6B35', '#6366F1', '#10B981', '#F59E0B', '#3B82F6', '#EC4899'])
+    color: pick(THEME.palette)
   }))
 }
 
@@ -758,15 +758,15 @@ const hotKeywords = ['短视频代运营', '品牌全案', '抖音达人', '私�
 export const searchService = {
   hotKeywords() { return hotKeywords },
   history() {
-    try { return JSON.parse(uni.getStorageSync('search_history') || '[]') } catch { return [] }
+    try { return JSON.parse(uni.getStorageSync(STORAGE_KEYS.SEARCH_HISTORY) || '[]') } catch { return [] }
   },
   addHistory(keyword) {
     if (!keyword || !keyword.trim()) return
     const list = this.history().filter(k => k !== keyword)
     list.unshift(keyword)
-    uni.setStorageSync('search_history', JSON.stringify(list.slice(0, 10)))
+    uni.setStorageSync(STORAGE_KEYS.SEARCH_HISTORY, JSON.stringify(list.slice(0, 10)))
   },
-  clearHistory() { uni.removeStorageSync('search_history') },
+  clearHistory() { uni.removeStorageSync(STORAGE_KEYS.SEARCH_HISTORY) },
   search(keyword) {
     const kw = (keyword || '').trim().toLowerCase()
     if (!kw) return { demands: [], products: [], posts: [], total: 0 }
@@ -779,7 +779,7 @@ export const searchService = {
 
 // ========== 企业认证 Mock ==========
 export const verifyService = {
-  _key: 'qiye_ku_verify',
+  _key: STORAGE_KEYS.VERIFY,
   getInfo() {
     try { return JSON.parse(uni.getStorageSync(this._key) || 'null') } catch { return null }
     // 默认状态：未认证
@@ -824,7 +824,7 @@ export const memberService = {
   tiers() { return memberTiers },
   current() {
     try {
-      const info = JSON.parse(uni.getStorageSync('qiye_ku_member') || 'null')
+      const info = JSON.parse(uni.getStorageSync(STORAGE_KEYS.MEMBER) || 'null')
       return info || { tier: 'free', expire: null }
     } catch { return { tier: 'free', expire: null } }
   },
@@ -832,7 +832,7 @@ export const memberService = {
     const tier = memberTiers.find(t => t.id === tierId)
     if (!tier) return null
     const info = { tier: tierId, name: tier.name, expire: '2027-06-16', subscribed_at: new Date().toISOString() }
-    uni.setStorageSync('qiye_ku_member', JSON.stringify(info))
+    uni.setStorageSync(STORAGE_KEYS.MEMBER, JSON.stringify(info))
     return info
   }
 }
@@ -851,7 +851,7 @@ const autoReplies = [
   '好的，已为您加急处理！'
 ]
 export const chatService = {
-  _key: 'qiye_ku_chat',
+  _key: STORAGE_KEYS.CHAT,
   _getList() {
     try { const list = JSON.parse(uni.getStorageSync(this._key) || 'null'); return list || seedMessages.map(m => ({ ...m })) } catch { return seedMessages.map(m => ({ ...m })) }
   },

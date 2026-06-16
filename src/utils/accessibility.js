@@ -8,9 +8,10 @@
  *   <view :style="rootStyle">  // 应用全局缩放
  */
 import { ref, computed } from 'vue'
+import { STORAGE_KEYS } from '@/config/constants'
 
-const FONT_KEY = 'qiye_ku_font_scale'
-const CONTRAST_KEY = 'qiye_ku_contrast'
+const FONT_KEY = STORAGE_KEYS.FONT_SCALE
+const CONTRAST_KEY = STORAGE_KEYS.CONTRAST
 
 // 字体档位
 export const fontScales = [

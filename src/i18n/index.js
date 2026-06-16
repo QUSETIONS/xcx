@@ -8,11 +8,12 @@
  *   t('common.empty', '默认值')    // 带兜底
  */
 import { ref, computed } from 'vue'
+import { STORAGE_KEYS } from '@/config/constants'
 import zh from './locales/zh'
 import en from './locales/en'
 
 const messages = { 'zh-CN': zh, 'en-US': en }
-const STORAGE_KEY = 'qiye_ku_locale'
+const STORAGE_KEY = STORAGE_KEYS.LOCALE
 
 // 读取持久化的语言偏好
 function getInitialLocale() {

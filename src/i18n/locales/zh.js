@@ -54,6 +54,9 @@ export default {
   // 社区
   community: {
     title: '社区',
+    hotDiscussions: '热门讨论',
+    latest: '最新',
+    hot: '最热',
     publish: '发布动态',
     like: '点赞',
     comment: '评论',

@@ -49,6 +49,9 @@ export default {
   },
   community: {
     title: 'Community',
+    hotDiscussions: 'Hot Discussions',
+    latest: 'Latest',
+    hot: 'Hot',
     publish: 'Post',
     like: 'Like',
     comment: 'Comment',

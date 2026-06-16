@@ -1,7 +1,7 @@
 <template>
   <view class="page">
     <view class="header">
-      <text class="header-title">需求大厅</text>
+      <text class="header-title">{{ t('demand.hall') }}</text>
       <view class="header-actions">
         <view class="search-btn" @tap="goSearch"><image class="icon-sm" src="/static/icons/search.svg" mode="aspectFit"/></view>
       </view>
@@ -137,6 +137,7 @@ import { ref, computed, onMounted } from 'vue'
 import { DEMAND_CATEGORIES, REGIONS, QUOTE_TYPES } from '@/config/constants'
 import { demandService } from '@/mock/service'
 import { formatRelativeTime as formatTime } from "@/utils/util"
+import { t } from '@/i18n'
 
 const categories = DEMAND_CATEGORIES
 const regions = REGIONS

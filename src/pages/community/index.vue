@@ -2,7 +2,7 @@
   <view class="page">
     <!-- 头部 -->
     <view class="header">
-      <text class="header-title">社区</text>
+      <text class="header-title">{{ t('community.title') }}</text>
       <view class="header-right">
         <view class="notify-btn" @tap="goNotify">
           <text>🔔</text>
@@ -24,7 +24,7 @@
 
     <!-- 热门讨论卡片 -->
     <view v-if="!currentTopic && hotPosts.length" class="hot-section">
-      <text class="hot-title">🔥 热门讨论</text>
+      <text class="hot-title">🔥 {{ t('community.hotDiscussions') }}</text>
       <scroll-view scroll-x class="hot-scroll">
         <view class="hot-list">
           <view class="hot-card" v-for="item in hotPosts" :key="item._id" @tap="goDetail(item._id)">
@@ -44,8 +44,8 @@
 
     <!-- Tab切换 -->
     <view class="tab-bar">
-      <view class="tab-item" :class="{ active: sortMode === 'latest' }" @tap="sortMode = 'latest'; loadList(true)"><text>最新</text></view>
-      <view class="tab-item" :class="{ active: sortMode === 'hot' }" @tap="sortMode = 'hot'; loadList(true)"><text>最热</text></view>
+      <view class="tab-item" :class="{ active: sortMode === 'latest' }" @tap="sortMode = 'latest'; loadList(true)"><text>{{ t('community.latest') }}</text></view>
+      <view class="tab-item" :class="{ active: sortMode === 'hot' }" @tap="sortMode = 'hot'; loadList(true)"><text>{{ t('community.hot') }}</text></view>
     </view>
 
     <!-- 帖子列表 -->
@@ -98,6 +98,7 @@
 import { ref } from 'vue'
 import { communityService } from '@/mock/service'
 import { formatRelativeTime as formatTime } from "@/utils/util"
+import { t } from '@/i18n'
 
 const topics = ref(communityService.topics())
 const currentTopic = ref(null)

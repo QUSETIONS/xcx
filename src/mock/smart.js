@@ -3,9 +3,10 @@
  */
 
 import { demandService, productService } from './service'
+import { STORAGE_KEYS } from '@/config/constants'
 
-const HISTORY_KEY = 'browse_history'
-const PREFERENCE_KEY = 'user_preference'
+const HISTORY_KEY = STORAGE_KEYS.BROWSE_HISTORY
+const PREFERENCE_KEY = STORAGE_KEYS.USER_PREFERENCE
 
 // ========== 浏览历史 ==========
 
