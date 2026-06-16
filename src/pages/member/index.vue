@@ -6,8 +6,8 @@
         <text class="status-icon">{{ currentTier.icon }}</text>
         <view>
           <text class="status-name">{{ current.name || currentTier.name }}</text>
-          <text class="status-expire" v-if="current.tier !== 'free'">{{ current.expire }} 到期</text>
-          <text class="status-expire" v-else>升级解锁更多权益</text>
+          <text class="status-expire" v-if="current.tier !== 'free'">{{ current.expire }}{{ t('member.expireSuffix') }}</text>
+          <text class="status-expire" v-else>{{ t('member.upgradeHint') }}</text>
         </view>
       </view>
       <view class="status-right" v-if="current.tier !== 'free'">
@@ -17,19 +17,19 @@
 
     <!-- 会员套餐 -->
     <view class="plans-section">
-      <text class="section-title">选择会员套餐</text>
+      <text class="section-title">{{ t('member.choosePlan') }}</text>
       <view class="plan-list">
         <view class="plan-card" v-for="tier in tiers" :key="tier.id"
           :class="{ active: selectedTier === tier.id, current: current.tier === tier.id }"
           @tap="selectedTier = tier.id">
-          <view class="plan-hot" v-if="tier.hot"><text>热门</text></view>
+          <view class="plan-hot" v-if="tier.hot"><text>{{ t('member.hot') }}</text></view>
           <view class="plan-header">
             <text class="plan-icon">{{ tier.icon }}</text>
             <text class="plan-name">{{ tier.name }}</text>
           </view>
           <view class="plan-price">
             <text class="price-symbol" v-if="tier.price > 0">¥</text>
-            <text class="price-num">{{ tier.price > 0 ? (tier.price / 100).toFixed(0) : '免费' }}</text>
+            <text class="price-num">{{ tier.price > 0 ? (tier.price / 100).toFixed(0) : t('member.freePrice') }}</text>
             <text class="price-period" v-if="tier.price > 0">/{{ tier.period }}</text>
           </view>
           <text class="price-original" v-if="tier.original">¥{{ (tier.original / 100).toFixed(0) }}</text>
@@ -39,20 +39,20 @@
               <text class="pp-text">{{ p }}</text>
             </view>
           </view>
-          <view class="plan-current-tag" v-if="current.tier === tier.id"><text>当前套餐</text></view>
+          <view class="plan-current-tag" v-if="current.tier === tier.id"><text>{{ t('member.currentTier') }}</text></view>
         </view>
       </view>
     </view>
 
     <!-- 权益对比 -->
     <view class="compare-section">
-      <text class="section-title">权益对比</text>
+      <text class="section-title">{{ t('member.benefitsCompare') }}</text>
       <view class="compare-table">
         <view class="compare-row compare-head">
-          <text class="compare-col cw-name">权益</text>
-          <text class="compare-col">普通</text>
-          <text class="compare-col cw-pro">专业</text>
-          <text class="compare-col">企业</text>
+          <text class="compare-col cw-name">{{ t('member.compareBenefit') }}</text>
+          <text class="compare-col">{{ t('member.colFree') }}</text>
+          <text class="compare-col cw-pro">{{ t('member.colPro') }}</text>
+          <text class="compare-col">{{ t('member.colEnterprise') }}</text>
         </view>
         <view class="compare-row" v-for="(item, i) in compareData" :key="i">
           <text class="compare-col cw-name">{{ item.name }}</text>
@@ -68,12 +68,12 @@
     <!-- 底部开通 -->
     <view class="bottom-bar">
       <view class="bottom-left">
-        <text class="bottom-price-label">应付</text>
+        <text class="bottom-price-label">{{ t('member.payable') }}</text>
         <text class="bottom-price">¥{{ (selectedPlan.price / 100).toFixed(0) }}</text>
         <text class="bottom-original" v-if="selectedPlan.original">¥{{ (selectedPlan.original / 100).toFixed(0) }}</text>
       </view>
       <view class="bottom-btn" :class="{ disabled: current.tier === selectedTier || selectedTier === 'free' }" @tap="subscribe">
-        <text>{{ current.tier === selectedTier ? '当前套餐' : (selectedTier === 'free' ? '基础套餐' : '立即开通') }}</text>
+        <text>{{ current.tier === selectedTier ? t('member.currentTier') : (selectedTier === 'free' ? t('member.basicTier') : t('member.subscribe')) }}</text>
       </view>
     </view>
   </view>
@@ -83,20 +83,14 @@
 import { ref, computed, onMounted } from 'vue'
 import { memberService } from '@/mock/service'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.member')
 
 const tiers = ref([])
 const current = ref({ tier: 'free' })
 const selectedTier = ref('pro')
 
-const compareData = [
-  { name: '需求发布', free: '3条/天', pro: '无限', enterprise: '无限' },
-  { name: '优先推荐', free: '—', pro: '✓', enterprise: '✓' },
-  { name: '数据看板', free: '—', pro: '✓', enterprise: '✓' },
-  { name: '专属客服', free: '—', pro: '✓', enterprise: '经理1对1' },
-  { name: 'API接入', free: '—', pro: '—', enterprise: '✓' },
-  { name: '团队协作', free: '—', pro: '—', enterprise: '✓' }
-]
+const compareData = computed(() => t('member.compareData'))
 
 const currentTier = computed(() => tiers.value.find(t => t.id === current.value.tier) || tiers.value[0])
 const selectedPlan = computed(() => tiers.value.find(t => t.id === selectedTier.value) || tiers.value[0])
@@ -110,13 +104,13 @@ onMounted(() => {
 function subscribe() {
   if (current.value.tier === selectedTier.value || selectedTier.value === 'free') return
   uni.showModal({
-    title: '确认开通',
-    content: `确认以 ¥${(selectedPlan.value.price / 100).toFixed(0)} 开通${selectedPlan.value.name}？`,
+    title: t('member.confirmSubscribe'),
+    content: t('member.subscribePrompt').replace('{price}', (selectedPlan.value.price / 100).toFixed(0)).replace('{name}', selectedPlan.value.name),
     success: (r) => {
       if (r.confirm) {
         memberService.subscribe(selectedTier.value)
         current.value = memberService.current()
-        uni.showToast({ title: '开通成功', icon: 'success' })
+        uni.showToast({ title: t('member.subscribeSuccess'), icon: 'success' })
       }
     }
   })

@@ -7,7 +7,7 @@
       </view>
       <text class="hero-type">{{ serviceTypes[product.service_type] }}</text>
       <text class="hero-title">{{ product.title }}</text>
-      <view class="hero-sales"><text>{{ product.sale_count }}人已购买</text></view>
+      <view class="hero-sales"><text>{{ product.sale_count }}{{ t('mallDetail.boughtSuffix') }}</text></view>
     </view>
 
     <!-- 价格卡片 -->
@@ -16,13 +16,13 @@
         <text class="price-current gradient-text">¥{{ (product.price / 100).toFixed(2) }}</text>
         <text class="price-unit">/{{ product.unit }}</text>
       </view>
-      <view class="price-row"><text class="price-label">原价</text><text class="price-market">¥{{ (product.market_price / 100).toFixed(2) }}</text></view>
-      <view class="price-row"><text class="price-label">节省</text><text class="price-save">¥{{ ((product.market_price - product.price) / 100).toFixed(0) }}</text></view>
+      <view class="price-row"><text class="price-label">{{ t('mallDetail.originalPrice') }}</text><text class="price-market">¥{{ (product.market_price / 100).toFixed(2) }}</text></view>
+      <view class="price-row"><text class="price-label">{{ t('mallDetail.save') }}</text><text class="price-save">¥{{ ((product.market_price - product.price) / 100).toFixed(0) }}</text></view>
     </view>
 
     <!-- 服务权益 -->
     <view class="benefits-card glass-card">
-      <text class="card-label">服务权益</text>
+      <text class="card-label">{{ t('mallDetail.benefits') }}</text>
       <view class="benefit-list">
         <view class="benefit-item" v-for="(b, i) in getBenefits(product.service_type)" :key="i">
           <view class="benefit-check"><text>✓</text></view>
@@ -33,25 +33,25 @@
 
     <!-- 购买须知 -->
     <view class="notice-card glass-card">
-      <text class="card-label">购买须知</text>
-      <text class="notice-item">• 本服务为虚拟商品，购买后即时生效</text>
-      <text class="notice-item">• Demo阶段为模拟购买，不产生真实交易</text>
-      <text class="notice-item">• 服务有效期内可享受对应权益</text>
+      <text class="card-label">{{ t('mallDetail.notice') }}</text>
+      <text class="notice-item">• {{ t('mallDetail.notice1') }}</text>
+      <text class="notice-item">• {{ t('mallDetail.notice2') }}</text>
+      <text class="notice-item">• {{ t('mallDetail.notice3') }}</text>
     </view>
 
     <!-- 商品详情 -->
     <view class="desc-card glass-card">
-      <text class="card-label">商品详情</text>
+      <text class="card-label">{{ t('mallDetail.productDetail') }}</text>
       <rich-text class="desc-content" :nodes="product.description_rich" />
     </view>
 
     <!-- 底部操作 -->
     <view class="action-bar glass-card-strong">
-      <view class="action-btn" @tap="toggleFavorite"><text class="action-icon">{{ isFavorited ? '❤️' : '🤍' }}</text><text class="action-text">收藏</text></view>
-      <view class="action-btn" @tap="share"><text class="action-icon">🔗</text><text class="action-text">分享</text></view>
-      <view class="action-btn cart-entry" @tap="goCart"><text class="action-icon">🛒</text><text class="action-text">购物车</text></view>
-      <view class="add-cart-btn" @tap="addToCart"><text>加入购物车</text></view>
-      <button class="btn-glow" @tap="buyNow"><text>立即购买</text></button>
+      <view class="action-btn" @tap="toggleFavorite"><text class="action-icon">{{ isFavorited ? '❤️' : '🤍' }}</text><text class="action-text">{{ t('mallDetail.favorite') }}</text></view>
+      <view class="action-btn" @tap="share"><text class="action-icon">🔗</text><text class="action-text">{{ t('mallDetail.share') }}</text></view>
+      <view class="action-btn cart-entry" @tap="goCart"><text class="action-icon">🛒</text><text class="action-text">{{ t('mallDetail.cart') }}</text></view>
+      <view class="add-cart-btn" @tap="addToCart"><text>{{ t('mall.addToCart') }}</text></view>
+      <button class="btn-glow" @tap="buyNow"><text>{{ t('mall.buyNow') }}</text></button>
     </view>
   </view>
 </template>
@@ -64,6 +64,7 @@ import { productService, favoriteService, cartService } from '@/mock/service'
 import { trackBrowse } from '@/mock/smart'
 import { hapticLight, toastSuccess } from '@/utils/feedback'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.mallDetail')
 
 const productId = ref('')
@@ -88,14 +89,8 @@ function getIconBg(type) {
 }
 
 function getBenefits(type) {
-  const map = {
-    member: ['全部功能畅享', '专属客服支持', '优先对接服务', '行业报告下载', '会员身份标识'],
-    linker: ['精准需求匹配', '专属链接官服务', '每周推荐3次', '进度实时追踪', '不满意可更换'],
-    survey: ['调研方案设计', '数据采集分析', '完整报告输出', '对标分析服务', '7天内交付'],
-    resource_pack: ['精选方案资源', '持续更新推送', '下载即用', '定制指导服务', '售后答疑'],
-    certification: ['官方认证标识', '优先展示推荐', '信任背书支持', '运营指导服务', '年度审核续期']
-  }
-  return map[type] || ['标准服务内容', '客服支持']
+  const map = t('mallDetail.benefitMap')
+  return map[type] || map.default
 }
 
 function loadDetail() {
@@ -108,15 +103,15 @@ function toggleFavorite() {
   const r = favoriteService.toggle({ userId: 'demo_user_001', targetType: 'product', targetId: productId.value })
   isFavorited.value = r.isFavorited
   if (r.isFavorited) hapticLight()
-  uni.showToast({ title: r.isFavorited ? '已收藏' : '已取消', icon: 'none' })
+  uni.showToast({ title: r.isFavorited ? t('mallDetail.favorited') : t('mallDetail.unfavorited'), icon: 'none' })
 }
 
-function share() { uni.showModal({ title: '分享商品', content: '点击右上角「...」分享', showCancel: false }) }
+function share() { uni.showModal({ title: t('mallDetail.shareTitle'), content: t('mallDetail.shareContent'), showCancel: false }) }
 function buyNow() { uni.navigateTo({ url: `/pages/mall/order-confirm?id=${productId.value}` }) }
 function addToCart() {
   cartService.add(product.value)
   hapticLight()
-  toastSuccess('已加入购物车')
+  toastSuccess(t('mallDetail.addedToCart'))
 }
 function goCart() { uni.navigateTo({ url: '/pages/cart/index' }) }
 

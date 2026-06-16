@@ -5,7 +5,7 @@
       <view class="hero-tags">
         <text class="tag-cat">{{ demand.category_name }}</text>
         <text class="tag-quote">{{ formatQuote(demand.quote_type) }}</text>
-        <text class="tag-hot" v-if="demand.view_count > 1000">🔥 热门</text>
+        <text class="tag-hot" v-if="demand.view_count > 1000">🔥 {{ t('demandDetail.hot') }}</text>
       </view>
       <text class="hero-title">{{ demand.title }}</text>
       <view class="hero-company">
@@ -16,7 +16,7 @@
 
     <!-- 预算 -->
     <view class="card">
-      <text class="card-label">💰 预算范围</text>
+      <text class="card-label">💰 {{ t('demandDetail.budgetRange') }}</text>
       <text class="budget-value">
         <template v-if="demand.quote_type === 'self'">¥{{ (demand.budget_min/100).toFixed(0) }} - {{ (demand.budget_max/100).toFixed(0) }}</template>
         <template v-else>{{ formatQuote(demand.quote_type) }}</template>
@@ -26,12 +26,12 @@
     <!-- 数据统计 -->
     <view class="card">
       <view class="stat-row">
-        <view class="stat-box card-press"><text class="stat-num">{{ demand.view_count }}</text><text class="stat-label">浏览</text></view>
-        <view class="stat-box card-press"><text class="stat-num">{{ demand.lead_count }}</text><text class="stat-label">对接</text></view>
-        <view class="stat-box card-press"><text class="stat-num">{{ demand.favorite_count }}</text><text class="stat-label">收藏</text></view>
+        <view class="stat-box card-press"><text class="stat-num">{{ demand.view_count }}</text><text class="stat-label">{{ t('demandDetail.views') }}</text></view>
+        <view class="stat-box card-press"><text class="stat-num">{{ demand.lead_count }}</text><text class="stat-label">{{ t('demandDetail.leads') }}</text></view>
+        <view class="stat-box card-press"><text class="stat-num">{{ demand.favorite_count }}</text><text class="stat-label">{{ t('demandDetail.favorites') }}</text></view>
       </view>
       <view class="heat-row">
-        <text class="heat-label">热度指数</text>
+        <text class="heat-label">{{ t('demandDetail.heatIndex') }}</text>
         <view class="heat-track"><view class="heat-fill" :style="{ width: getHeat() + '%' }"/></view>
         <text class="heat-value">{{ getHeat() }}%</text>
       </view>
@@ -39,20 +39,20 @@
 
     <!-- 需求详情 -->
     <view class="card">
-      <text class="card-label">📝 需求详情</text>
-      <text class="desc-text">{{ demand.description || '暂无详细描述' }}</text>
+      <text class="card-label">📝 {{ t('demandDetail.detail') }}</text>
+      <text class="desc-text">{{ demand.description || t('demandDetail.noDesc') }}</text>
     </view>
 
     <!-- 时间信息 -->
     <view class="card">
-      <text class="card-label">📅 时间信息</text>
-      <view class="time-row"><text class="time-label">发布时间</text><text class="time-value">{{ formatDate(demand.publish_time) }}</text></view>
-      <view class="time-row"><text class="time-label">有效期至</text><text class="time-value">{{ formatDate(demand.expire_time) }}</text></view>
+      <text class="card-label">📅 {{ t('demandDetail.timeInfo') }}</text>
+      <view class="time-row"><text class="time-label">{{ t('demandDetail.publishTime') }}</text><text class="time-value">{{ formatDate(demand.publish_time) }}</text></view>
+      <view class="time-row"><text class="time-label">{{ t('demandDetail.validUntil') }}</text><text class="time-value">{{ formatDate(demand.expire_time) }}</text></view>
     </view>
 
     <!-- 相似需求 -->
     <view class="card" v-if="similarDemands.length">
-      <text class="card-label">🔗 相似需求</text>
+      <text class="card-label">🔗 {{ t('demandDetail.similar') }}</text>
       <view class="similar-list">
         <view class="similar-item card-press" v-for="item in similarDemands" :key="item._id" @tap="goDetail(item._id)">
           <text class="similar-title">{{ item.title }}</text>
@@ -63,7 +63,7 @@
 
     <!-- AI智能匹配服务商 -->
     <view class="card" v-if="matchedProviders.length">
-      <text class="card-label">🎯 AI推荐服务商</text>
+      <text class="card-label">🎯 {{ t('demandDetail.aiProviders') }}</text>
       <view class="provider-list">
         <view class="provider-item card-press" v-for="(item, idx) in matchedProviders" :key="item._id">
           <view class="provider-rank">{{ idx + 1 }}</view>
@@ -72,7 +72,7 @@
               <text class="provider-name">{{ item.name }}</text>
               <text class="provider-match">{{ item.match_percent }}</text>
             </view>
-            <text class="provider-desc">{{ item.category_name }} · ⭐{{ item.rating }} · {{ item.deal_count }}单</text>
+            <text class="provider-desc">{{ item.category_name }} · ⭐{{ item.rating }} · {{ item.deal_count }}{{ t('demandDetail.orderUnit') }}</text>
             <view class="provider-tags">
               <text class="provider-tag" v-for="(tag, i) in item.tags" :key="i">{{ tag }}</text>
             </view>
@@ -84,17 +84,17 @@
     <!-- 用户评价 -->
     <view class="card">
       <view class="review-header">
-        <text class="card-label">💬 用户评价</text>
+        <text class="card-label">💬 {{ t('demandDetail.reviews') }}</text>
         <view class="review-summary">
           <text class="review-avg">{{ reviewAvg.avg }}</text>
           <text class="review-stars">{{ getStars(reviewAvg.avg) }}</text>
-          <text class="review-count">{{ reviewAvg.count }}条</text>
+          <text class="review-count">{{ reviewAvg.count }}{{ t('demandDetail.reviewUnit') }}</text>
         </view>
       </view>
       <view class="review-list" v-if="reviews.length">
         <view class="review-item card-press" v-for="item in reviews" :key="item._id">
           <view class="review-top">
-            <text class="reviewer-name">{{ item.reviewer?.nickname || '匿名用户' }}</text>
+            <text class="reviewer-name">{{ item.reviewer?.nickname || t('demandDetail.anonymous') }}</text>
             <text class="review-stars">{{ getStars(item.rating) }}</text>
           </view>
           <text class="review-content">{{ item.content }}</text>
@@ -104,34 +104,34 @@
           <text class="review-time">{{ formatDate(item.created_at) }}</text>
         </view>
       </view>
-      <view v-else class="review-empty"><text>暂无评价</text></view>
+      <view v-else class="review-empty"><text>{{ t('demandDetail.noReviews') }}</text></view>
     </view>
 
     <!-- 底部操作 -->
     <view class="action-bar">
       <view class="action-left">
-        <view class="action-btn" @tap="toggleFavorite"><text class="action-icon">{{ isFavorited ? '❤️' : '🤍' }}</text><text class="action-text">收藏</text></view>
-        <view class="action-btn" @tap="share"><text class="action-icon">🔗</text><text class="action-text">分享</text></view>
+        <view class="action-btn" @tap="toggleFavorite"><text class="action-icon">{{ isFavorited ? '❤️' : '🤍' }}</text><text class="action-text">{{ t('demandDetail.favorite') }}</text></view>
+        <view class="action-btn" @tap="share"><text class="action-icon">🔗</text><text class="action-text">{{ t('demandDetail.share') }}</text></view>
       </view>
-      <button class="primary-btn" @tap="showLeadModal = true"><text>立即对接</text></button>
+      <button class="primary-btn" @tap="showLeadModal = true"><text>{{ t('demandDetail.connectNow') }}</text></button>
     </view>
 
     <!-- 对接弹窗 -->
     <view v-if="showLeadModal" class="modal-mask" @tap="showLeadModal = false">
       <view class="modal-panel" @tap.stop>
-        <text class="modal-title">立即对接</text>
+        <text class="modal-title">{{ t('demandDetail.leadModal.title') }}</text>
         <view class="modal-body">
-          <view class="form-row"><text class="form-label">姓名 *</text><input class="form-input" v-model="leadForm.contact_name" placeholder="请输入" /></view>
-          <view class="form-row"><text class="form-label">电话 *</text><input class="form-input" type="number" v-model="leadForm.phone" placeholder="请输入" /></view>
-          <view class="form-row"><text class="form-label">微信号</text><input class="form-input" v-model="leadForm.wechat" placeholder="可选" /></view>
-          <view class="form-row"><text class="form-label">对接说明</text><textarea class="form-area" v-model="leadForm.message" placeholder="简要介绍您的服务能力" /></view>
+          <view class="form-row"><text class="form-label">{{ t('demandDetail.leadModal.name') }}</text><input class="form-input" v-model="leadForm.contact_name" :placeholder="t('demandDetail.leadModal.placeholder')" /></view>
+          <view class="form-row"><text class="form-label">{{ t('demandDetail.leadModal.phone') }}</text><input class="form-input" type="number" v-model="leadForm.phone" :placeholder="t('demandDetail.leadModal.placeholder')" /></view>
+          <view class="form-row"><text class="form-label">{{ t('demandDetail.leadModal.wechat') }}</text><input class="form-input" v-model="leadForm.wechat" :placeholder="t('demandDetail.leadModal.optional')" /></view>
+          <view class="form-row"><text class="form-label">{{ t('demandDetail.leadModal.message') }}</text><textarea class="form-area" v-model="leadForm.message" :placeholder="t('demandDetail.leadModal.messagePlaceholder')" /></view>
         </view>
-        <button class="primary-btn" @tap="submitLead" :disabled="submitting"><text>{{ submitting ? '提交中...' : '提交对接' }}</text></button>
+        <button class="primary-btn" @tap="submitLead" :disabled="submitting"><text>{{ submitting ? t('demandDetail.leadModal.submitting') : t('demandDetail.leadModal.submit') }}</text></button>
       </view>
     </view>
   </view>
 
-  <view v-else class="empty"><text class="empty-icon">📭</text><text>需求不存在</text></view>
+  <view v-else class="empty"><text class="empty-icon">📭</text><text>{{ t('demandDetail.notExist') }}</text></view>
 </template>
 
 <script setup>
@@ -141,6 +141,7 @@ import { QUOTE_TYPES } from '@/config/constants'
 import { demandService, leadService, favoriteService, reviewService, matchService } from '@/mock/service'
 import { trackBrowse } from '@/mock/smart'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.demandDetail')
 
 const demandId = ref('')
@@ -154,7 +155,7 @@ const showLeadModal = ref(false)
 const submitting = ref(false)
 const leadForm = ref({ contact_name: '', phone: '', wechat: '', message: '' })
 
-function formatQuote(type) { return QUOTE_TYPES.find(q => q.value === type)?.label || '面议' }
+function formatQuote(type) { return QUOTE_TYPES.find(q => q.value === type)?.label || t('demandDetail.negotiate') }
 function formatDate(t) { if (!t) return ''; const d = new Date(t); return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}` }
 function getHeat() { return demand.value ? Math.min(100, Math.round((demand.value.view_count / 3000) * 100)) : 0 }
 function getStars(rating) { const r = Math.round(rating); return '⭐'.repeat(r) + '☆'.repeat(5 - r) }
@@ -178,17 +179,17 @@ function loadDetail() {
 function toggleFavorite() {
   const r = favoriteService.toggle({ userId: 'demo_user_001', targetType: 'demand', targetId: demandId.value })
   isFavorited.value = r.isFavorited
-  uni.showToast({ title: r.isFavorited ? '已收藏' : '已取消', icon: 'none' })
+  uni.showToast({ title: r.isFavorited ? t('demandDetail.favorited') : t('demandDetail.unfavorited'), icon: 'none' })
 }
 
-function share() { uni.showModal({ title: '分享需求', content: '点击右上角「...」分享', showCancel: false }) }
+function share() { uni.showModal({ title: t('demandDetail.shareTitle'), content: t('demandDetail.shareContent'), showCancel: false }) }
 
 async function submitLead() {
-  if (!leadForm.value.contact_name.trim() || !leadForm.value.phone.trim()) { uni.showToast({ title: '请填写联系信息', icon: 'none' }); return }
+  if (!leadForm.value.contact_name.trim() || !leadForm.value.phone.trim()) { uni.showToast({ title: t('demandDetail.fillContact'), icon: 'none' }); return }
   submitting.value = true
   try {
     leadService.create({ demand_id: demandId.value, ...leadForm.value, user_id: 'demo_user_001' })
-    uni.showToast({ title: '提交成功', icon: 'success' })
+    uni.showToast({ title: t('demandDetail.submitSuccess'), icon: 'success' })
     showLeadModal.value = false
     demand.value.lead_count++
   } finally { submitting.value = false }

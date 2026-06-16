@@ -10,6 +10,9 @@ const delay = (ms = 200) => new Promise(r => setTimeout(r, ms))
 const uid = () => 'id_' + Math.random().toString(36).slice(2, 10)
 const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min
 const pick = (arr) => arr[randInt(0, arr.length - 1)]
+// 预算区间成对抽取，保证 budget_min <= budget_max，避免生成非法预算数据
+const BUDGET_RANGES = [[5000, 50000], [10000, 100000], [20000, 200000], [50000, 500000], [100000, 500000]]
+const pickBudget = () => { const [budget_min, budget_max] = pick(BUDGET_RANGES); return { budget_min, budget_max } }
 
 // ========== 需求 Mock ==========
 const demandData = Array.from({ length: 30 }, (_, i) => ({
@@ -31,8 +34,7 @@ const demandData = Array.from({ length: 30 }, (_, i) => ({
   category_name: DEMAND_CATEGORIES[i % 10].name,
   region: pick(REGIONS),
   quote_type: pick(QUOTE_TYPES).value,
-  budget_min: pick([5000, 10000, 20000, 50000, 100000]),
-  budget_max: pick([20000, 50000, 100000, 200000, 500000]),
+  ...pickBudget(),
   description: '这是对需求的详细描述，包含具体要求、时间节点和交付物标准等信息。企业希望找到专业的服务方来完成该项目。',
   contact_name: '张经理',
   contact_phone: '138****8888',
