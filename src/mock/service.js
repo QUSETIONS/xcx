@@ -7,8 +7,21 @@ import { DEMAND_CATEGORIES, REGIONS, QUOTE_TYPES, STORAGE_KEYS, THEME } from '@/
 
 // ========== 工具函数 ==========
 const delay = (ms = 200) => new Promise(r => setTimeout(r, ms))
-const uid = () => 'id_' + Math.random().toString(36).slice(2, 10)
-const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min
+
+// 确定性伪随机：固定种子，保证种子数据跨进程/跨测试完全可复现，
+// 消除依赖聚合值的断言(Math.random 随机种子)导致的偶发失败。
+// mulberry32 —— 仅用于 mock 数据生成，非安全场景。
+let _seed = 0x2F6E2B1
+function rng() {
+  _seed |= 0
+  _seed = (_seed + 0x6D2B79F5) | 0
+  let t = Math.imul(_seed ^ (_seed >>> 15), 1 | _seed)
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+}
+
+const uid = () => 'id_' + rng().toString(36).slice(2, 10)
+const randInt = (min, max) => Math.floor(rng() * (max - min + 1)) + min
 const pick = (arr) => arr[randInt(0, arr.length - 1)]
 // 预算区间成对抽取，保证 budget_min <= budget_max，避免生成非法预算数据
 const BUDGET_RANGES = [[5000, 50000], [10000, 100000], [20000, 200000], [50000, 500000], [100000, 500000]]
@@ -561,7 +574,7 @@ const providersData = Array.from({ length: 20 }, (_, i) => ({
   category_id: DEMAND_CATEGORIES[i % 10].id,
   category_name: DEMAND_CATEGORIES[i % 10].name,
   region: pick(REGIONS),
-  rating: (4 + Math.random()).toFixed(1),
+  rating: (4 + rng()).toFixed(1),
   deal_count: randInt(10, 200),
   response_rate: randInt(80, 99),
   avg_price: pick([5000, 10000, 20000, 50000]),
@@ -578,7 +591,7 @@ const dashboardData = {
     total_leads: randInt(50, 200),
     total_deals: randInt(10, 50),
     total_revenue: randInt(100000, 500000),
-    conversion_rate: (Math.random() * 20 + 5).toFixed(1),
+    conversion_rate: (rng() * 20 + 5).toFixed(1),
     avg_response_time: randInt(1, 6) + '小时'
   },
   trend_7days: Array.from({ length: 7 }, (_, i) => ({

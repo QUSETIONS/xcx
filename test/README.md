@@ -31,6 +31,7 @@ app/
 │   ├── integration-extended.test.js # 集成扩展（会员/签到/认证/关注/收藏/搜索）
 │   ├── i18n-accessibility.test.js   # i18n 切换 + 无障碍 + bridge
 │   ├── i18n-integrity.test.js    # i18n 完整性护栏（键对等/引用可解析/对象型 key）
+│   ├── determinism.test.js       # 种子数据确定性（源码守护 + 固定快照）
 │   └── regression.test.js        # 回归（价格建议区间一致性等）
 └── src/mock/                     # 被测纯逻辑模块
 ```
@@ -44,8 +45,8 @@ app/
 ## 测试结果
 
 ```
-Test Files  10 passed (10)
-     Tests  167 passed (167)
+Test Files  11 passed (11)
+     Tests  173 passed (173)
 
 Coverage（含门禁，见 vitest.config.js thresholds: stmts≥95 / branch≥80 / funcs≥72 / lines≥95）
   All files   96%+ statements | 84%+ branch | 75%+ functions
@@ -54,6 +55,8 @@ Coverage（含门禁，见 vitest.config.js thresholds: stmts≥95 / branch≥80
   smart.js    95%+ statements | 100% functions
   service.js  90%+ statements
 ```
+
+> mock 种子数据用**固定种子 PRNG(mulberry32)** 生成，跨进程完全可复现（`test/determinism.test.js` 守护：源码禁用 `Math.random` + 固定快照）。
 
 > 测试过程中发现并修复的真实 bug：
 > 1. `scoreDemandQuality`：未选择报价方式时错误给 10 分预算分 → 修正为 0 分
