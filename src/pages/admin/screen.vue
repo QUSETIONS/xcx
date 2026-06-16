@@ -6,10 +6,10 @@
         <text class="header-time">{{ currentTime }}</text>
         <text class="header-date">{{ currentDate }}</text>
       </view>
-      <text class="header-title">企业库 · 运营数据中心</text>
+      <text class="header-title">{{ t('admin.screenTitle') }}</text>
       <view class="header-right">
         <view class="live-dot"></view>
-        <text class="live-text">实时</text>
+        <text class="live-text">{{ t('admin.live') }}</text>
       </view>
     </view>
 
@@ -28,7 +28,7 @@
     <view class="chart-row">
       <!-- 交易趋势 -->
       <view class="chart-block">
-        <text class="block-title">交易趋势（近7天）</text>
+        <text class="block-title">{{ t('admin.trendTitle') }}</text>
         <view class="line-chart">
           <view class="line-area" v-for="(d, i) in trendData" :key="i">
             <view class="bar-group">
@@ -39,14 +39,14 @@
           </view>
         </view>
         <view class="legend">
-          <view class="lg"><view class="lg-dot deals"></view><text>成交</text></view>
-          <view class="lg"><view class="lg-dot leads"></view><text>对接</text></view>
+          <view class="lg"><view class="lg-dot deals"></view><text>{{ t('admin.legendDeal') }}</text></view>
+          <view class="lg"><view class="lg-dot leads"></view><text>{{ t('admin.legendLead') }}</text></view>
         </view>
       </view>
 
       <!-- 分类占比 -->
       <view class="chart-block">
-        <text class="block-title">需求分类占比</text>
+        <text class="block-title">{{ t('admin.categoryTitle') }}</text>
         <view class="donut-list">
           <view class="donut-item" v-for="(c, i) in categories" :key="i">
             <view class="donut-bar"><view class="donut-fill" :style="{ width: c.pct + '%', background: c.color }"></view></view>
@@ -59,7 +59,7 @@
 
     <!-- 实时动态流 -->
     <view class="feed-block">
-      <text class="block-title">⚡ 实时动态</text>
+      <text class="block-title">{{ t('admin.feedTitle') }}</text>
       <view class="feed-list">
         <view class="feed-item" v-for="(f, i) in feeds" :key="f.id">
           <text class="feed-icon">{{ f.icon }}</text>
@@ -71,7 +71,7 @@
 
     <!-- 区域热力 -->
     <view class="region-block">
-      <text class="block-title">🌏 区域活跃度 TOP6</text>
+      <text class="block-title">{{ t('admin.regionTitle') }}</text>
       <view class="region-list">
         <view class="region-item" v-for="(r, i) in regions" :key="i">
           <text class="region-rank">{{ i + 1 }}</text>
@@ -88,6 +88,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { dashboardService } from '@/mock/service'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.screen')
 
 const currentTime = ref('00:00:00')
@@ -123,12 +124,12 @@ function updateTime() {
 function loadData() {
   const ov = dashboardService.overview()
   kpis.value = [
-    { label: '总营收', display: '¥' + (ov.total_revenue / 10000).toFixed(1) + '万', change: '12.5%', up: true },
-    { label: '总成交', display: ov.total_deals, change: '8.3%', up: true },
-    { label: '总对接', display: ov.total_leads, change: '15.6%', up: true },
-    { label: '总浏览', display: ov.total_views, change: '5.2%', up: true },
-    { label: '转化率', display: ov.conversion_rate + '%', change: '2.1%', up: true },
-    { label: '客单价', display: '¥' + Math.round(ov.total_revenue / Math.max(1, ov.total_deals) / 100), change: '3.4%', up: false }
+    { label: t('admin.kpiRevenue'), display: '¥' + (ov.total_revenue / 10000).toFixed(1) + '万', change: '12.5%', up: true },
+    { label: t('admin.kpiDeals'), display: ov.total_deals, change: '8.3%', up: true },
+    { label: t('admin.kpiLeads'), display: ov.total_leads, change: '15.6%', up: true },
+    { label: t('admin.kpiViews'), display: ov.total_views, change: '5.2%', up: true },
+    { label: t('admin.kpiConv'), display: ov.conversion_rate + '%', change: '2.1%', up: true },
+    { label: t('admin.kpiAOV'), display: '¥' + Math.round(ov.total_revenue / Math.max(1, ov.total_deals) / 100), change: '3.4%', up: false }
   ]
 
   trendData.value = dashboardService.trend(7)
@@ -148,18 +149,18 @@ function loadData() {
 }
 
 function generateFeeds() {
-  feeds.value = feedTemplates.slice(0, 6).map((t, i) => ({
+  feeds.value = feedTemplates.slice(0, 6).map((tpl, i) => ({
     id: 'f' + i,
-    icon: t.icon,
-    text: t.text,
-    time: '刚刚'
+    icon: tpl.icon,
+    text: tpl.text,
+    time: t('orderConfirm.justNow')
   }))
 }
 
 function rotateFeed() {
   // 随机插入一条新动态到顶部
-  const t = feedTemplates[Math.floor(Math.random() * feedTemplates.length)]
-  feeds.value = [{ id: 'f' + Date.now(), icon: t.icon, text: t.text, time: '刚刚' }, ...feeds.value.slice(0, 5)]
+  const tpl = feedTemplates[Math.floor(Math.random() * feedTemplates.length)]
+  feeds.value = [{ id: 'f' + Date.now(), icon: tpl.icon, text: tpl.text, time: t('orderConfirm.justNow') }, ...feeds.value.slice(0, 5)]
 }
 
 function barHeight(v, type) {

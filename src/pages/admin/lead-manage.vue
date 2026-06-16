@@ -1,8 +1,8 @@
 <template>
   <view class="page">
     <view class="header">
-      <text class="header-title">对接管理</text>
-      <view class="filter-btn" :class="{ active: statusFilter }" @tap="showStatusPicker = true"><text>{{ statusFilter ? statusMap[statusFilter] : '全部状态' }}</text></view>
+      <text class="header-title">{{ t('titles.leadManage') }}</text>
+      <view class="filter-btn" :class="{ active: statusFilter }" @tap="showStatusPicker = true"><text>{{ statusFilter ? statusMap[statusFilter] : t('admin.allStatus') }}</text></view>
     </view>
 
     <scroll-view class="list-scroll" scroll-y :refresher-enabled="true" :refresher-triggered="refreshing" @refresherrefresh="onRefresh">
@@ -16,24 +16,24 @@
           <text class="lead-phone">{{ item.phone }}</text>
           <text class="lead-msg" v-if="item.message">{{ item.message }}</text>
           <view class="lead-bottom">
-            <text class="lead-demand">需求：{{ item.demand_title || item.demand_id }}</text>
+            <text class="lead-demand">{{ t('admin.demandPrefix') }}{{ item.demand_title || item.demand_id }}</text>
             <text class="lead-time">{{ formatDate(item.created_at) }}</text>
           </view>
           <view class="lead-actions">
-            <view class="action-btn" @tap.stop="updateStatus(item, 'contacted')"><text>已联系</text></view>
-            <view class="action-btn success" @tap.stop="updateStatus(item, 'deal')"><text>成交</text></view>
-            <view class="action-btn warn" @tap.stop="updateStatus(item, 'invalid')"><text>无效</text></view>
+            <view class="action-btn" @tap.stop="updateStatus(item, 'contacted')"><text>{{ t('admin.contacted') }}</text></view>
+            <view class="action-btn success" @tap.stop="updateStatus(item, 'deal')"><text>{{ t('admin.deal') }}</text></view>
+            <view class="action-btn warn" @tap.stop="updateStatus(item, 'invalid')"><text>{{ t('admin.invalid') }}</text></view>
           </view>
         </view>
       </view>
-      <view v-if="!filteredList.length" class="empty"><text>暂无对接记录</text></view>
+      <view v-if="!filteredList.length" class="empty"><text>{{ t('admin.emptyLead') }}</text></view>
     </scroll-view>
 
     <view v-if="showStatusPicker" class="picker-mask" @tap="showStatusPicker = false">
       <view class="picker-panel" @tap.stop>
-        <view class="picker-header"><text>选择状态</text></view>
+        <view class="picker-header"><text>{{ t('admin.selectStatus') }}</text></view>
         <view class="picker-grid">
-          <view class="picker-opt" :class="{ active: !statusFilter }" @tap="statusFilter = ''; showStatusPicker = false"><text>全部</text></view>
+          <view class="picker-opt" :class="{ active: !statusFilter }" @tap="statusFilter = ''; showStatusPicker = false"><text>{{ t('common.all') }}</text></view>
           <view class="picker-opt" :class="{ active: statusFilter === k }" v-for="(v, k) in statusMap" :key="k" @tap="statusFilter = k; showStatusPicker = false"><text>{{ v }}</text></view>
         </view>
       </view>
@@ -47,6 +47,7 @@ import { LEAD_STATUS } from '@/config/constants'
 import { leadService } from '@/mock/service'
 import { formatDate } from "@/utils/util"
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.leadManage')
 
 const statusMap = LEAD_STATUS
@@ -66,7 +67,7 @@ function onRefresh() { refreshing.value = true; allLeads.value = leadService.myL
 function goDemand(id) { uni.navigateTo({ url: `/pages/demand/detail?id=${id}` }) }
 function updateStatus(item, newStatus) {
   item.status = newStatus
-  uni.showToast({ title: `状态已更新为${statusMap[newStatus]}`, icon: 'success' })
+  uni.showToast({ title: t('admin.statusUpdated').replace('{status}', statusMap[newStatus]), icon: 'success' })
 }
 </script>
 

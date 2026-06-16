@@ -1,8 +1,8 @@
 <template>
   <view class="page">
     <view class="header">
-      <text class="header-title">商品管理</text>
-      <view class="add-btn" @tap="goAdd"><text>+ 新增</text></view>
+      <text class="header-title">{{ t('titles.productManage') }}</text>
+      <view class="add-btn" @tap="goAdd"><text>{{ t('admin.add') }}</text></view>
     </view>
 
     <scroll-view class="list-scroll" scroll-y :refresher-enabled="true" :refresher-triggered="refreshing" @refresherrefresh="onRefresh">
@@ -24,17 +24,17 @@
           </view>
           <view class="product-bottom">
             <view class="product-stats">
-              <text>销量: {{ item.sale_count }}</text>
-              <text class="product-status" :class="{ featured: item.is_featured }">{{ item.is_featured ? '精选' : '普通' }}</text>
+              <text>{{ t('admin.sales') }}{{ item.sale_count }}</text>
+              <text class="product-status" :class="{ featured: item.is_featured }">{{ item.is_featured ? t('admin.featured') : t('admin.normal') }}</text>
             </view>
             <view class="product-actions">
-              <text class="action-btn" @tap.stop="editProduct(item)">编辑</text>
-              <text class="action-btn danger" @tap.stop="deleteProduct(item)">删除</text>
+              <text class="action-btn" @tap.stop="editProduct(item)">{{ t('admin.edit') }}</text>
+              <text class="action-btn danger" @tap.stop="deleteProduct(item)">{{ t('admin.delete') }}</text>
             </view>
           </view>
         </view>
       </view>
-      <view v-if="!productList.length" class="empty"><text>暂无商品</text></view>
+      <view v-if="!productList.length" class="empty"><text>{{ t('admin.emptyProduct') }}</text></view>
     </scroll-view>
   </view>
 </template>
@@ -44,6 +44,7 @@ import { ref, onMounted } from 'vue'
 import { SERVICE_TYPES } from '@/config/constants'
 import { productService } from '@/mock/service'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.productManage')
 
 const serviceTypes = SERVICE_TYPES
@@ -60,34 +61,34 @@ function loadList() {
 function onRefresh() { refreshing.value = true; loadList(); refreshing.value = false }
 function goAdd() {
   uni.showModal({
-    title: '新增商品',
-    content: '请在后台系统中添加商品信息（标题、价格、类型等）',
+    title: t('admin.addTitle'),
+    content: t('admin.addContent'),
     showCancel: false,
-    confirmText: '知道了'
+    confirmText: t('admin.gotIt')
   })
 }
 function editProduct(item) {
   uni.showActionSheet({
-    itemList: ['设为精选', '取消精选', '修改价格', '上下架'],
+    itemList: [t('admin.setFeatured'), t('admin.unsetFeatured'), t('admin.editPrice'), t('admin.toggleSale')],
     success: (res) => {
-      if (res.tapIndex === 0) { item.is_featured = true; uni.showToast({ title: '已设为精选', icon: 'success' }) }
-      else if (res.tapIndex === 1) { item.is_featured = false; uni.showToast({ title: '已取消精选', icon: 'success' }) }
+      if (res.tapIndex === 0) { item.is_featured = true; uni.showToast({ title: t('admin.featuredSet'), icon: 'success' }) }
+      else if (res.tapIndex === 1) { item.is_featured = false; uni.showToast({ title: t('admin.featuredUnset'), icon: 'success' }) }
       else if (res.tapIndex === 2) {
         uni.showModal({
-          title: '修改价格',
+          title: t('admin.editPrice'),
           editable: true,
-          placeholderText: '输入新价格（元）',
+          placeholderText: t('admin.editPricePlaceholder'),
           success: (r) => {
             if (r.confirm && r.content) {
               item.price = Math.round(parseFloat(r.content) * 100)
-              uni.showToast({ title: '价格已更新', icon: 'success' })
+              uni.showToast({ title: t('admin.priceUpdated'), icon: 'success' })
             }
           }
         })
       }
       else if (res.tapIndex === 3) {
         item.status = item.status === 'on_sale' ? 'off_sale' : 'on_sale'
-        uni.showToast({ title: item.status === 'on_sale' ? '已上架' : '已下架', icon: 'success' })
+        uni.showToast({ title: item.status === 'on_sale' ? t('admin.onSale') : t('admin.offSale'), icon: 'success' })
       }
     }
   })
@@ -95,12 +96,12 @@ function editProduct(item) {
 
 function deleteProduct(item) {
   uni.showModal({
-    title: '确认删除', content: `确定要删除「${item.title}」吗？`,
+    title: t('admin.confirmDelete'), content: t('admin.deleteContent').replace('{title}', item.title),
     success: (res) => {
       if (res.confirm) {
         const idx = productList.value.findIndex(p => p._id === item._id)
         if (idx > -1) productList.value.splice(idx, 1)
-        uni.showToast({ title: '已删除', icon: 'success' })
+        uni.showToast({ title: t('admin.deleted'), icon: 'success' })
       }
     }
   })

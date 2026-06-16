@@ -1,8 +1,8 @@
 <template>
   <view class="page">
     <view class="header">
-      <text class="header-title">订单管理</text>
-      <view class="filter-btn" :class="{ active: statusFilter }" @tap="showStatusPicker = true"><text>{{ statusFilter ? statusMap[statusFilter] : '全部状态' }}</text></view>
+      <text class="header-title">{{ t('titles.orderManage') }}</text>
+      <view class="filter-btn" :class="{ active: statusFilter }" @tap="showStatusPicker = true"><text>{{ statusFilter ? statusMap[statusFilter] : t('admin.allStatus') }}</text></view>
     </view>
 
     <scroll-view class="list-scroll" scroll-y :refresher-enabled="true" :refresher-triggered="refreshing" @refresherrefresh="onRefresh">
@@ -10,24 +10,24 @@
         <view class="order-item card-press" v-for="(item, idx) in filteredList" :key="item._id"
           :class="{ 'fade-in': animated }" :style="{ animationDelay: (idx * 0.08) + 's' }">
           <view class="order-top">
-            <text class="order-id">订单 {{ item._id }}</text>
+            <text class="order-id">{{ t('admin.orderPrefix') }}{{ item._id }}</text>
             <view class="status-tag" :class="'status-' + item.status"><text>{{ statusMap[item.status] || item.status }}</text></view>
           </view>
-          <text class="order-product">{{ item.items?.[0]?.title || '商品' }}</text>
+          <text class="order-product">{{ item.items?.[0]?.title || t('user.typeProduct') }}</text>
           <view class="order-bottom">
             <text class="order-amount">¥{{ (item.total_amount / 100).toFixed(2) }}</text>
             <text class="order-time">{{ formatDate(item.created_at) }}</text>
           </view>
         </view>
       </view>
-      <view v-if="!filteredList.length" class="empty"><text>暂无订单</text></view>
+      <view v-if="!filteredList.length" class="empty"><text>{{ t('admin.emptyOrder') }}</text></view>
     </scroll-view>
 
     <view v-if="showStatusPicker" class="picker-mask" @tap="showStatusPicker = false">
       <view class="picker-panel" @tap.stop>
-        <view class="picker-header"><text>选择状态</text></view>
+        <view class="picker-header"><text>{{ t('admin.selectStatus') }}</text></view>
         <view class="picker-grid">
-          <view class="picker-opt" :class="{ active: !statusFilter }" @tap="statusFilter = ''; showStatusPicker = false"><text>全部</text></view>
+          <view class="picker-opt" :class="{ active: !statusFilter }" @tap="statusFilter = ''; showStatusPicker = false"><text>{{ t('common.all') }}</text></view>
           <view class="picker-opt" :class="{ active: statusFilter === k }" v-for="(v, k) in statusMap" :key="k" @tap="statusFilter = k; showStatusPicker = false"><text>{{ v }}</text></view>
         </view>
       </view>
@@ -41,6 +41,7 @@ import { ORDER_STATUS } from '@/config/constants'
 import { orderService } from '@/mock/service'
 import { formatDate } from "@/utils/util"
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.orderManage')
 
 const statusMap = ORDER_STATUS

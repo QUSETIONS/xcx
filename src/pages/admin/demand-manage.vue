@@ -1,9 +1,9 @@
 <template>
   <view class="page">
     <view class="header">
-      <text class="header-title">需求管理</text>
+      <text class="header-title">{{ t('titles.demandManage') }}</text>
       <view class="header-actions">
-        <view class="filter-btn" :class="{ active: statusFilter }" @tap="showStatusPicker = true"><text>{{ statusFilter ? statusMap[statusFilter] : '全部' }}</text></view>
+        <view class="filter-btn" :class="{ active: statusFilter }" @tap="showStatusPicker = true"><text>{{ statusFilter ? statusMap[statusFilter] : t('common.all') }}</text></view>
       </view>
     </view>
 
@@ -25,21 +25,21 @@
             <text class="item-time">{{ formatDate(item.publish_time) }}</text>
           </view>
           <view class="item-actions">
-            <view class="action-btn" @tap.stop="editDemand(item)"><text>编辑</text></view>
-            <view class="action-btn warn" v-if="item.status === 'published'" @tap.stop="offlineDemand(item)"><text>下架</text></view>
-            <view class="action-btn success" v-if="item.status === 'offline'" @tap.stop="publishDemand(item)"><text>上架</text></view>
-            <view class="action-btn danger" @tap.stop="deleteDemand(item)"><text>删除</text></view>
+            <view class="action-btn" @tap.stop="editDemand(item)"><text>{{ t('admin.edit') }}</text></view>
+            <view class="action-btn warn" v-if="item.status === 'published'" @tap.stop="offlineDemand(item)"><text>{{ t('admin.offline') }}</text></view>
+            <view class="action-btn success" v-if="item.status === 'offline'" @tap.stop="publishDemand(item)"><text>{{ t('admin.online') }}</text></view>
+            <view class="action-btn danger" @tap.stop="deleteDemand(item)"><text>{{ t('admin.delete') }}</text></view>
           </view>
         </view>
       </view>
-      <view v-if="!filteredList.length" class="empty"><text>暂无需求</text></view>
+      <view v-if="!filteredList.length" class="empty"><text>{{ t('admin.emptyDemand') }}</text></view>
     </scroll-view>
 
     <view v-if="showStatusPicker" class="picker-mask" @tap="showStatusPicker = false">
       <view class="picker-panel" @tap.stop>
-        <view class="picker-header"><text>选择状态</text></view>
+        <view class="picker-header"><text>{{ t('admin.selectStatus') }}</text></view>
         <view class="picker-grid">
-          <view class="picker-opt" :class="{ active: !statusFilter }" @tap="statusFilter = ''; showStatusPicker = false"><text>全部</text></view>
+          <view class="picker-opt" :class="{ active: !statusFilter }" @tap="statusFilter = ''; showStatusPicker = false"><text>{{ t('common.all') }}</text></view>
           <view class="picker-opt" :class="{ active: statusFilter === k }" v-for="(v, k) in statusMap" :key="k" @tap="statusFilter = k; showStatusPicker = false"><text>{{ v }}</text></view>
         </view>
       </view>
@@ -53,6 +53,7 @@ import { DEMAND_STATUS } from '@/config/constants'
 import { demandService } from '@/mock/service'
 import { formatDate } from "@/utils/util"
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.demandManage')
 
 const statusMap = DEMAND_STATUS
@@ -73,21 +74,21 @@ function goDetail(id) { uni.navigateTo({ url: `/pages/demand/detail?id=${id}` })
 
 function editDemand(item) { uni.navigateTo({ url: `/pages/demand/publish?id=${item._id}` }) }
 function offlineDemand(item) {
-  uni.showModal({ title: '确认下架', content: `确定要下架「${item.title}」吗？`, success: (res) => {
-    if (res.confirm) { item.status = 'offline'; uni.showToast({ title: '已下架', icon: 'success' }) }
+  uni.showModal({ title: t('admin.confirmOffline'), content: t('admin.offlineContent').replace('{title}', item.title), success: (res) => {
+    if (res.confirm) { item.status = 'offline'; uni.showToast({ title: t('admin.offlined'), icon: 'success' }) }
   }})
 }
 function publishDemand(item) {
-  uni.showModal({ title: '确认上架', content: `确定要上架「${item.title}」吗？`, success: (res) => {
-    if (res.confirm) { item.status = 'published'; uni.showToast({ title: '已上架', icon: 'success' }) }
+  uni.showModal({ title: t('admin.confirmOnline'), content: t('admin.onlineContent').replace('{title}', item.title), success: (res) => {
+    if (res.confirm) { item.status = 'published'; uni.showToast({ title: t('admin.onlined'), icon: 'success' }) }
   }})
 }
 function deleteDemand(item) {
-  uni.showModal({ title: '确认删除', content: `确定要删除「${item.title}」吗？`, success: (res) => {
+  uni.showModal({ title: t('admin.confirmDelete'), content: t('admin.deleteContent').replace('{title}', item.title), success: (res) => {
     if (res.confirm) {
       const idx = allDemands.value.findIndex(d => d._id === item._id)
       if (idx > -1) allDemands.value.splice(idx, 1)
-      uni.showToast({ title: '已删除', icon: 'success' })
+      uni.showToast({ title: t('admin.deleted'), icon: 'success' })
     }
   }})
 }
