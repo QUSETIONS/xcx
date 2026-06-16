@@ -1,7 +1,7 @@
 <template>
   <view class="empty-wrap">
     <text class="empty-icon">{{ icon }}</text>
-    <text class="empty-text">{{ text }}</text>
+    <text class="empty-text">{{ text || t('common.empty') }}</text>
     <view class="empty-action" v-if="actionText" @tap="$emit('action')">
       <text>{{ actionText }}</text>
     </view>
@@ -9,9 +9,10 @@
 </template>
 
 <script setup>
+import { t } from '@/i18n'
 defineProps({
   icon: { type: String, default: '📭' },
-  text: { type: String, default: '暂无数据' },
+  text: { type: String, default: '' },
   actionText: { type: String, default: '' }
 })
 defineEmits(['action'])

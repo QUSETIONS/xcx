@@ -55,6 +55,7 @@ export default {
     save: '保存',
     submit: '提交',
     loading: '加载中...',
+    loadFailed: '加载失败，请稍后重试',
     empty: '暂无数据',
     retry: '重新加载',
     search: '搜索',
@@ -112,6 +113,33 @@ export default {
     cart: '购物车',
     orderConfirm: '订单确认',
     checkout: '结算'
+  },
+  // 购物车
+  cartPage: {
+    empty: '购物车空空如也',
+    goShop: '去逛逛',
+    selectAll: '全选',
+    total: '合计',
+    checkout: '结算'
+  },
+  // 订单
+  orderPage: {
+    all: '全部',
+    pending: '待处理',
+    serving: '服务中',
+    completed: '已完成',
+    empty: '暂无订单',
+    goOrder: '去下单',
+    orderNo: '订单号',
+    paid: '实付',
+    cancel: '取消订单',
+    pay: '立即支付',
+    confirmService: '确认服务',
+    startService: '开始服务',
+    contactService: '联系客服',
+    complete: '确认完成',
+    review: '评价',
+    buyAgain: '再次购买'
   },
   // 用户
   user: {

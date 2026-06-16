@@ -54,6 +54,7 @@ export default {
     save: 'Save',
     submit: 'Submit',
     loading: 'Loading...',
+    loadFailed: 'Load failed, please retry',
     empty: 'No data',
     retry: 'Retry',
     search: 'Search',
@@ -107,6 +108,31 @@ export default {
     cart: 'Cart',
     orderConfirm: 'Confirm Order',
     checkout: 'Checkout'
+  },
+  cartPage: {
+    empty: 'Your cart is empty',
+    goShop: 'Browse',
+    selectAll: 'All',
+    total: 'Total',
+    checkout: 'Checkout'
+  },
+  orderPage: {
+    all: 'All',
+    pending: 'Pending',
+    serving: 'In Service',
+    completed: 'Completed',
+    empty: 'No orders',
+    goOrder: 'Order Now',
+    orderNo: 'Order',
+    paid: 'Paid',
+    cancel: 'Cancel',
+    pay: 'Pay Now',
+    confirmService: 'Confirm',
+    startService: 'Start',
+    contactService: 'Support',
+    complete: 'Complete',
+    review: 'Review',
+    buyAgain: 'Buy Again'
   },
   user: {
     title: 'Me',

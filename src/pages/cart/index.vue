@@ -20,22 +20,22 @@
 
     <view v-else class="empty">
       <text class="empty-icon">🛒</text>
-      <text class="empty-text">购物车空空如也</text>
-      <view class="empty-btn" @tap="goMall"><text>去逛逛</text></view>
+      <text class="empty-text">{{ t('cartPage.empty') }}</text>
+      <view class="empty-btn" @tap="goMall"><text>{{ t('cartPage.goShop') }}</text></view>
     </view>
 
     <!-- 结算栏 -->
     <view class="settle-bar" v-if="cartItems.length">
       <view class="settle-left">
         <text class="settle-check" @tap="toggleAll"><text>{{ allSelected ? '☑' : '☐' }}</text></text>
-        <text class="settle-all-text">全选</text>
+        <text class="settle-all-text">{{ t('cartPage.selectAll') }}</text>
       </view>
       <view class="settle-right">
         <view class="settle-total">
-          <text class="total-label">合计</text>
+          <text class="total-label">{{ t('cartPage.total') }}</text>
           <text class="total-amount">¥{{ (totalPrice / 100).toFixed(0) }}</text>
         </view>
-        <view class="settle-btn" :class="{ disabled: !selectedItems.length }" @tap="checkout"><text>结算 ({{ selectedItems.length }})</text></view>
+        <view class="settle-btn" :class="{ disabled: !selectedItems.length }" @tap="checkout"><text>{{ t('cartPage.checkout') }} ({{ selectedItems.length }})</text></view>
       </view>
     </view>
   </view>
@@ -46,6 +46,7 @@ import { ref, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { cartService } from '@/mock/service'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.cart')
 
 const cartItems = ref([])

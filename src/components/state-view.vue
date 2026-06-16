@@ -6,14 +6,14 @@
     <!-- 错误：可重试 -->
     <view v-else-if="status === 'error'" class="error-box">
       <text class="error-icon">😕</text>
-      <text class="error-text">{{ errorText }}</text>
-      <view class="retry-btn" @tap="$emit('retry')"><text>重新加载</text></view>
+      <text class="error-text">{{ errorText || t('common.loadFailed') }}</text>
+      <view class="retry-btn" @tap="$emit('retry')"><text>{{ t('common.retry') }}</text></view>
     </view>
 
     <!-- 空：可引导 -->
     <view v-else-if="status === 'empty'" class="empty-box">
       <text class="empty-icon">{{ emptyIcon }}</text>
-      <text class="empty-text">{{ emptyText }}</text>
+      <text class="empty-text">{{ emptyText || t('common.empty') }}</text>
       <view class="empty-btn" v-if="actionText" @tap="$emit('action')"><text>{{ actionText }}</text></view>
     </view>
   </view>
@@ -21,12 +21,14 @@
 
 <script setup>
 import skeleton from '@/components/skeleton.vue'
+import { t } from '@/i18n'
 
 const props = defineProps({
   status: { type: String, default: '' }, // loading / error / empty / success
   skeletonType: { type: String, default: 'list' },
   skeletonRows: { type: Number, default: 5 },
-  errorText: { type: String, default: '加载失败，请稍后重试' },
+  errorText: { type: String, default: '' },
+  emptyText: { type: String, default: '' },
   emptyIcon: { type: String, default: '📭' },
   emptyText: { type: String, default: '暂无数据' },
   actionText: { type: String, default: '' }

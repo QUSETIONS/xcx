@@ -2,10 +2,10 @@
   <view class="page">
     <!-- Tab筛选 -->
     <view class="tab-bar">
-      <text class="tab-item" :class="{ active: tab === 'all' }" @tap="switchTab('all')">全部</text>
-      <text class="tab-item" :class="{ active: tab === 'pending' }" @tap="switchTab('pending')">待处理</text>
-      <text class="tab-item" :class="{ active: tab === 'serving' }" @tap="switchTab('serving')">服务中</text>
-      <text class="tab-item" :class="{ active: tab === 'completed' }" @tap="switchTab('completed')">已完成</text>
+      <text class="tab-item" :class="{ active: tab === 'all' }" @tap="switchTab('all')">{{ t('orderPage.all') }}</text>
+      <text class="tab-item" :class="{ active: tab === 'pending' }" @tap="switchTab('pending')">{{ t('orderPage.pending') }}</text>
+      <text class="tab-item" :class="{ active: tab === 'serving' }" @tap="switchTab('serving')">{{ t('orderPage.serving') }}</text>
+      <text class="tab-item" :class="{ active: tab === 'completed' }" @tap="switchTab('completed')">{{ t('orderPage.completed') }}</text>
     </view>
 
     <!-- 订单列表 -->
@@ -48,14 +48,14 @@
 
           <!-- 操作按钮 -->
           <view class="order-actions">
-            <view class="action-btn-outline" v-if="order.status === 'created'" @tap="cancelOrder(order._id)"><text>取消订单</text></view>
-            <view class="action-btn-outline" v-if="order.status === 'created'" @tap="payOrder(order._id)"><text>立即支付</text></view>
-            <view class="action-btn-fill" v-if="order.status === 'paid'" @tap="confirmOrder(order._id)"><text>确认服务</text></view>
-            <view class="action-btn-fill" v-if="order.status === 'confirmed'" @tap="startServe(order._id)"><text>开始服务</text></view>
-            <view class="action-btn-outline" v-if="order.status === 'serving'" @tap="contactService"><text>联系客服</text></view>
-            <view class="action-btn-fill" v-if="order.status === 'serving'" @tap="completeOrder(order._id)"><text>确认完成</text></view>
-            <view class="action-btn-outline" v-if="order.status === 'completed'" @tap="review"><text>评价</text></view>
-            <view class="action-btn-outline" v-if="order.status === 'completed'" @tap="buyAgain"><text>再次购买</text></view>
+            <view class="action-btn-outline" v-if="order.status === 'created'" @tap="cancelOrder(order._id)"><text>{{ t('orderPage.cancel') }}</text></view>
+            <view class="action-btn-outline" v-if="order.status === 'created'" @tap="payOrder(order._id)"><text>{{ t('orderPage.pay') }}</text></view>
+            <view class="action-btn-fill" v-if="order.status === 'paid'" @tap="confirmOrder(order._id)"><text>{{ t('orderPage.confirmService') }}</text></view>
+            <view class="action-btn-fill" v-if="order.status === 'confirmed'" @tap="startServe(order._id)"><text>{{ t('orderPage.startService') }}</text></view>
+            <view class="action-btn-outline" v-if="order.status === 'serving'" @tap="contactService"><text>{{ t('orderPage.contactService') }}</text></view>
+            <view class="action-btn-fill" v-if="order.status === 'serving'" @tap="completeOrder(order._id)"><text>{{ t('orderPage.complete') }}</text></view>
+            <view class="action-btn-outline" v-if="order.status === 'completed'" @tap="review"><text>{{ t('orderPage.review') }}</text></view>
+            <view class="action-btn-outline" v-if="order.status === 'completed'" @tap="buyAgain"><text>{{ t('orderPage.buyAgain') }}</text></view>
           </view>
         </view>
       </view>
@@ -63,8 +63,8 @@
       <!-- 空状态 -->
       <view v-else class="empty">
         <text class="empty-icon">📋</text>
-        <text class="empty-text">暂无订单</text>
-        <view class="empty-btn" @tap="goMall"><text>去下单</text></view>
+        <text class="empty-text">{{ t('orderPage.empty') }}</text>
+        <view class="empty-btn" @tap="goMall"><text>{{ t('orderPage.goOrder') }}</text></view>
       </view>
     </scroll-view>
   </view>
@@ -77,6 +77,7 @@ import { ORDER_STATUS } from '@/config/constants'
 import { orderService } from '@/mock/service'
 import { formatDateTime as formatTime } from "@/utils/util"
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.myOrders')
 
 const tab = ref('all')
