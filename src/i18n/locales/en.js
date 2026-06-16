@@ -682,6 +682,18 @@ export default {
     kpiConv: 'Conv. Rate',
     kpiAOV: 'AOV'
   },
+  category: {
+    cat_01: 'Brand & PR',
+    cat_02: 'Livestream Sales',
+    cat_03: 'Enterprise Services',
+    cat_04: 'Online Media',
+    cat_05: 'Offline Media',
+    cat_06: 'Operations',
+    cat_07: 'Creator Seeding',
+    cat_08: 'Video Production',
+    cat_09: 'Event Planning',
+    cat_10: 'Channel Resources'
+  },
   status: {
     demand: { draft: 'Draft', pending: 'Pending', published: 'Published', offline: 'Offline' },
     order: { created: 'Unconfirmed', paid: 'Paid', confirmed: 'Confirmed', serving: 'In Service', completed: 'Completed', cancelled: 'Cancelled' },

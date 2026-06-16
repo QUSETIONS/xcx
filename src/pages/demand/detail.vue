@@ -3,14 +3,14 @@
     <!-- 顶部信息 -->
     <view class="hero-card">
       <view class="hero-tags">
-        <text class="tag-cat">{{ demand.category_name }}</text>
+        <text class="tag-cat">{{ categoryName(demand.category_id, demand.category_name) }}</text>
         <text class="tag-quote">{{ formatQuote(demand.quote_type) }}</text>
         <text class="tag-hot" v-if="demand.view_count > 1000">🔥 {{ t('demandDetail.hot') }}</text>
       </view>
       <text class="hero-title">{{ demand.title }}</text>
       <view class="hero-company">
         <text class="hero-name">{{ demand.company_name }}</text>
-        <text class="hero-region">{{ demand.region }}</text>
+        <text class="hero-region">{{ regionName(demand.region) }}</text>
       </view>
     </view>
 
@@ -72,7 +72,7 @@
               <text class="provider-name">{{ item.name }}</text>
               <text class="provider-match">{{ item.match_percent }}</text>
             </view>
-            <text class="provider-desc">{{ item.category_name }} · ⭐{{ item.rating }} · {{ item.deal_count }}{{ t('demandDetail.orderUnit') }}</text>
+            <text class="provider-desc">{{ categoryName(item.category_id, item.category_name) }} · ⭐{{ item.rating }} · {{ item.deal_count }}{{ t('demandDetail.orderUnit') }}</text>
             <view class="provider-tags">
               <text class="provider-tag" v-for="(tag, i) in item.tags" :key="i">{{ tag }}</text>
             </view>
@@ -137,7 +137,7 @@
 <script setup>
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-import { quoteLabel } from '@/utils/i18n-maps'
+import { quoteLabel, categoryName, regionName } from '@/utils/i18n-maps'
 import { demandService, leadService, favoriteService, reviewService, matchService } from '@/mock/service'
 import { trackBrowse } from '@/mock/smart'
 import { useNavTitle } from '@/hooks/useNavTitle'

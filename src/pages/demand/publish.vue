@@ -21,7 +21,7 @@
       <view class="form-card">
         <text class="form-label">{{ t('demandPublish.regionLabel') }}</text>
         <view class="form-select" @tap="showRegionPicker = true">
-          <text :class="{ placeholder: !form.region }">{{ form.region || t('demandPublish.selectRegion') }}</text>
+          <text :class="{ placeholder: !form.region }">{{ regionName(form.region) || t('demandPublish.selectRegion') }}</text>
           <text class="select-arrow">▸</text>
         </view>
       </view>
@@ -29,7 +29,7 @@
       <view class="form-card">
         <text class="form-label">{{ t('demandPublish.categoryLabel') }}</text>
         <view class="form-select" @tap="showCategoryPicker = true">
-          <text :class="{ placeholder: !form.category_name }">{{ form.category_name || t('demandPublish.selectCategory') }}</text>
+          <text :class="{ placeholder: !form.category_name }">{{ categoryName(form.category_id, form.category_name) || t('demandPublish.selectCategory') }}</text>
           <text class="select-arrow">▸</text>
         </view>
       </view>
@@ -106,7 +106,7 @@
       <view class="picker-panel" @tap.stop>
         <view class="picker-header"><text>{{ t('listPage.selectRegion') }}</text><text class="picker-close" @tap="showRegionPicker = false">✕</text></view>
         <view class="picker-grid">
-          <view class="picker-opt" :class="{ active: form.region === r }" v-for="r in regions" :key="r" @tap="form.region = r; showRegionPicker = false"><text>{{ r }}</text></view>
+          <view class="picker-opt" :class="{ active: form.region === r }" v-for="r in regions" :key="r" @tap="form.region = r; showRegionPicker = false"><text>{{ regionName(r) }}</text></view>
         </view>
       </view>
     </view>
@@ -116,7 +116,7 @@
       <view class="picker-panel" @tap.stop>
         <view class="picker-header"><text>{{ t('listPage.selectCategory') }}</text><text class="picker-close" @tap="showCategoryPicker = false">✕</text></view>
         <view class="picker-grid">
-          <view class="picker-opt" :class="{ active: form.category_id === c.id }" v-for="c in categories" :key="c.id" @tap="form.category_id = c.id; form.category_name = c.name; showCategoryPicker = false"><text>{{ c.name }}</text></view>
+          <view class="picker-opt" :class="{ active: form.category_id === c.id }" v-for="c in categories" :key="c.id" @tap="form.category_id = c.id; form.category_name = c.name; showCategoryPicker = false"><text>{{ c.icon }} {{ categoryName(c.id, c.name) }}</text></view>
         </view>
       </view>
     </view>
@@ -144,7 +144,7 @@ import { DEMAND_CATEGORIES, REGIONS } from '@/config/constants'
 import { demandService } from '@/mock/service'
 import { getPriceSuggestion, scoreDemandQuality } from '@/mock/smart'
 import { guardClick } from '@/utils/feedback'
-import { quoteTypes } from '@/utils/i18n-maps'
+import { quoteTypes, categoryName, regionName } from '@/utils/i18n-maps'
 import { useNavTitle } from '@/hooks/useNavTitle'
 import { t } from '@/i18n'
 useNavTitle('titles.demandPublish')

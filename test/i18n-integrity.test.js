@@ -11,7 +11,7 @@ import fs from 'fs'
 import path from 'path'
 import zh from '@/i18n/locales/zh'
 import en from '@/i18n/locales/en'
-import { demandStatusMap, orderStatusMap, leadStatusMap, quoteTypes, serviceTypes, quoteLabel } from '@/utils/i18n-maps'
+import { demandStatusMap, orderStatusMap, leadStatusMap, quoteTypes, serviceTypes, quoteLabel, categoryName, regionName } from '@/utils/i18n-maps'
 import { setLocale } from '@/i18n'
 
 // 把嵌套对象压平成 'a.b.c' 的叶子键集合（数组视为叶子）
@@ -143,5 +143,25 @@ describe('i18n 完整性：枚举映射 helper', () => {
 
   it('serviceTypes 覆盖五种服务类型', () => {
     expect(Object.keys(serviceTypes.value).sort()).toEqual(['certification', 'linker', 'member', 'resource_pack', 'survey'])
+  })
+
+  it('categoryName 按 id 解析并随语言切换', () => {
+    setLocale('zh-CN')
+    expect(categoryName('cat_01')).toBe('品牌公关')
+    setLocale('en-US')
+    expect(categoryName('cat_01')).toBe('Brand & PR')
+    // 未知 id 回退到 fallback
+    expect(categoryName('cat_99', '默认名')).toBe('默认名')
+    setLocale('zh-CN')
+  })
+
+  it('regionName 英文翻译、中文原样', () => {
+    setLocale('zh-CN')
+    expect(regionName('北京')).toBe('北京')
+    expect(regionName('')).toBe('')
+    setLocale('en-US')
+    expect(regionName('北京')).toBe('Beijing')
+    expect(regionName('未知城市')).toBe('未知城市') // 未收录原样返回
+    setLocale('zh-CN')
   })
 })

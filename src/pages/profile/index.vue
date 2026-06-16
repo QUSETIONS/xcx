@@ -57,8 +57,8 @@
       <view class="demand-item card-press" v-for="item in userDemands" :key="item._id" @tap="goDemand(item._id)">
         <text class="demand-title">{{ item.title }}</text>
         <view class="demand-meta">
-          <text class="demand-cat">{{ item.category_name }}</text>
-          <text class="demand-region">{{ item.region }}</text>
+          <text class="demand-cat">{{ categoryName(item.category_id, item.category_name) }}</text>
+          <text class="demand-region">{{ regionName(item.region) }}</text>
           <text class="demand-stats">👁 {{ item.view_count }}  🤝 {{ item.lead_count }}</text>
         </view>
       </view>
@@ -89,6 +89,7 @@ import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { communityService, demandService, reviewService, followService } from '@/mock/service'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { categoryName, regionName } from '@/utils/i18n-maps'
 import { t } from '@/i18n'
 useNavTitle('titles.userProfile')
 

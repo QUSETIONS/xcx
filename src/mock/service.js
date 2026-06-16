@@ -594,6 +594,7 @@ const dashboardData = {
     deals: randInt(0, 4)
   })),
   category_stats: DEMAND_CATEGORIES.slice(0, 6).map(cat => ({
+    id: cat.id,
     name: cat.name,
     count: randInt(5, 50),
     color: pick(THEME.palette)

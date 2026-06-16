@@ -50,7 +50,7 @@
         <view class="donut-list">
           <view class="donut-item" v-for="(c, i) in categories" :key="i">
             <view class="donut-bar"><view class="donut-fill" :style="{ width: c.pct + '%', background: c.color }"></view></view>
-            <text class="donut-name">{{ c.name }}</text>
+            <text class="donut-name">{{ categoryName(c.id, c.name) }}</text>
             <text class="donut-pct">{{ c.pct }}%</text>
           </view>
         </view>
@@ -75,7 +75,7 @@
       <view class="region-list">
         <view class="region-item" v-for="(r, i) in regions" :key="i">
           <text class="region-rank">{{ i + 1 }}</text>
-          <text class="region-name">{{ r.name }}</text>
+          <text class="region-name">{{ regionName(r.name) }}</text>
           <view class="region-bar"><view class="region-fill" :style="{ width: r.pct + '%' }"></view></view>
           <text class="region-val">{{ r.count }}</text>
         </view>
@@ -88,6 +88,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { dashboardService } from '@/mock/service'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { categoryName, regionName } from '@/utils/i18n-maps'
 import { t } from '@/i18n'
 useNavTitle('titles.screen')
 
@@ -138,7 +139,7 @@ function loadData() {
 
   const cats = dashboardService.categoryStats()
   const total = cats.reduce((s, c) => s + c.count, 0) || 1
-  categories.value = cats.map(c => ({ name: c.name, pct: Math.round(c.count / total * 100), color: c.color }))
+  categories.value = cats.map(c => ({ id: c.id, name: c.name, pct: Math.round(c.count / total * 100), color: c.color }))
 
   const regionNames = ['北京', '上海', '深圳', '广州', '杭州', '成都']
   const regionCounts = regionNames.map(() => Math.floor(Math.random() * 500) + 100)

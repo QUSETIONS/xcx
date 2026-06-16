@@ -3,7 +3,7 @@
     <view class="info-card">
       <text class="info-title">{{ resource.title }}</text>
       <view class="info-tags">
-        <text class="tag">{{ resource.category_name }}</text>
+        <text class="tag">{{ categoryName(resource.category_id, resource.category_name) }}</text>
         <text class="tag">{{ resource.file_type }}</text>
         <text class="tag">{{ resource.file_size }}</text>
       </view>
@@ -60,6 +60,7 @@ import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { resourceService, favoriteService } from '@/mock/service'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { categoryName } from '@/utils/i18n-maps'
 import { t } from '@/i18n'
 useNavTitle('titles.resourceDetail')
 

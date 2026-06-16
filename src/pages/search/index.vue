@@ -23,7 +23,7 @@
           <view class="result-item card-press" v-for="item in result.demands" :key="item._id" @tap="goDemand(item._id)">
             <text class="ri-title">{{ item.title }}</text>
             <view class="ri-meta">
-              <text class="ri-tag">{{ item.category_name }}</text>
+              <text class="ri-tag">{{ categoryName(item.category_id, item.category_name) }}</text>
               <text class="ri-stat">👁 {{ item.view_count }} · 🤝 {{ item.lead_count }}</text>
             </view>
           </view>
@@ -89,6 +89,7 @@ import { ref, onMounted, watch } from 'vue'
 import { searchService } from '@/mock/service'
 import { debounce } from '@/utils/util'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { categoryName } from '@/utils/i18n-maps'
 import { t } from '@/i18n'
 useNavTitle('titles.search')
 

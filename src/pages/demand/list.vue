@@ -22,7 +22,7 @@
         <text class="filter-arrow">▾</text>
       </view>
       <view class="filter-item" :class="{ active: currentRegion }" @tap="showRegionPicker = true">
-        <text>{{ currentRegion || t('demand.region') }}</text>
+        <text>{{ regionName(currentRegion) || t('demand.region') }}</text>
         <text class="filter-arrow">▾</text>
       </view>
       <view class="filter-item" :class="{ active: currentSort !== 'latest' }" @tap="showSortPicker = true">
@@ -63,14 +63,14 @@
         <view class="demand-item card-press" v-for="(item, idx) in demandList" :key="item._id" @tap="goDetail(item._id)"
           :class="{ 'fade-in': animated }" :style="{ animationDelay: (idx * 0.08) + 's' }">
           <view class="item-top">
-            <view class="item-cat-tag">{{ item.category_name }}</view>
+            <view class="item-cat-tag">{{ categoryName(item.category_id, item.category_name) }}</view>
             <view class="item-quote-tag">{{ formatQuote(item.quote_type) }}</view>
             <text class="item-time">{{ formatTime(item.publish_time) }}</text>
           </view>
           <text class="item-title">{{ item.title }}</text>
           <view class="item-company-row">
             <text class="item-company">{{ item.company_name }}</text>
-            <text class="item-region">{{ item.region }}</text>
+            <text class="item-region">{{ regionName(item.region) }}</text>
           </view>
           <view class="item-bottom">
             <view class="item-stats">
@@ -101,7 +101,7 @@
         <view class="picker-grid">
           <view class="picker-opt" :class="{ active: !currentCat }" @tap="selectCat(null)"><text>{{ t('common.all') }}</text></view>
           <view class="picker-opt" :class="{ active: currentCat === cat.id }" v-for="cat in categories" :key="cat.id" @tap="selectCat(cat.id)">
-            <text>{{ cat.icon }} {{ cat.name }}</text>
+            <text>{{ cat.icon }} {{ categoryName(cat.id, cat.name) }}</text>
           </view>
         </view>
       </view>
@@ -137,7 +137,7 @@ import { ref, computed, onMounted } from 'vue'
 import { DEMAND_CATEGORIES, REGIONS } from '@/config/constants'
 import { demandService } from '@/mock/service'
 import { formatRelativeTime as formatTime } from "@/utils/util"
-import { quoteLabel } from '@/utils/i18n-maps'
+import { quoteLabel, categoryName, regionName } from '@/utils/i18n-maps'
 import { t } from '@/i18n'
 import { useNavTitle } from '@/hooks/useNavTitle'
 useNavTitle('titles.demandHall')

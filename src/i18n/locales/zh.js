@@ -710,6 +710,19 @@ export default {
     kpiConv: '转化率',
     kpiAOV: '客单价'
   },
+  // 需求分类（按 id 解析）
+  category: {
+    cat_01: '品牌公关',
+    cat_02: '直播带货',
+    cat_03: '企业服务',
+    cat_04: '线上媒体',
+    cat_05: '线下媒体',
+    cat_06: '代运营',
+    cat_07: '达人种草',
+    cat_08: '视频制作',
+    cat_09: '活动策划',
+    cat_10: '渠道资源'
+  },
   // 状态枚举（响应式映射）
   status: {
     demand: { draft: '草稿', pending: '待审核', published: '已发布', offline: '已下架' },

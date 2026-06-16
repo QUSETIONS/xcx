@@ -13,8 +13,8 @@
             <view class="status-tag" :class="'status-' + item.status"><text>{{ statusMap[item.status] || item.status }}</text></view>
           </view>
           <view class="item-meta">
-            <text class="item-cat">{{ item.category_name }}</text>
-            <text class="item-region">{{ item.region }}</text>
+            <text class="item-cat">{{ categoryName(item.category_id, item.category_name) }}</text>
+            <text class="item-region">{{ regionName(item.region) }}</text>
           </view>
           <view class="item-stats">
             <view class="stat-box card-press"><image class="stat-icon" src="/static/icons/eye.svg"/><text>{{ item.view_count }}</text></view>
@@ -38,6 +38,7 @@ import { demandStatusMap as statusMap } from '@/utils/i18n-maps'
 import { demandService } from '@/mock/service'
 import { formatDate } from "@/utils/util"
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { categoryName, regionName } from '@/utils/i18n-maps'
 import { t } from '@/i18n'
 useNavTitle('titles.myDemands')
 

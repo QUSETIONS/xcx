@@ -17,7 +17,7 @@
           </view>
           <view class="item-meta">
             <text class="item-company">{{ item.company_name }}</text>
-            <text class="item-region">{{ item.region }}</text>
+            <text class="item-region">{{ regionName(item.region) }}</text>
           </view>
           <view class="item-stats">
             <view class="stat-box card-press"><text>👁 {{ item.view_count }}</text></view>
@@ -49,7 +49,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { demandStatusMap as statusMap } from '@/utils/i18n-maps'
+import { demandStatusMap as statusMap, regionName } from '@/utils/i18n-maps'
 import { demandService } from '@/mock/service'
 import { formatDate } from "@/utils/util"
 import { useNavTitle } from '@/hooks/useNavTitle'

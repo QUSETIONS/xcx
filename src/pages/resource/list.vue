@@ -13,7 +13,7 @@
             <text class="resource-title">{{ item.title }}</text>
             <text class="resource-summary">{{ item.summary }}</text>
             <view class="resource-meta">
-              <text class="meta-tag">{{ item.category_name }}</text>
+              <text class="meta-tag">{{ categoryName(item.category_id, item.category_name) }}</text>
               <text class="meta-type">{{ item.file_type }} · {{ item.file_size }}</text>
             </view>
             <view class="resource-stats">
@@ -39,6 +39,7 @@
 import { ref, onMounted } from 'vue'
 import { resourceService } from '@/mock/service'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { categoryName } from '@/utils/i18n-maps'
 import { t } from '@/i18n'
 useNavTitle('titles.resource')
 

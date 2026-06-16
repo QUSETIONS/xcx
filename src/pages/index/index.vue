@@ -58,7 +58,7 @@
           <view class="cat-icon-box" :class="'cat-color-' + (idx % 8)">
             <text class="cat-icon">{{ cat.icon }}</text>
           </view>
-          <text class="cat-name">{{ cat.name }}</text>
+          <text class="cat-name">{{ categoryName(cat.id, cat.name) }}</text>
         </view>
       </view>
     </view>
@@ -88,13 +88,13 @@
       <view class="demand-list" v-if="hotDemands.length">
         <view class="demand-item card-press" v-for="item in hotDemands" :key="item._id" @tap="goDemandDetail(item._id)">
           <view class="demand-top">
-            <text class="demand-cat-tag">{{ item.category_name }}</text>
+            <text class="demand-cat-tag">{{ categoryName(item.category_id, item.category_name) }}</text>
             <text class="demand-quote-tag">{{ formatQuote(item.quote_type) }}</text>
           </view>
           <text class="demand-title">{{ item.title }}</text>
           <view class="demand-meta">
             <text class="demand-company">{{ item.company_name }}</text>
-            <text class="demand-region">{{ item.region }}</text>
+            <text class="demand-region">{{ regionName(item.region) }}</text>
           </view>
           <view class="demand-bottom">
             <text class="demand-stats">👁 {{ item.view_count }}  🤝 {{ item.lead_count }}</text>
@@ -129,7 +129,7 @@ import { ref } from 'vue'
 import { DEMAND_CATEGORIES } from '@/config/constants'
 import { demandService, productService } from '@/mock/service'
 import { getRecommendedDemands, getRecommendedProducts } from '@/mock/smart'
-import { quoteLabel } from '@/utils/i18n-maps'
+import { quoteLabel, categoryName, regionName } from '@/utils/i18n-maps'
 import { t } from '@/i18n'
 import { useNavTitle } from '@/hooks/useNavTitle'
 useNavTitle('titles.home')
