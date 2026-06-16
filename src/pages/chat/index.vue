@@ -37,6 +37,8 @@
 <script setup>
 import { ref, nextTick, onMounted } from 'vue'
 import { chatService } from '@/mock/service'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.chat')
 
 const messages = ref([])
 const inputText = ref('')

@@ -87,6 +87,8 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { dashboardService } from '@/mock/service'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.screen')
 
 const currentTime = ref('00:00:00')
 const currentDate = ref('')

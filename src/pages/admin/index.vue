@@ -27,6 +27,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { demandService, leadService, orderService, productService } from '@/mock/service'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.admin')
 
 const animated = ref(false)
 const todayDemands = ref(0)

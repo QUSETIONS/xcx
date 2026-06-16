@@ -140,6 +140,8 @@ import { onLoad } from '@dcloudio/uni-app'
 import { QUOTE_TYPES } from '@/config/constants'
 import { demandService, leadService, favoriteService, reviewService, matchService } from '@/mock/service'
 import { trackBrowse } from '@/mock/smart'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.demandDetail')
 
 const demandId = ref('')
 const demand = ref(null)

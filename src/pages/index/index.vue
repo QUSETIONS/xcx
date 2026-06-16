@@ -130,6 +130,8 @@ import { DEMAND_CATEGORIES, QUOTE_TYPES } from '@/config/constants'
 import { demandService, productService } from '@/mock/service'
 import { getRecommendedDemands, getRecommendedProducts } from '@/mock/smart'
 import { t } from '@/i18n'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.home')
 
 const todayDemands = ref(128)
 const activeLeads = ref(56)

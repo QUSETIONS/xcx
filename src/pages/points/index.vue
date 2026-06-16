@@ -57,6 +57,8 @@
 <script setup>
 import { ref } from 'vue'
 import { pointsService } from '@/mock/service'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.points')
 
 const info = ref(pointsService.getInfo())
 const history = ref(pointsService.history())

@@ -88,6 +88,8 @@
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { communityService, demandService, reviewService, followService } from '@/mock/service'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.userProfile')
 
 const userId = ref('')
 const user = ref(null)

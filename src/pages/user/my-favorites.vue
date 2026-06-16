@@ -28,6 +28,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { favoriteService, demandService, productService } from '@/mock/service'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.myFavorites')
 
 const favList = ref([])
 const refreshing = ref(false)

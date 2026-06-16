@@ -107,6 +107,8 @@
 import { ref, onMounted } from 'vue'
 import { demandService, leadService, favoriteService, reviewService, pointsService, couponService, followService } from '@/mock/service'
 import { t } from '@/i18n'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.me')
 
 const userInfo = ref({ nickname: '创业者', company: '创新科技有限公司' })
 const myDemandsCount = ref(0)

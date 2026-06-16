@@ -37,6 +37,8 @@
 <script setup>
 import { ref } from 'vue'
 import { couponService } from '@/mock/service'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.coupon')
 
 const coupons = ref(couponService.list())
 

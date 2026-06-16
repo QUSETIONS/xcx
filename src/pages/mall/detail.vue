@@ -63,6 +63,8 @@ import { SERVICE_TYPES } from '@/config/constants'
 import { productService, favoriteService, cartService } from '@/mock/service'
 import { trackBrowse } from '@/mock/smart'
 import { hapticLight, toastSuccess } from '@/utils/feedback'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.mallDetail')
 
 const productId = ref('')
 const product = ref(null)

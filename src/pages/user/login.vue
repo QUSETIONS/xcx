@@ -15,6 +15,8 @@
 
 <script setup>
 import { useUserStore } from '@/stores/user'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.login')
 const userStore = useUserStore()
 async function doLogin() {
   await userStore.demoLogin('user')

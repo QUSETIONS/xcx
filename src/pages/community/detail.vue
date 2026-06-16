@@ -79,6 +79,8 @@ import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { communityService } from '@/mock/service'
 import { formatRelativeTime as formatTime } from "@/utils/util"
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.communityDetail')
 
 const postId = ref('')
 const post = ref(null)

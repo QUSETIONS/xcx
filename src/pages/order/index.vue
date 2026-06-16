@@ -76,6 +76,8 @@ import { onShow } from '@dcloudio/uni-app'
 import { ORDER_STATUS } from '@/config/constants'
 import { orderService } from '@/mock/service'
 import { formatDateTime as formatTime } from "@/utils/util"
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.myOrders')
 
 const tab = ref('all')
 const orderList = ref([])

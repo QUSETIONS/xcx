@@ -76,6 +76,8 @@ import { ref, onMounted } from 'vue'
 import { SERVICE_TYPES } from '@/config/constants'
 import { productService } from '@/mock/service'
 import { t } from '@/i18n'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.mall')
 
 const serviceTypes = SERVICE_TYPES
 const currentType = ref(null)

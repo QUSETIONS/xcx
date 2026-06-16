@@ -86,6 +86,8 @@
 import { ref, onMounted } from 'vue'
 import { verifyService } from '@/mock/service'
 import { formatDateFull as formatTime } from "@/utils/util"
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.verify')
 
 const status = ref('none')
 const info = ref(null)

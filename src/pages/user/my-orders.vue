@@ -30,6 +30,8 @@ import { ref, onMounted } from 'vue'
 import { ORDER_STATUS } from '@/config/constants'
 import { orderService } from '@/mock/service'
 import { formatDate } from "@/utils/util"
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.myOrders')
 
 const statusMap = ORDER_STATUS
 const list = ref([])

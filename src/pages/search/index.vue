@@ -88,6 +88,8 @@
 import { ref, onMounted, watch } from 'vue'
 import { searchService } from '@/mock/service'
 import { debounce } from '@/utils/util'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.search')
 
 const keyword = ref('')
 const searched = ref(false)

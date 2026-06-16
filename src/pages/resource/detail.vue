@@ -59,6 +59,8 @@
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { resourceService, favoriteService } from '@/mock/service'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.resourceDetail')
 
 const resource = ref(null)
 const isCollected = ref(false)

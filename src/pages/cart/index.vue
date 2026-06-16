@@ -45,6 +45,8 @@
 import { ref, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { cartService } from '@/mock/service'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.cart')
 
 const cartItems = ref([])
 const selectedIds = ref([])

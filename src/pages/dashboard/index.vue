@@ -117,6 +117,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { dashboardService, reviewService } from '@/mock/service'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.dashboard')
 
 const overview = ref({})
 const trendData = ref([])

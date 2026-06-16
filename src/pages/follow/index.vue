@@ -29,6 +29,8 @@
 <script setup>
 import { ref } from 'vue'
 import { followService } from '@/mock/service'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.follow')
 
 const list = ref(followService.list())
 

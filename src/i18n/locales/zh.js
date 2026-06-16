@@ -2,6 +2,48 @@
  * 中文语言包
  */
 export default {
+  // 页面标题（用于动态导航栏标题）
+  titles: {
+    home: '企动库',
+    demandHall: '需求大厅',
+    demandDetail: '需求详情',
+    demandPublish: '发布需求',
+    community: '社区',
+    communityPost: '发布动态',
+    communityDetail: '动态详情',
+    mall: '商城',
+    mallDetail: '商品详情',
+    orderConfirm: '订单确认',
+    resource: '资料库',
+    resourceDetail: '资料详情',
+    me: '我的',
+    login: '登录',
+    myDemands: '我的需求',
+    myLeads: '我的对接',
+    myOrders: '我的订单',
+    myFavorites: '我的收藏',
+    message: '消息中心',
+    dashboard: '数据看板',
+    points: '积分中心',
+    coupon: '我的优惠券',
+    follow: '我的关注',
+    deals: '成交管理',
+    userProfile: '用户主页',
+    cart: '购物车',
+    verify: '企业认证',
+    search: '搜索',
+    member: '会员中心',
+    campaign: '活动中心',
+    chat: '在线客服',
+    settings: '设置',
+    admin: '后台管理',
+    demandManage: '需求管理',
+    leadManage: '对接管理',
+    orderManage: '订单管理',
+    productManage: '商品管理',
+    screen: '运营数据中心'
+  },
+
   // 通用
   app: {
     name: '企动库',
@@ -50,8 +92,7 @@ export default {
     connect: '我要对接',
     favorite: '收藏',
     share: '分享'
-  },
-  // 社区
+  },  // 社区
   community: {
     title: '社区',
     hotDiscussions: '热门讨论',

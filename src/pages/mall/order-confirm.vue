@@ -99,6 +99,8 @@ import { onLoad } from '@dcloudio/uni-app'
 import { SERVICE_TYPES } from '@/config/constants'
 import { productService, orderService, couponService, pointsService } from '@/mock/service'
 import { guardClick, toastSuccess, toastError, hapticSuccess } from '@/utils/feedback'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.orderConfirm')
 
 const productId = ref('')
 const product = ref(null)

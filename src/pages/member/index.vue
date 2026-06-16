@@ -82,6 +82,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { memberService } from '@/mock/service'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.member')
 
 const tiers = ref([])
 const current = ref({ tier: 'free' })

@@ -43,6 +43,8 @@
 import { ref, onMounted } from 'vue'
 import { SERVICE_TYPES } from '@/config/constants'
 import { productService } from '@/mock/service'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.productManage')
 
 const serviceTypes = SERVICE_TYPES
 const productList = ref([])

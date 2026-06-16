@@ -41,6 +41,8 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { notifyService } from '@/mock/service'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.message')
 
 const tab = ref('all')
 const refreshing = ref(false)

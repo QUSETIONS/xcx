@@ -52,6 +52,8 @@ import { ref, computed, onMounted } from 'vue'
 import { DEMAND_STATUS } from '@/config/constants'
 import { demandService } from '@/mock/service'
 import { formatDate } from "@/utils/util"
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.demandManage')
 
 const statusMap = DEMAND_STATUS
 const statusFilter = ref('')

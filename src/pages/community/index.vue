@@ -99,6 +99,8 @@ import { ref } from 'vue'
 import { communityService } from '@/mock/service'
 import { formatRelativeTime as formatTime } from "@/utils/util"
 import { t } from '@/i18n'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.community')
 
 const topics = ref(communityService.topics())
 const currentTopic = ref(null)

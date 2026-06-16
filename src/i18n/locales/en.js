@@ -2,6 +2,48 @@
  * English language pack
  */
 export default {
+  // Page titles (dynamic navigation bar)
+  titles: {
+    home: 'QiYeKu',
+    demandHall: 'Demands',
+    demandDetail: 'Demand Detail',
+    demandPublish: 'Publish Demand',
+    community: 'Community',
+    communityPost: 'New Post',
+    communityDetail: 'Post Detail',
+    mall: 'Mall',
+    mallDetail: 'Product Detail',
+    orderConfirm: 'Confirm Order',
+    resource: 'Library',
+    resourceDetail: 'Resource Detail',
+    me: 'Me',
+    login: 'Login',
+    myDemands: 'My Demands',
+    myLeads: 'My Leads',
+    myOrders: 'My Orders',
+    myFavorites: 'Favorites',
+    message: 'Messages',
+    dashboard: 'Dashboard',
+    points: 'Points',
+    coupon: 'Coupons',
+    follow: 'Following',
+    deals: 'Deals',
+    userProfile: 'Profile',
+    cart: 'Cart',
+    verify: 'Verification',
+    search: 'Search',
+    member: 'Membership',
+    campaign: 'Campaigns',
+    chat: 'Service',
+    settings: 'Settings',
+    admin: 'Admin',
+    demandManage: 'Demand Mgmt',
+    leadManage: 'Lead Mgmt',
+    orderManage: 'Order Mgmt',
+    productManage: 'Product Mgmt',
+    screen: 'Data Center'
+  },
+
   app: {
     name: 'QiYeKu',
     slogan: 'Enterprise Resource Matching Platform'

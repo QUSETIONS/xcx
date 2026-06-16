@@ -74,6 +74,8 @@
 import { ref, computed } from 'vue'
 import { dealService } from '@/mock/service'
 import { formatDate } from "@/utils/util"
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.deals')
 
 const tab = ref('all')
 const showReviewModal = ref(false)

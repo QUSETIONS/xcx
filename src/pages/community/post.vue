@@ -54,6 +54,8 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { communityService } from '@/mock/service'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.communityPost')
 
 const topics = ref(communityService.topics())
 const selectedTopic = ref('')

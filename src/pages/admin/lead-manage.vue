@@ -46,6 +46,8 @@ import { ref, computed, onMounted } from 'vue'
 import { LEAD_STATUS } from '@/config/constants'
 import { leadService } from '@/mock/service'
 import { formatDate } from "@/utils/util"
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.leadManage')
 
 const statusMap = LEAD_STATUS
 const statusFilter = ref('')

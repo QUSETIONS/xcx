@@ -38,6 +38,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { resourceService } from '@/mock/service'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.resource')
 
 const list = ref([])
 const refreshing = ref(false)

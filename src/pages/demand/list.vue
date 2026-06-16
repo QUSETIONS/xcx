@@ -138,6 +138,8 @@ import { DEMAND_CATEGORIES, REGIONS, QUOTE_TYPES } from '@/config/constants'
 import { demandService } from '@/mock/service'
 import { formatRelativeTime as formatTime } from "@/utils/util"
 import { t } from '@/i18n'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.demandHall')
 
 const categories = DEMAND_CATEGORIES
 const regions = REGIONS

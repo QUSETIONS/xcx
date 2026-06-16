@@ -7,7 +7,7 @@
  *   setLocale('en')               // 切换语言
  *   t('common.empty', '默认值')    // 带兜底
  */
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { STORAGE_KEYS } from '@/config/constants'
 import zh from './locales/zh'
 import en from './locales/en'
@@ -31,9 +31,6 @@ export const locales = [
   { value: 'zh-CN', label: '简体中文' },
   { value: 'en-US', label: 'English' }
 ]
-
-/** 当前语言包（响应式） */
-export const messages_ref = computed(() => messages[locale.value] || messages['zh-CN'])
 
 /**
  * 翻译函数
@@ -63,6 +60,3 @@ export function setLocale(l) {
   try { uni.setStorageSync(STORAGE_KEY, l) } catch {}
   return true
 }
-
-/** 是否英文 */
-export function isEn() { return locale.value === 'en-US' }

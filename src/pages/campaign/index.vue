@@ -62,6 +62,8 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { campaignService } from '@/mock/service'
+import { useNavTitle } from '@/hooks/useNavTitle'
+useNavTitle('titles.campaign')
 
 const campaigns = ref([])
 const countdown = ref({ h: '08', m: '32', s: '45' })
