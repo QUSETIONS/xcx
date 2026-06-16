@@ -371,7 +371,22 @@ export default {
     onlineService: 'Online Service',
     pointsSign: 'Check-in',
     message: 'Messages',
-    resource: 'Resources'
+    resource: 'Resources',
+    emptyDemand: 'No demands yet',
+    emptyLead: 'No leads yet',
+    emptyFavorite: 'No favorites yet',
+    emptyOrder: 'No orders yet',
+    removedFav: 'Removed from favorites',
+    goMall: 'Go to Mall',
+    typeDemand: 'Demand',
+    typeProduct: 'Product',
+    typePost: 'Post',
+    typeOther: 'Other'
+  },
+  login: {
+    oneTap: 'One-tap Login',
+    admin: 'Admin Login',
+    demoTip: 'Demo mode — tap to try'
   },
   member: {
     free: 'Free',

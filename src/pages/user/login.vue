@@ -2,13 +2,13 @@
   <view class="login-page">
     <view class="login-hero">
       <text class="login-logo">🚀</text>
-      <text class="login-title">企动库</text>
-      <text class="login-subtitle">企业资源对接平台</text>
+      <text class="login-title">{{ t('app.name') }}</text>
+      <text class="login-subtitle">{{ t('app.slogan') }}</text>
     </view>
     <view class="login-actions">
-      <button class="btn-glow" @tap="doLogin">一键登录</button>
-      <button class="btn-glow" style="background: $gradient-secondary; box-shadow: $shadow-glow-secondary;" @tap="doAdminLogin">管理员登录</button>
-      <text class="login-tip">Demo模式，点击即可体验</text>
+      <button class="btn-glow" @tap="doLogin">{{ t('login.oneTap') }}</button>
+      <button class="btn-glow" style="background: $gradient-secondary; box-shadow: $shadow-glow-secondary;" @tap="doAdminLogin">{{ t('login.admin') }}</button>
+      <text class="login-tip">{{ t('login.demoTip') }}</text>
     </view>
   </view>
 </template>
@@ -16,6 +16,7 @@
 <script setup>
 import { useUserStore } from '@/stores/user'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.login')
 const userStore = useUserStore()
 async function doLogin() {

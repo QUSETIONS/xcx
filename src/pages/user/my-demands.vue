@@ -1,7 +1,7 @@
 <template>
   <view class="page">
     <view class="header">
-      <text class="header-title">我的需求</text>
+      <text class="header-title">{{ t('user.myDemand') }}</text>
     </view>
 
     <scroll-view class="list-scroll" scroll-y :refresher-enabled="true" :refresher-triggered="refreshing" @refresherrefresh="onRefresh">
@@ -25,8 +25,8 @@
       </view>
       <view v-if="!list.length" class="empty">
         <text class="empty-icon">📋</text>
-        <text class="empty-text">暂无需求</text>
-        <text class="empty-btn" @tap="goPublish">发布需求</text>
+        <text class="empty-text">{{ t('user.emptyDemand') }}</text>
+        <text class="empty-btn" @tap="goPublish">{{ t('demand.publish') }}</text>
       </view>
     </scroll-view>
   </view>
@@ -38,6 +38,7 @@ import { DEMAND_STATUS } from '@/config/constants'
 import { demandService } from '@/mock/service'
 import { formatDate } from "@/utils/util"
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.myDemands')
 
 const statusMap = DEMAND_STATUS

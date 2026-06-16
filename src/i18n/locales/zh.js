@@ -384,7 +384,23 @@ export default {
     onlineService: '在线客服',
     pointsSign: '积分签到',
     message: '消息中心',
-    resource: '资料下载'
+    resource: '资料下载',
+    emptyDemand: '暂无需求',
+    emptyLead: '暂无对接记录',
+    emptyFavorite: '暂无收藏',
+    emptyOrder: '暂无订单',
+    removedFav: '已取消收藏',
+    goMall: '去商城',
+    typeDemand: '需求',
+    typeProduct: '商品',
+    typePost: '帖子',
+    typeOther: '其他'
+  },
+  // 登录
+  login: {
+    oneTap: '一键登录',
+    admin: '管理员登录',
+    demoTip: 'Demo模式，点击即可体验'
   },
   // 会员
   member: {

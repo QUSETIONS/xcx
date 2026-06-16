@@ -1,6 +1,6 @@
 <template>
   <view class="page">
-    <view class="header"><text class="header-title">我的对接</text></view>
+    <view class="header"><text class="header-title">{{ t('user.myLeads') }}</text></view>
 
     <scroll-view class="list-scroll" scroll-y :refresher-enabled="true" :refresher-triggered="refreshing" @refresherrefresh="onRefresh">
       <view class="lead-list" :class="{ 'animate-in': animated }">
@@ -17,7 +17,7 @@
       </view>
       <view v-if="!list.length" class="empty">
         <text class="empty-icon">🤝</text>
-        <text class="empty-text">暂无对接记录</text>
+        <text class="empty-text">{{ t('user.emptyLead') }}</text>
       </view>
     </scroll-view>
   </view>
@@ -29,6 +29,7 @@ import { LEAD_STATUS } from '@/config/constants'
 import { leadService } from '@/mock/service'
 import { formatDate } from "@/utils/util"
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.myLeads')
 
 const statusMap = LEAD_STATUS

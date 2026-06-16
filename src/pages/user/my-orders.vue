@@ -1,13 +1,13 @@
 <template>
   <view class="page">
-    <view class="header"><text class="header-title">我的订单</text></view>
+    <view class="header"><text class="header-title">{{ t('user.myOrder') }}</text></view>
 
     <scroll-view class="list-scroll" scroll-y :refresher-enabled="true" :refresher-triggered="refreshing" @refresherrefresh="onRefresh">
       <view class="order-list" :class="{ 'animate-in': animated }">
         <view class="order-item card-press" v-for="(item, idx) in list" :key="item._id"
           :class="{ 'fade-in': animated }" :style="{ animationDelay: (idx * 0.08) + 's' }">
           <view class="order-top">
-            <text class="order-product">{{ item.items?.[0]?.title || '商品' }}</text>
+            <text class="order-product">{{ item.items?.[0]?.title || t('user.typeProduct') }}</text>
             <view class="status-tag" :class="'status-' + item.status"><text>{{ statusMap[item.status] || item.status }}</text></view>
           </view>
           <view class="order-bottom">
@@ -18,8 +18,8 @@
       </view>
       <view v-if="!list.length" class="empty">
         <text class="empty-icon">📦</text>
-        <text class="empty-text">暂无订单</text>
-        <text class="empty-btn" @tap="goMall">去商城</text>
+        <text class="empty-text">{{ t('user.emptyOrder') }}</text>
+        <text class="empty-btn" @tap="goMall">{{ t('user.goMall') }}</text>
       </view>
     </scroll-view>
   </view>
@@ -31,6 +31,7 @@ import { ORDER_STATUS } from '@/config/constants'
 import { orderService } from '@/mock/service'
 import { formatDate } from "@/utils/util"
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.myOrders')
 
 const statusMap = ORDER_STATUS

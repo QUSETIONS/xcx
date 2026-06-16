@@ -1,6 +1,6 @@
 <template>
   <view class="page">
-    <view class="header"><text class="header-title">我的收藏</text></view>
+    <view class="header"><text class="header-title">{{ t('user.myFavorite') }}</text></view>
 
     <scroll-view class="list-scroll" scroll-y :refresher-enabled="true" :refresher-triggered="refreshing" @refresherrefresh="onRefresh">
       <view class="fav-list" :class="{ 'animate-in': animated }">
@@ -18,8 +18,8 @@
       </view>
       <view v-if="!favList.length" class="empty">
         <text class="empty-icon">❤️</text>
-        <text class="empty-text">暂无收藏</text>
-        <text class="empty-hint" @tap="goBrowse">去逛逛</text>
+        <text class="empty-text">{{ t('user.emptyFavorite') }}</text>
+        <text class="empty-hint" @tap="goBrowse">{{ t('cartPage.goShop') }}</text>
       </view>
     </scroll-view>
   </view>
@@ -29,6 +29,7 @@
 import { ref, onMounted } from 'vue'
 import { favoriteService, demandService, productService } from '@/mock/service'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.myFavorites')
 
 const favList = ref([])
@@ -57,14 +58,14 @@ function getIconName(type) {
 }
 
 function getTypeName(type) {
-  const map = { demand: '需求', product: '商品', post: '帖子' }
-  return map[type] || '其他'
+  const map = { demand: t('user.typeDemand'), product: t('user.typeProduct'), post: t('user.typePost') }
+  return map[type] || t('user.typeOther')
 }
 
 function removeFav(item) {
   favoriteService.toggle({ userId: 'demo_user_001', targetType: item.targetType, targetId: item.targetId })
   loadList()
-  uni.showToast({ title: '已取消收藏', icon: 'none' })
+  uni.showToast({ title: t('user.removedFav'), icon: 'none' })
 }
 
 function goDetail(item) {
