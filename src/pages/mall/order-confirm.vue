@@ -2,7 +2,7 @@
   <view class="confirm-page">
     <!-- 服务信息 -->
     <view class="goods-card">
-      <text class="card-label">服务信息</text>
+      <text class="card-label">{{ t('orderConfirm.serviceInfo') }}</text>
       <view class="goods-item">
         <view class="goods-icon-box" :class="'type-' + (product?.service_type || 'resource_pack')">
           <text class="goods-icon">{{ getServiceIcon(product?.service_type) }}</text>
@@ -17,11 +17,11 @@
 
     <!-- 优惠券选择 -->
     <view class="coupon-card" @tap="showCouponPicker = true">
-      <text class="coupon-label">🎫 优惠券</text>
+      <text class="coupon-label">🎫 {{ t('orderConfirm.coupon') }}</text>
       <view class="coupon-right">
         <text v-if="selectedCoupon" class="coupon-selected">-¥{{ (selectedCoupon.amount / 100).toFixed(0) }}</text>
-        <text v-else-if="availableCoupons.length" class="coupon-available">{{ availableCoupons.length }}张可用</text>
-        <text v-else class="coupon-none">暂无可用</text>
+        <text v-else-if="availableCoupons.length" class="coupon-available">{{ availableCoupons.length }}{{ t('orderConfirm.couponCountSuffix') }}</text>
+        <text v-else class="coupon-none">{{ t('orderConfirm.couponNone') }}</text>
         <text class="arrow">›</text>
       </view>
     </view>
@@ -31,8 +31,8 @@
       <view class="points-left">
         <text class="points-icon">🎁</text>
         <view class="points-info">
-          <text class="points-title">积分抵扣</text>
-          <text class="points-desc">{{ pointsBalance }}积分可用，{{ pointsUsed ? '抵扣¥' + (pointsUsed / 100).toFixed(0) : '100积分=¥1' }}</text>
+          <text class="points-title">{{ t('orderConfirm.pointsTitle') }}</text>
+          <text class="points-desc">{{ pointsDesc }}</text>
         </view>
       </view>
       <switch :checked="usePoints" @change="togglePoints" color="#FF6B35"/>
@@ -40,19 +40,19 @@
 
     <!-- 联系信息 -->
     <view class="contact-card">
-      <text class="card-label">联系信息</text>
-      <view class="contact-row"><text class="contact-label">姓名 *</text><input class="contact-input" v-model="form.contact_name" placeholder="请输入姓名" /></view>
-      <view class="contact-row"><text class="contact-label">电话 *</text><input class="contact-input" type="number" v-model="form.phone" placeholder="请输入电话" /></view>
-      <view class="contact-row"><text class="contact-label">备注</text><textarea class="contact-area" v-model="form.remark" placeholder="订单备注（可选）" /></view>
+      <text class="card-label">{{ t('orderConfirm.contactInfo') }}</text>
+      <view class="contact-row"><text class="contact-label">{{ t('orderConfirm.nameLabel') }}</text><input class="contact-input" v-model="form.contact_name" :placeholder="t('orderConfirm.namePlaceholder')" /></view>
+      <view class="contact-row"><text class="contact-label">{{ t('orderConfirm.phoneLabel') }}</text><input class="contact-input" type="number" v-model="form.phone" :placeholder="t('orderConfirm.phonePlaceholder')" /></view>
+      <view class="contact-row"><text class="contact-label">{{ t('orderConfirm.remarkLabel') }}</text><textarea class="contact-area" v-model="form.remark" :placeholder="t('orderConfirm.remarkPlaceholder')" /></view>
     </view>
 
     <!-- 金额汇总 -->
     <view class="summary-card">
-      <view class="summary-row"><text class="summary-label">服务金额</text><text class="summary-value">¥{{ originalPrice }}</text></view>
-      <view class="summary-row" v-if="couponDiscount > 0"><text class="summary-label">优惠券</text><text class="summary-discount">-¥{{ (couponDiscount / 100).toFixed(0) }}</text></view>
-      <view class="summary-row" v-if="pointsDiscount > 0"><text class="summary-label">积分抵扣</text><text class="summary-discount">-¥{{ (pointsDiscount / 100).toFixed(0) }}</text></view>
-      <view class="summary-row total"><text class="summary-label">应付金额</text><text class="summary-total">¥{{ finalPrice }}</text></view>
-      <text class="summary-tip">Demo阶段为模拟支付，不产生真实交易</text>
+      <view class="summary-row"><text class="summary-label">{{ t('orderConfirm.serviceAmount') }}</text><text class="summary-value">¥{{ originalPrice }}</text></view>
+      <view class="summary-row" v-if="couponDiscount > 0"><text class="summary-label">{{ t('orderConfirm.coupon') }}</text><text class="summary-discount">-¥{{ (couponDiscount / 100).toFixed(0) }}</text></view>
+      <view class="summary-row" v-if="pointsDiscount > 0"><text class="summary-label">{{ t('orderConfirm.pointsDiscount') }}</text><text class="summary-discount">-¥{{ (pointsDiscount / 100).toFixed(0) }}</text></view>
+      <view class="summary-row total"><text class="summary-label">{{ t('orderConfirm.totalDue') }}</text><text class="summary-total">¥{{ finalPrice }}</text></view>
+      <text class="summary-tip">{{ t('orderConfirm.demoTip') }}</text>
     </view>
 
     <view style="height: 160rpx;"></view>
@@ -60,33 +60,33 @@
     <!-- 提交 -->
     <view class="submit-bar">
       <view class="submit-left">
-        <text class="submit-amount-label">实付</text>
+        <text class="submit-amount-label">{{ t('orderConfirm.paid') }}</text>
         <text class="submit-amount">¥{{ finalPrice }}</text>
       </view>
-      <view class="submit-btn" @tap="submitOrder"><text>{{ submitting ? '提交中...' : '确认下单' }}</text></view>
+      <view class="submit-btn" @tap="submitOrder"><text>{{ submitting ? t('orderConfirm.submitting') : t('orderConfirm.confirmOrder') }}</text></view>
     </view>
 
     <!-- 优惠券选择弹窗 -->
     <view v-if="showCouponPicker" class="modal-mask" @tap="showCouponPicker = false">
       <view class="modal-panel" @tap.stop>
         <view class="modal-header">
-          <text class="modal-title">选择优惠券</text>
+          <text class="modal-title">{{ t('orderConfirm.selectCoupon') }}</text>
           <text class="modal-close" @tap="showCouponPicker = false">✕</text>
         </view>
         <view class="coupon-option" v-for="c in availableCoupons" :key="c._id" :class="{ active: selectedCoupon?._id === c._id }" @tap="selectCoupon(c)">
           <view class="co-left">
             <text class="co-amount">{{ c.amount / 100 }}</text>
-            <text class="co-unit">元</text>
+            <text class="co-unit">{{ t('orderConfirm.yuan') }}</text>
           </view>
           <view class="co-right">
             <text class="co-name">{{ c.name }}</text>
             <text class="co-desc">{{ c.desc }}</text>
-            <text class="co-expire">有效期至 {{ c.expire }}</text>
+            <text class="co-expire">{{ t('orderConfirm.validUntil') }}{{ c.expire }}</text>
           </view>
           <view class="co-check" v-if="selectedCoupon?._id === c._id">✓</view>
         </view>
         <view class="coupon-option" :class="{ active: !selectedCoupon }" @tap="selectCoupon(null)">
-          <text class="co-none-text">不使用优惠券</text>
+          <text class="co-none-text">{{ t('orderConfirm.noCoupon') }}</text>
         </view>
       </view>
     </view>
@@ -100,6 +100,7 @@ import { SERVICE_TYPES } from '@/config/constants'
 import { productService, orderService, couponService, pointsService } from '@/mock/service'
 import { guardClick, toastSuccess, toastError, hapticSuccess } from '@/utils/feedback'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.orderConfirm')
 
 const productId = ref('')
@@ -129,6 +130,14 @@ const finalPrice = computed(() => {
   return (Math.max(0, remaining) / 100).toFixed(2)
 })
 
+// 积分抵扣说明（含余额/抵扣金额，需随语言切换）
+const pointsDesc = computed(() => {
+  const bal = pointsBalance.value
+  const used = pointsUsed.value
+  if (used) return t('orderConfirm.pointsDescUsed').replace('{balance}', bal).replace('{amount}', (used / 100).toFixed(0))
+  return t('orderConfirm.pointsDescRate').replace('{balance}', bal)
+})
+
 function getServiceIcon(type) {
   const map = { member: '👑', linker: '🔗', survey: '📊', resource_pack: '📦', certification: '✅' }
   return map[type] || '📦'
@@ -152,8 +161,8 @@ onLoad((q) => {
 })
 
 async function doSubmit() {
-  if (!product.value) { toastError('商品信息错误'); return }
-  if (!form.value.contact_name.trim() || !form.value.phone.trim()) { toastError('请填写联系信息'); return }
+  if (!product.value) { toastError(t('orderConfirm.productError')); return }
+  if (!form.value.contact_name.trim() || !form.value.phone.trim()) { toastError(t('orderConfirm.fillContact')); return }
   submitting.value = true
   try {
     orderService.create({
@@ -168,11 +177,11 @@ async function doSubmit() {
     if (pointsUsed.value) {
       const info = pointsService.getInfo()
       info.balance -= pointsUsed.value
-      info.history.unshift({ _id: 'p' + Date.now(), type: 'redeem', points: -pointsUsed.value, desc: '订单积分抵扣', date: '刚刚' })
+      info.history.unshift({ _id: 'p' + Date.now(), type: 'redeem', points: -pointsUsed.value, desc: t('orderConfirm.pointsRedeemDesc'), date: t('orderConfirm.justNow') })
     }
     uni.setStorageSync('last_order_contact', { name: form.value.contact_name, phone: form.value.phone })
     hapticSuccess()
-    toastSuccess('下单成功')
+    toastSuccess(t('orderConfirm.orderSuccess'))
     setTimeout(() => uni.redirectTo({ url: '/pages/order/index' }), 1500)
   } finally { submitting.value = false }
 }
