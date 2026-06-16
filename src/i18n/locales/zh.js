@@ -586,6 +586,54 @@ export default {
     todoLead: '新对接待回复',
     todoMessage: '未读消息'
   },
+  // 资料库
+  resource: {
+    title: '资料库',
+    free: '免费',
+    empty: '暂无资料',
+    downloads: '下载',
+    summary: '资料简介',
+    preview: '资料预览',
+    downloadTips: '下载说明',
+    tip1: '资料下载后可永久使用',
+    tip2: '支持PDF/Word/PPT/Excel格式',
+    tip3: '如有问题请联系客服',
+    collected: '已收藏',
+    freeDownload: '免费下载',
+    getPrice: ' 获取',
+    downloadConfirm: '下载确认',
+    downloadContent: '确定要下载「{title}」吗？',
+    downloadSuccess: '下载成功',
+    downloadSaved: '资料已保存到您的设备，请在"我的下载"中查看',
+    payTitle: '付费获取',
+    payContent: '该资料需要 ¥{price}，确定购买吗？',
+    payWip: 'Demo：支付功能开发中'
+  },
+  // 活动中心
+  campaign: {
+    heroDesc: '超值优惠 · 限时抢购',
+    flash: '限时秒杀进行中',
+    taskTitle: '做任务赚积分',
+    pointsUnit: '积分',
+    taskDone: '已完成',
+    taskGo: '去完成',
+    linkCopied: '分享链接已复制',
+    tasks: [
+      { name: '每日签到', desc: '连续签到领额外奖励' },
+      { name: '发布一条需求', desc: '首次发布得双倍积分' },
+      { name: '浏览3个服务', desc: '了解平台精选服务' },
+      { name: '邀请1位好友', desc: '好友注册即得奖励' },
+      { name: '完善企业资料', desc: '提升信任度与曝光' }
+    ]
+  },
+  // 在线客服
+  chat: {
+    today: '今天',
+    serviceLabel: '客',
+    meLabel: '我',
+    placeholder: '请输入消息...',
+    quick: ['会员有什么权益？', '如何发布需求？', '退款流程', '联系人工客服']
+  },
   // 设置
   settings: {
     title: '设置',

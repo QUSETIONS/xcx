@@ -3,16 +3,16 @@
     <!-- 消息列表 -->
     <scroll-view class="msg-scroll" scroll-y :scroll-top="scrollTop" :scroll-with-animation="true">
       <view class="msg-list">
-        <view class="time-divider"><text>今天</text></view>
+        <view class="time-divider"><text>{{ t('chat.today') }}</text></view>
         <view class="msg-item" v-for="msg in messages" :key="msg.id" :class="msg.from">
-          <view class="avatar" v-if="msg.from === 'service'"><text>客</text></view>
+          <view class="avatar" v-if="msg.from === 'service'"><text>{{ t('chat.serviceLabel') }}</text></view>
           <view class="bubble" :class="msg.from">
             <text>{{ msg.content }}</text>
           </view>
-          <view class="avatar user-avatar" v-if="msg.from === 'user'"><text>我</text></view>
+          <view class="avatar user-avatar" v-if="msg.from === 'user'"><text>{{ t('chat.meLabel') }}</text></view>
         </view>
         <view class="typing" v-if="serviceTyping">
-          <view class="avatar"><text>客</text></view>
+          <view class="avatar"><text>{{ t('chat.serviceLabel') }}</text></view>
           <view class="bubble service typing-bubble">
             <text class="dot"></text><text class="dot"></text><text class="dot"></text>
           </view>
@@ -28,8 +28,8 @@
 
     <!-- 输入栏 -->
     <view class="input-bar">
-      <input class="msg-input" v-model="inputText" placeholder="请输入消息..." confirm-type="send" @confirm="send" />
-      <view class="send-btn" :class="{ active: inputText.trim() }" @tap="send"><text>发送</text></view>
+      <input class="msg-input" v-model="inputText" :placeholder="t('chat.placeholder')" confirm-type="send" @confirm="send" />
+      <view class="send-btn" :class="{ active: inputText.trim() }" @tap="send"><text>{{ t('community.send') }}</text></view>
     </view>
   </view>
 </template>
@@ -38,13 +38,14 @@
 import { ref, nextTick, onMounted } from 'vue'
 import { chatService } from '@/mock/service'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.chat')
 
 const messages = ref([])
 const inputText = ref('')
 const scrollTop = ref(0)
 const serviceTyping = ref(false)
-const quickQuestions = ['会员有什么权益？', '如何发布需求？', '退款流程', '联系人工客服']
+const quickQuestions = t('chat.quick')
 
 onMounted(() => {
   messages.value = chatService.list()

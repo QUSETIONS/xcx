@@ -12,25 +12,25 @@
     <view class="stats-card">
       <view class="stat-item">
         <text class="stat-val">{{ resource.view_count }}</text>
-        <text class="stat-label">浏览</text>
+        <text class="stat-label">{{ t('demandDetail.views') }}</text>
       </view>
       <view class="stat-item">
         <text class="stat-val">{{ resource.download_count }}</text>
-        <text class="stat-label">下载</text>
+        <text class="stat-label">{{ t('resource.downloads') }}</text>
       </view>
       <view class="stat-item">
         <text class="stat-val">{{ resource.favorite_count }}</text>
-        <text class="stat-label">收藏</text>
+        <text class="stat-label">{{ t('demandDetail.favorites') }}</text>
       </view>
     </view>
 
     <view class="desc-card">
-      <text class="card-label">资料简介</text>
+      <text class="card-label">{{ t('resource.summary') }}</text>
       <text class="desc-text">{{ resource.summary }}</text>
     </view>
 
     <view class="preview-card">
-      <text class="card-label">资料预览</text>
+      <text class="card-label">{{ t('resource.preview') }}</text>
       <view class="preview-box">
         <text class="preview-icon">📄</text>
         <text class="preview-name">{{ resource.title }}.{{ resource.file_type }}</text>
@@ -38,18 +38,18 @@
     </view>
 
     <view class="download-tips">
-      <text class="tips-title">下载说明</text>
-      <text class="tips-item">• 资料下载后可永久使用</text>
-      <text class="tips-item">• 支持PDF/Word/PPT/Excel格式</text>
-      <text class="tips-item">• 如有问题请联系客服</text>
+      <text class="tips-title">{{ t('resource.downloadTips') }}</text>
+      <text class="tips-item">• {{ t('resource.tip1') }}</text>
+      <text class="tips-item">• {{ t('resource.tip2') }}</text>
+      <text class="tips-item">• {{ t('resource.tip3') }}</text>
     </view>
 
     <view class="action-bar">
       <view class="collect-btn" @tap="toggleCollect">
-        <text>{{ isCollected ? '已收藏' : '收藏' }}</text>
+        <text>{{ isCollected ? t('resource.collected') : t('demandDetail.favorite') }}</text>
       </view>
       <view class="download-btn" :class="{ free: resource.is_free }" @tap="download">
-        <text>{{ resource.is_free ? '免费下载' : `¥${(resource.price/100).toFixed(0)} 获取` }}</text>
+        <text>{{ resource.is_free ? t('resource.freeDownload') : ('¥' + (resource.price/100).toFixed(0) + t('resource.getPrice')) }}</text>
       </view>
     </view>
   </view>
@@ -60,6 +60,7 @@ import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { resourceService, favoriteService } from '@/mock/service'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.resourceDetail')
 
 const resource = ref(null)
@@ -76,7 +77,7 @@ function toggleCollect() {
   if (!resource.value) return
   favoriteService.toggle({ userId: 'demo_user_001', targetType: 'resource', targetId: resource.value._id })
   isCollected.value = !isCollected.value
-  uni.showToast({ title: isCollected.value ? '已收藏' : '已取消收藏', icon: 'success' })
+  uni.showToast({ title: isCollected.value ? t('demandDetail.favorited') : t('user.removedFav'), icon: 'success' })
 }
 
 function download() {
@@ -85,14 +86,14 @@ function download() {
   if (resource.value.is_free) {
     // 免费资料直接下载
     uni.showModal({
-      title: '下载确认',
-      content: `确定要下载「${resource.value.title}」吗？`,
+      title: t('resource.downloadConfirm'),
+      content: t('resource.downloadContent').replace('{title}', resource.value.title),
       success: (res) => {
         if (res.confirm) {
           resource.value.download_count = (resource.value.download_count || 0) + 1
           uni.showModal({
-            title: '下载成功',
-            content: '资料已保存到您的设备，请在"我的下载"中查看',
+            title: t('resource.downloadSuccess'),
+            content: t('resource.downloadSaved'),
             showCancel: false
           })
         }
@@ -101,12 +102,12 @@ function download() {
   } else {
     // 付费资料
     uni.showModal({
-      title: '付费获取',
-      content: `该资料需要 ¥${(resource.value.price/100).toFixed(0)}，确定购买吗？`,
-      confirmText: '立即购买',
+      title: t('resource.payTitle'),
+      content: t('resource.payContent').replace('{price}', (resource.value.price/100).toFixed(0)),
+      confirmText: t('mall.buyNow'),
       success: (res) => {
         if (res.confirm) {
-          uni.showToast({ title: 'Demo：支付功能开发中', icon: 'none' })
+          uni.showToast({ title: t('resource.payWip'), icon: 'none' })
         }
       }
     })

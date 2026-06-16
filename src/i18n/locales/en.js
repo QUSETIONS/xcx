@@ -562,6 +562,51 @@ export default {
     todoLead: 'New Leads to Reply',
     todoMessage: 'Unread Messages'
   },
+  resource: {
+    title: 'Library',
+    free: 'Free',
+    empty: 'No resources',
+    downloads: 'Downloads',
+    summary: 'Summary',
+    preview: 'Preview',
+    downloadTips: 'Download Info',
+    tip1: 'Permanently yours after download',
+    tip2: 'Supports PDF/Word/PPT/Excel',
+    tip3: 'Contact support for issues',
+    collected: 'Saved',
+    freeDownload: 'Free Download',
+    getPrice: ' Get',
+    downloadConfirm: 'Download',
+    downloadContent: 'Download "{title}"?',
+    downloadSuccess: 'Downloaded',
+    downloadSaved: 'Saved to your device. Check "My Downloads".',
+    payTitle: 'Purchase',
+    payContent: 'This resource costs ¥{price}. Purchase?',
+    payWip: 'Demo: payment coming soon'
+  },
+  campaign: {
+    heroDesc: 'Deals · Limited time',
+    flash: 'Flash sale live',
+    taskTitle: 'Do tasks, earn points',
+    pointsUnit: ' pts',
+    taskDone: 'Done',
+    taskGo: 'Go',
+    linkCopied: 'Invite link copied',
+    tasks: [
+      { name: 'Daily check-in', desc: 'Streak bonus rewards' },
+      { name: 'Post a demand', desc: 'Double points for first post' },
+      { name: 'Browse 3 services', desc: 'Discover featured services' },
+      { name: 'Invite a friend', desc: 'Earn when they sign up' },
+      { name: 'Complete profile', desc: 'Boost trust and exposure' }
+    ]
+  },
+  chat: {
+    today: 'Today',
+    serviceLabel: 'S',
+    meLabel: 'Me',
+    placeholder: 'Type a message...',
+    quick: ['Member benefits?', 'How to post a demand?', 'Refund process', 'Human support']
+  },
   settings: {
     title: 'Settings',
     account: 'Account',

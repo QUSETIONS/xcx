@@ -1,6 +1,6 @@
 <template>
   <view class="page">
-    <view class="header"><text class="header-title">资料库</text></view>
+    <view class="header"><text class="header-title">{{ t('resource.title') }}</text></view>
 
     <scroll-view class="list-scroll" scroll-y :refresher-enabled="true" :refresher-triggered="refreshing" @refresherrefresh="onRefresh">
       <view class="resource-list" :class="{ 'animate-in': animated }">
@@ -22,14 +22,14 @@
             </view>
           </view>
           <view class="resource-price">
-            <text v-if="item.is_free" class="price-free">免费</text>
+            <text v-if="item.is_free" class="price-free">{{ t('resource.free') }}</text>
             <text v-else class="price-num">¥{{ (item.price / 100).toFixed(0) }}</text>
           </view>
         </view>
       </view>
       <view v-if="!list.length" class="empty">
         <text class="empty-icon">📚</text>
-        <text class="empty-text">暂无资料</text>
+        <text class="empty-text">{{ t('resource.empty') }}</text>
       </view>
     </scroll-view>
   </view>
@@ -39,6 +39,7 @@
 import { ref, onMounted } from 'vue'
 import { resourceService } from '@/mock/service'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.resource')
 
 const list = ref([])

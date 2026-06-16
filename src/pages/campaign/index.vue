@@ -2,14 +2,14 @@
   <view class="page">
     <!-- 头部 -->
     <view class="hero">
-      <text class="hero-title">活动中心</text>
-      <text class="hero-desc">超值优惠 · 限时抢购</text>
+      <text class="hero-title">{{ t('user.campaign') }}</text>
+      <text class="hero-desc">{{ t('campaign.heroDesc') }}</text>
     </view>
 
     <!-- 倒计时横幅 -->
     <view class="countdown-banner">
       <text class="cb-icon">⏰</text>
-      <text class="cb-text">限时秒杀进行中</text>
+      <text class="cb-text">{{ t('campaign.flash') }}</text>
       <view class="cb-time">
         <text class="time-box">{{ countdown.h }}</text>
         <text class="time-sep">:</text>
@@ -31,7 +31,7 @@
           <text class="cc-desc">{{ c.desc }}</text>
           <view class="cc-bottom">
             <view class="cc-end"><text>🕐 {{ c.end }}</text></view>
-            <view class="cc-btn"><text>立即参与</text></view>
+            <view class="cc-btn"><text>{{ t('home.joinNow') }}</text></view>
           </view>
         </view>
       </view>
@@ -39,7 +39,7 @@
 
     <!-- 任务中心 -->
     <view class="task-section">
-      <text class="section-title">🎯 做任务赚积分</text>
+      <text class="section-title">🎯 {{ t('campaign.taskTitle') }}</text>
       <view class="task-card" v-for="(task, i) in tasks" :key="i">
         <view class="task-icon" :style="{ background: task.bg }"><text>{{ task.icon }}</text></view>
         <view class="task-info">
@@ -47,9 +47,9 @@
           <text class="task-desc">{{ task.desc }}</text>
         </view>
         <view class="task-action">
-          <text class="task-reward">+{{ task.reward }}积分</text>
+          <text class="task-reward">+{{ task.reward }}{{ t('campaign.pointsUnit') }}</text>
           <view class="task-btn" :class="{ done: task.done }" @tap.stop="doTask(i)">
-            <text>{{ task.done ? '已完成' : '去完成' }}</text>
+            <text>{{ task.done ? t('campaign.taskDone') : t('campaign.taskGo') }}</text>
           </view>
         </view>
       </view>
@@ -60,22 +60,28 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { campaignService } from '@/mock/service'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.campaign')
 
 const campaigns = ref([])
 const countdown = ref({ h: '08', m: '32', s: '45' })
 let timer = null
 
-const tasks = ref([
-  { name: '每日签到', desc: '连续签到领额外奖励', icon: '📅', bg: 'rgba(255,107,53,0.1)', reward: 10, done: false },
-  { name: '发布一条需求', desc: '首次发布得双倍积分', icon: '📝', bg: 'rgba(99,102,241,0.1)', reward: 50, done: false },
-  { name: '浏览3个服务', desc: '了解平台精选服务', icon: '👀', bg: 'rgba(16,185,129,0.1)', reward: 15, done: false },
-  { name: '邀请1位好友', desc: '好友注册即得奖励', icon: '👥', bg: 'rgba(245,158,11,0.1)', reward: 100, done: false },
-  { name: '完善企业资料', desc: '提升信任度与曝光', icon: '🏢', bg: 'rgba(236,72,153,0.1)', reward: 30, done: true }
-])
+const tasks = ref(buildTasks())
+function buildTasks() {
+  const data = t('campaign.tasks')
+  const meta = [
+    { icon: '📅', bg: 'rgba(255,107,53,0.1)', reward: 10, done: false },
+    { icon: '📝', bg: 'rgba(99,102,241,0.1)', reward: 50, done: false },
+    { icon: '👀', bg: 'rgba(16,185,129,0.1)', reward: 15, done: false },
+    { icon: '👥', bg: 'rgba(245,158,11,0.1)', reward: 100, done: false },
+    { icon: '🏢', bg: 'rgba(236,72,153,0.1)', reward: 30, done: true }
+  ]
+  return data.map((d, i) => ({ ...d, ...meta[i] }))
+}
 
 onMounted(() => {
   campaigns.value = campaignService.list()
@@ -108,7 +114,7 @@ function joinCampaign(c) {
     rank: '/pages/dashboard/index',
     discount: '/pages/mall/list'
   }
-  if (c.type === 'invite') { uni.showToast({ title: '分享链接已复制', icon: 'none' }); return }
+  if (c.type === 'invite') { uni.showToast({ title: t('campaign.linkCopied'), icon: 'none' }); return }
   if (c.type === 'task') { uni.pageScrollTo({ scrollTop: 9999 }); return }
   const url = routes[c.type]
   if (url) uni.navigateTo({ url })
@@ -117,7 +123,7 @@ function joinCampaign(c) {
 function doTask(i) {
   if (tasks.value[i].done) return
   tasks.value[i].done = true
-  uni.showToast({ title: `+${tasks.value[i].reward}积分`, icon: 'success' })
+  uni.showToast({ title: `+${tasks.value[i].reward}${t('campaign.pointsUnit')}`, icon: 'success' })
 }
 </script>
 
