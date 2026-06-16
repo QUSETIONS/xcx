@@ -478,6 +478,37 @@ export default {
     uploadLicenseRequired: 'Please upload license',
     verifySuccess: 'Verified'
   },
+  points: {
+    myPoints: 'My Points',
+    streak: 'Checked in {n} days in a row',
+    todayChecked: 'Checked in today',
+    checkin: 'Check in +',
+    weekTitle: 'This Week',
+    rulesTitle: 'Points Rules',
+    historyTitle: 'History',
+    checkinSuccess: 'Checked in! +{n}',
+    alreadyChecked: 'Already checked in today',
+    days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+  },
+  coupon: {
+    title: 'My Coupons',
+    use: 'Use',
+    empty: 'No coupons available',
+    tipsTitle: 'Coupon Info',
+    tip1: 'Coupons auto-deduct at checkout',
+    tip2: 'Only one coupon per order',
+    tip3: 'Coupons expire automatically — use them in time',
+    tip4: 'Earn more via check-in and referrals',
+    useTitle: 'Use Coupon',
+    useConfirm: 'Go to the mall to use "{name}"?'
+  },
+  follow: {
+    empty: 'Not following anyone yet',
+    goCommunity: 'Explore Community',
+    unfollowTitle: 'Unfollow',
+    unfollowConfirm: 'Unfollow "{name}"?',
+    unfollowed: 'Unfollowed'
+  },
   settings: {
     title: 'Settings',
     account: 'Account',

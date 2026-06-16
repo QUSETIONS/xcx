@@ -1,6 +1,6 @@
 <template>
   <view class="page">
-    <view class="header"><text class="header-title">我的关注</text></view>
+    <view class="header"><text class="header-title">{{ t('user.following') }}</text></view>
 
     <view class="follow-list">
       <view class="follow-item" v-for="item in list" :key="item._id">
@@ -13,15 +13,15 @@
           <text class="user-bio">{{ item.user.bio }}</text>
         </view>
         <view class="follow-btn following" @tap="unfollow(item)">
-          <text>已关注</text>
+          <text>{{ t('community.followed') }}</text>
         </view>
       </view>
     </view>
 
     <view v-if="!list.length" class="empty">
       <text class="empty-icon">👥</text>
-      <text class="empty-text">暂未关注任何人</text>
-      <text class="empty-btn" @tap="goCommunity">去社区看看</text>
+      <text class="empty-text">{{ t('follow.empty') }}</text>
+      <text class="empty-btn" @tap="goCommunity">{{ t('follow.goCommunity') }}</text>
     </view>
   </view>
 </template>
@@ -30,6 +30,7 @@
 import { ref } from 'vue'
 import { followService } from '@/mock/service'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.follow')
 
 const list = ref(followService.list())
@@ -48,13 +49,13 @@ function getAvatarColor(id) {
 
 function unfollow(item) {
   uni.showModal({
-    title: '取消关注',
-    content: `确定取消关注「${item.user.nickname}」吗？`,
+    title: t('follow.unfollowTitle'),
+    content: t('follow.unfollowConfirm').replace('{name}', item.user.nickname),
     success: (res) => {
       if (res.confirm) {
         followService.toggle(item.user.id)
         list.value = followService.list()
-        uni.showToast({ title: '已取消关注', icon: 'none' })
+        uni.showToast({ title: t('follow.unfollowed'), icon: 'none' })
       }
     }
   })

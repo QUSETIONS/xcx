@@ -1,35 +1,35 @@
 <template>
   <view class="page">
-    <view class="header"><text class="header-title">我的优惠券</text></view>
+    <view class="header"><text class="header-title">{{ t('coupon.title') }}</text></view>
 
     <view class="coupon-list">
       <view class="coupon-item card-press" v-for="item in coupons" :key="item._id" @tap="useCoupon(item)">
         <view class="coupon-left">
           <text class="coupon-amount">{{ item.amount / 100 }}</text>
-          <text class="coupon-unit">元</text>
+          <text class="coupon-unit">{{ t('orderConfirm.yuan') }}</text>
         </view>
         <view class="coupon-divider"></view>
         <view class="coupon-right">
           <text class="coupon-name">{{ item.name }}</text>
           <text class="coupon-desc">{{ item.desc }}</text>
-          <text class="coupon-expire">有效期至 {{ item.expire }}</text>
+          <text class="coupon-expire">{{ t('orderConfirm.validUntil') }}{{ item.expire }}</text>
         </view>
-        <view class="coupon-use"><text>使用</text></view>
+        <view class="coupon-use"><text>{{ t('coupon.use') }}</text></view>
       </view>
     </view>
 
     <view v-if="!coupons.length" class="empty">
       <text class="empty-icon">🎫</text>
-      <text class="empty-text">暂无可用优惠券</text>
-      <text class="empty-btn" @tap="goMall">去逛逛</text>
+      <text class="empty-text">{{ t('coupon.empty') }}</text>
+      <text class="empty-btn" @tap="goMall">{{ t('cartPage.goShop') }}</text>
     </view>
 
     <view class="tips-card">
-      <text class="tips-title">💡 优惠券说明</text>
-      <text class="tips-item">• 优惠券可在下单时自动抵扣</text>
-      <text class="tips-item">• 每笔订单仅可使用一张优惠券</text>
-      <text class="tips-item">• 优惠券过期后自动失效，请及时使用</text>
-      <text class="tips-item">• 通过签到、邀请好友等方式获取更多优惠券</text>
+      <text class="tips-title">💡 {{ t('coupon.tipsTitle') }}</text>
+      <text class="tips-item">• {{ t('coupon.tip1') }}</text>
+      <text class="tips-item">• {{ t('coupon.tip2') }}</text>
+      <text class="tips-item">• {{ t('coupon.tip3') }}</text>
+      <text class="tips-item">• {{ t('coupon.tip4') }}</text>
     </view>
   </view>
 </template>
@@ -38,14 +38,15 @@
 import { ref } from 'vue'
 import { couponService } from '@/mock/service'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.coupon')
 
 const coupons = ref(couponService.list())
 
 function useCoupon(item) {
   uni.showModal({
-    title: '使用优惠券',
-    content: `是否前往商城使用「${item.name}」？`,
+    title: t('coupon.useTitle'),
+    content: t('coupon.useConfirm').replace('{name}', item.name),
     success: (res) => { if (res.confirm) uni.switchTab({ url: '/pages/mall/list' }) }
   })
 }

@@ -496,6 +496,40 @@ export default {
     uploadLicenseRequired: '请上传营业执照',
     verifySuccess: '认证成功'
   },
+  // 积分
+  points: {
+    myPoints: '我的积分',
+    streak: '已连续签到 {n} 天',
+    todayChecked: '今日已签到',
+    checkin: '立即签到 +',
+    weekTitle: '本周签到',
+    rulesTitle: '积分规则',
+    historyTitle: '积分记录',
+    checkinSuccess: '签到成功 +{n}',
+    alreadyChecked: '今天已签到',
+    days: ['一', '二', '三', '四', '五', '六', '日']
+  },
+  // 优惠券
+  coupon: {
+    title: '我的优惠券',
+    use: '使用',
+    empty: '暂无可用优惠券',
+    tipsTitle: '优惠券说明',
+    tip1: '优惠券可在下单时自动抵扣',
+    tip2: '每笔订单仅可使用一张优惠券',
+    tip3: '优惠券过期后自动失效，请及时使用',
+    tip4: '通过签到、邀请好友等方式获取更多优惠券',
+    useTitle: '使用优惠券',
+    useConfirm: '是否前往商城使用「{name}」？'
+  },
+  // 关注
+  follow: {
+    empty: '暂未关注任何人',
+    goCommunity: '去社区看看',
+    unfollowTitle: '取消关注',
+    unfollowConfirm: '确定取消关注「{name}」吗？',
+    unfollowed: '已取消关注'
+  },
   // 设置
   settings: {
     title: '设置',

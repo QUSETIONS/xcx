@@ -3,21 +3,21 @@
     <!-- 积分卡片 -->
     <view class="points-card">
       <view class="pc-top">
-        <text class="pc-label">我的积分</text>
+        <text class="pc-label">{{ t('points.myPoints') }}</text>
         <text class="pc-num">{{ info.balance }}</text>
       </view>
       <view class="pc-streak">
         <text class="pc-fire">🔥</text>
-        <text class="pc-streak-text">已连续签到 {{ info.checkinStreak }} 天</text>
+        <text class="pc-streak-text">{{ t('points.streak').replace('{n}', info.checkinStreak) }}</text>
       </view>
       <view class="pc-checkin-btn" :class="{ checked: info.todayChecked }" @tap="doCheckin">
-        <text>{{ info.todayChecked ? '今日已签到' : '立即签到 +' + (info.checkinStreak % 6 === 0 ? 50 : 10) }}</text>
+        <text>{{ info.todayChecked ? t('points.todayChecked') : t('points.checkin') + (info.checkinStreak % 6 === 0 ? 50 : 10) }}</text>
       </view>
     </view>
 
     <!-- 签到日历 -->
     <view class="calendar-card">
-      <text class="card-title">本周签到</text>
+      <text class="card-title">{{ t('points.weekTitle') }}</text>
       <view class="week-row">
         <view class="day-item" v-for="(day, i) in weekDays" :key="i">
           <text class="day-label">{{ day.label }}</text>
@@ -31,7 +31,7 @@
 
     <!-- 积分规则 -->
     <view class="rules-card">
-      <text class="card-title">积分规则</text>
+      <text class="card-title">{{ t('points.rulesTitle') }}</text>
       <view class="rule-item" v-for="(rule, i) in info.rules" :key="i">
         <text class="rule-action">{{ rule.action }}</text>
         <text class="rule-points">{{ rule.points }}</text>
@@ -40,7 +40,7 @@
 
     <!-- 积分记录 -->
     <view class="history-card">
-      <text class="card-title">积分记录</text>
+      <text class="card-title">{{ t('points.historyTitle') }}</text>
       <view class="history-item" v-for="(item, i) in history" :key="i">
         <view class="hi-left">
           <text class="hi-desc">{{ item.desc }}</text>
@@ -55,31 +55,28 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { pointsService } from '@/mock/service'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.points')
 
 const info = ref(pointsService.getInfo())
 const history = ref(pointsService.history())
-const weekDays = [
-  { label: '一', points: 10 },
-  { label: '二', points: 10 },
-  { label: '三', points: 10 },
-  { label: '四', points: 10 },
-  { label: '五', points: 10 },
-  { label: '六', points: 10 },
-  { label: '日', points: 50 },
-]
+const weekDays = computed(() => {
+  const labels = t('points.days')
+  const points = [10, 10, 10, 10, 10, 10, 50]
+  return labels.map((label, i) => ({ label, points: points[i] }))
+})
 
 function doCheckin() {
   const res = pointsService.checkin()
   if (res.success) {
     info.value = pointsService.getInfo()
     history.value = pointsService.history()
-    uni.showToast({ title: `签到成功 +${res.points}`, icon: 'success' })
+    uni.showToast({ title: t('points.checkinSuccess').replace('{n}', res.points), icon: 'success' })
   } else {
-    uni.showToast({ title: '今天已签到', icon: 'none' })
+    uni.showToast({ title: t('points.alreadyChecked'), icon: 'none' })
   }
 }
 </script>
