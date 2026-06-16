@@ -159,7 +159,9 @@ export default {
     goShop: 'Browse',
     selectAll: 'All',
     total: 'Total',
-    checkout: 'Checkout'
+    checkout: 'Checkout',
+    deleteTitle: 'Notice',
+    deleteContent: 'Delete this item?'
   },
   orderPage: {
     all: 'All',
@@ -168,7 +170,7 @@ export default {
     completed: 'Completed',
     empty: 'No orders',
     goOrder: 'Order Now',
-    orderNo: 'Order',
+    orderNo: 'Order No: ',
     paid: 'Paid',
     cancel: 'Cancel',
     pay: 'Pay Now',
@@ -177,7 +179,18 @@ export default {
     contactService: 'Support',
     complete: 'Complete',
     review: 'Review',
-    buyAgain: 'Buy Again'
+    buyAgain: 'Buy Again',
+    couponDiscounted: 'Coupon applied',
+    pointsDiscountPrefix: 'Points −',
+    pointsDiscountSuffix: '',
+    paidSuccess: 'Paid',
+    confirmed: 'Confirmed',
+    serviceStarted: 'Service started',
+    cancelled: 'Cancelled',
+    completeTitle: 'Confirm',
+    completeContent: 'Confirm this order service is complete?',
+    cancelTitle: 'Cancel Order',
+    cancelContent: 'Cancel this order?'
   },
   demandDetail: {
     hot: 'Hot',
@@ -694,6 +707,11 @@ export default {
     onlineService: 'Online Service',
     feedback: 'Feedback',
     about: 'About',
-    logout: 'Log Out'
+    logout: 'Log Out',
+    appVersion: 'QiYeKu v1.0.0 · Demo only',
+    verifyNone: 'Unverified',
+    verifyPending: 'Under Review',
+    verifyVerified: 'Verified',
+    feedbackThanks: 'Thanks for your feedback'
   }
 }

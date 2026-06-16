@@ -129,7 +129,7 @@
 
     <!-- 退出登录 -->
     <view class="logout-btn" @tap="logout"><text>{{ t('settings.logout') }}</text></view>
-    <text class="version-text">企业库 v1.0.0 · 仅供演示</text>
+    <text class="version-text">{{ t('settings.appVersion') }}</text>
     <view style="height: 60rpx;"></view>
   </view>
 </template>
@@ -148,12 +148,12 @@ const notify = ref({ lead: true, order: true, interact: true, campaign: false })
 const verifyStatus = ref('none')
 const memberInfo = ref({ tier: 'free' })
 
-const verifyText = computed(() => ({ none: '未认证', pending: '审核中', verified: '已认证' }[verifyStatus.value]))
+const verifyText = computed(() => ({ none: t('settings.verifyNone'), pending: t('settings.verifyPending'), verified: t('settings.verifyVerified') }[verifyStatus.value]))
 const verifyClass = computed(() => ({ none: 'gray', pending: 'orange', verified: 'green' }[verifyStatus.value]))
-const memberText = computed(() => ({ free: '普通会员', pro: '专业版', enterprise: '企业版' }[memberInfo.value.tier] || '普通会员'))
+const memberText = computed(() => ({ free: t('member.free'), pro: t('member.pro'), enterprise: t('member.enterprise') }[memberInfo.value.tier] || t('member.free')))
 
 // i18n / 无障碍
-const currentLocaleLabel = computed(() => locales.find(l => l.value === locale.value)?.label || '简体中文')
+const currentLocaleLabel = computed(() => locales.find(l => l.value === locale.value)?.label || locales[0].label)
 const fontLabel = computed(() => currentFontLabel.value)
 const contrast = computed(() => highContrast.value)
 
@@ -241,7 +241,7 @@ function showPrivacy() { uni.showModal({ title: '隐私政策', content: '我们
 function feedback() {
   uni.showModal({
     title: '意见反馈', editable: true, placeholderText: '说说你的建议...',
-    success: (r) => { if (r.confirm) uni.showToast({ title: '感谢反馈', icon: 'success' }) }
+    success: (r) => { if (r.confirm) uni.showToast({ title: t('settings.feedbackThanks'), icon: 'success' }) }
   })
 }
 function aboutUs() { uni.showModal({ title: '关于企业库', content: '企业库 - 企业服务精准对接平台\n演示版本 v1.0.0', showCancel: false }) }

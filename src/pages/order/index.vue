@@ -14,7 +14,7 @@
         <view class="order-card" v-for="order in orderList" :key="order._id">
           <!-- 订单头部 -->
           <view class="order-header">
-            <text class="order-no">订单号：{{ order._id.slice(-8).toUpperCase() }}</text>
+            <text class="order-no">{{ t('orderPage.orderNo') }}{{ order._id.slice(-8).toUpperCase() }}</text>
             <text class="order-status" :class="'s-' + order.status">{{ getStatusText(order.status) }}</text>
           </view>
 
@@ -31,13 +31,13 @@
 
           <!-- 优惠信息 -->
           <view class="order-discount" v-if="order.coupon_id || order.points_used">
-            <text class="discount-item" v-if="order.coupon_id">🎫 优惠券已抵扣</text>
-            <text class="discount-item" v-if="order.points_used">🎁 积分抵扣{{ order.points_used }}分</text>
+            <text class="discount-item" v-if="order.coupon_id">🎫 {{ t('orderPage.couponDiscounted') }}</text>
+            <text class="discount-item" v-if="order.points_used">🎁 {{ t('orderPage.pointsDiscountPrefix') }}{{ order.points_used }}{{ t('orderPage.pointsDiscountSuffix') }}</text>
           </view>
 
           <!-- 订单金额 -->
           <view class="order-amount">
-            <text class="amount-label">实付</text>
+            <text class="amount-label">{{ t('orderPage.paid') }}</text>
             <text class="amount-value">¥{{ ((order.total_amount || order.items?.[0]?.price || 0) / 100).toFixed(0) }}</text>
           </view>
 
@@ -102,26 +102,26 @@ function getIcon(type) {
 // 状态流转
 function payOrder(id) {
   orderService.updateStatus(id, 'paid')
-  uni.showToast({ title: '支付成功', icon: 'success' })
+  uni.showToast({ title: t('orderPage.paidSuccess'), icon: 'success' })
   loadOrders()
 }
 function confirmOrder(id) {
   orderService.updateStatus(id, 'confirmed')
-  uni.showToast({ title: '已确认', icon: 'success' })
+  uni.showToast({ title: t('orderPage.confirmed'), icon: 'success' })
   loadOrders()
 }
 function startServe(id) {
   orderService.updateStatus(id, 'serving')
-  uni.showToast({ title: '服务已开始', icon: 'success' })
+  uni.showToast({ title: t('orderPage.serviceStarted'), icon: 'success' })
   loadOrders()
 }
 function completeOrder(id) {
   uni.showModal({
-    title: '确认完成', content: '确认该订单服务已完成？',
+    title: t('orderPage.completeTitle'), content: t('orderPage.completeContent'),
     success: (r) => {
       if (r.confirm) {
         orderService.updateStatus(id, 'completed')
-        uni.showToast({ title: '已完成', icon: 'success' })
+        uni.showToast({ title: t('orderPage.completed'), icon: 'success' })
         loadOrders()
       }
     }
@@ -129,11 +129,11 @@ function completeOrder(id) {
 }
 function cancelOrder(id) {
   uni.showModal({
-    title: '取消订单', content: '确定取消该订单？',
+    title: t('orderPage.cancelTitle'), content: t('orderPage.cancelContent'),
     success: (r) => {
       if (r.confirm) {
         orderService.updateStatus(id, 'cancelled')
-        uni.showToast({ title: '已取消', icon: 'none' })
+        uni.showToast({ title: t('orderPage.cancelled'), icon: 'none' })
         loadOrders()
       }
     }

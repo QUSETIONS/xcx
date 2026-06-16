@@ -165,7 +165,9 @@ export default {
     goShop: '去逛逛',
     selectAll: '全选',
     total: '合计',
-    checkout: '结算'
+    checkout: '结算',
+    deleteTitle: '提示',
+    deleteContent: '确定删除该商品？'
   },
   // 订单
   orderPage: {
@@ -175,7 +177,7 @@ export default {
     completed: '已完成',
     empty: '暂无订单',
     goOrder: '去下单',
-    orderNo: '订单号',
+    orderNo: '订单号：',
     paid: '实付',
     cancel: '取消订单',
     pay: '立即支付',
@@ -184,7 +186,18 @@ export default {
     contactService: '联系客服',
     complete: '确认完成',
     review: '评价',
-    buyAgain: '再次购买'
+    buyAgain: '再次购买',
+    couponDiscounted: '优惠券已抵扣',
+    pointsDiscountPrefix: '积分抵扣',
+    pointsDiscountSuffix: '分',
+    paidSuccess: '支付成功',
+    confirmed: '已确认',
+    serviceStarted: '服务已开始',
+    cancelled: '已取消',
+    completeTitle: '确认完成',
+    completeContent: '确认该订单服务已完成？',
+    cancelTitle: '取消订单',
+    cancelContent: '确定取消该订单？'
   },
   // 需求详情
   demandDetail: {
@@ -723,6 +736,11 @@ export default {
     onlineService: '在线客服',
     feedback: '意见反馈',
     about: '关于我们',
-    logout: '退出登录'
+    logout: '退出登录',
+    appVersion: '企业库 v1.0.0 · 仅供演示',
+    verifyNone: '未认证',
+    verifyPending: '审核中',
+    verifyVerified: '已认证',
+    feedbackThanks: '感谢反馈'
   }
 }

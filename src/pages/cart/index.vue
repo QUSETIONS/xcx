@@ -77,7 +77,7 @@ function changeQty(item, delta) {
 
 function removeItem(id) {
   uni.showModal({
-    title: '提示', content: '确定删除该商品？',
+    title: t('cartPage.deleteTitle'), content: t('cartPage.deleteContent'),
     success: (r) => {
       if (r.confirm) { cartService.remove(id); reload() }
     }
