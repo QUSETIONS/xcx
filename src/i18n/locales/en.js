@@ -88,7 +88,12 @@ export default {
     quote: 'Quote',
     connect: 'Connect',
     favorite: 'Favorite',
-    share: 'Share'
+    share: 'Share',
+    searchPlaceholder: 'Search demands',
+    sort: 'Sort',
+    sortLatest: 'Latest',
+    sortHot: 'Hottest',
+    sortLead: 'Most Leads'
   },
   community: {
     title: 'Community',
@@ -107,7 +112,8 @@ export default {
     addToCart: 'Add to Cart',
     cart: 'Cart',
     orderConfirm: 'Confirm Order',
-    checkout: 'Checkout'
+    checkout: 'Checkout',
+    searchPlaceholder: 'Search products'
   },
   cartPage: {
     empty: 'Your cart is empty',
@@ -203,6 +209,22 @@ export default {
       certification: ['Official badge', 'Priority listing', 'Trust endorsement', 'Operation guidance', 'Annual renewal'],
       default: ['Standard service', 'Customer support']
     }
+  },
+  listPage: {
+    hotSearch: 'Hot Searches',
+    searchHistory: 'Search History',
+    noMore: 'All loaded',
+    emptyDemand: 'No matching demands',
+    emptyProduct: 'No products',
+    clearFilter: 'Clear filters',
+    clearSearch: 'Clear search',
+    selectCategory: 'Select Category',
+    selectRegion: 'Select Region',
+    sortBy: 'Sort By',
+    useSearchAbove: 'Use the search box above',
+    heatHot: 'Hot',
+    heatMedium: 'Warm',
+    heatNormal: 'Normal'
   },
   user: {
     title: 'Me',

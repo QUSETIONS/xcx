@@ -8,15 +8,15 @@
     <view class="search-row">
       <view class="search-box" :class="{ focused: searchFocused }">
         <image class="search-icon" src="/static/icons/search.svg" mode="aspectFit"/>
-        <input class="search-input" v-model="keyword" placeholder="搜索商品" @confirm="doSearch" @focus="searchFocused = true" @blur="searchFocused = false"/>
+        <input class="search-input" v-model="keyword" :placeholder="t('mall.searchPlaceholder')" @confirm="doSearch" @focus="searchFocused = true" @blur="searchFocused = false"/>
         <text class="search-clear" v-if="keyword" @tap="clearSearch">✕</text>
       </view>
-      <text class="search-btn" @tap="doSearch">搜索</text>
+      <text class="search-btn" @tap="doSearch">{{ t('common.search') }}</text>
     </view>
 
     <!-- 热门搜索 -->
     <view class="hot-tags" v-if="!keyword && searchHistory.length">
-      <text class="hot-title">搜索历史</text>
+      <text class="hot-title">{{ t('listPage.searchHistory') }}</text>
       <view class="tags-wrap">
         <text class="hot-tag" v-for="(h, i) in searchHistory.slice(0, 5)" :key="i" @tap="useHistory(h)">{{ h }}</text>
       </view>
@@ -25,7 +25,7 @@
     <!-- 分类 -->
     <scroll-view scroll-x class="cat-scroll">
       <view class="cat-list">
-        <view class="cat-item card-press" :class="{ active: !currentType }" @tap="selectType(null)"><text>全部</text></view>
+        <view class="cat-item card-press" :class="{ active: !currentType }" @tap="selectType(null)"><text>{{ t('common.all') }}</text></view>
         <view class="cat-item card-press" :class="{ active: currentType === t }" v-for="(label, t) in serviceTypes" :key="t" @tap="selectType(t)">
           <text>{{ label }}</text>
         </view>
@@ -56,16 +56,16 @@
             <text class="price-current">¥{{ (item.price / 100).toFixed(0) }}</text>
             <text class="price-market">¥{{ (item.market_price / 100).toFixed(0) }}</text>
           </view>
-          <view class="sales-tag"><text>{{ item.sale_count }}人已购</text></view>
+          <view class="sales-tag"><text>{{ item.sale_count }}{{ t('mallDetail.boughtSuffix') }}</text></view>
         </view>
       </view>
 
-      <view v-if="loading && productList.length" class="loading"><text>加载中...</text></view>
-      <view v-if="noMore && productList.length" class="end"><text>— 已加载全部 —</text></view>
+      <view v-if="loading && productList.length" class="loading"><text>{{ t('common.loading') }}</text></view>
+      <view v-if="noMore && productList.length" class="end"><text>— {{ t('listPage.noMore') }} —</text></view>
       <view v-if="!productList.length && !loading" class="empty">
         <text class="empty-icon">🛒</text>
-        <text class="empty-text">暂无商品</text>
-        <text class="empty-hint" v-if="keyword" @tap="clearSearch">清空搜索</text>
+        <text class="empty-text">{{ t('listPage.emptyProduct') }}</text>
+        <text class="empty-hint" v-if="keyword" @tap="clearSearch">{{ t('listPage.clearSearch') }}</text>
       </view>
     </scroll-view>
   </view>

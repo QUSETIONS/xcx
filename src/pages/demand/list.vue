@@ -10,19 +10,19 @@
     <view class="search-row">
       <view class="search-box" :class="{ focused: searchFocused }">
         <image class="search-icon" src="/static/icons/search.svg" mode="aspectFit"/>
-        <input class="search-input" v-model="keyword" placeholder="搜索需求" @confirm="doSearch" @focus="searchFocused = true" @blur="searchFocused = false" />
+        <input class="search-input" v-model="keyword" :placeholder="t('demand.searchPlaceholder')" @confirm="doSearch" @focus="searchFocused = true" @blur="searchFocused = false" />
         <text class="search-clear" v-if="keyword" @tap="clearSearch">✕</text>
       </view>
-      <text class="search-btn" @tap="doSearch">搜索</text>
+      <text class="search-btn" @tap="doSearch">{{ t('common.search') }}</text>
     </view>
 
     <view class="filter-bar">
       <view class="filter-item" :class="{ active: currentCat }" @tap="showCatPicker = true">
-        <text>{{ currentCatName || '分类' }}</text>
+        <text>{{ currentCatName || t('demand.category') }}</text>
         <text class="filter-arrow">▾</text>
       </view>
       <view class="filter-item" :class="{ active: currentRegion }" @tap="showRegionPicker = true">
-        <text>{{ currentRegion || '地区' }}</text>
+        <text>{{ currentRegion || t('demand.region') }}</text>
         <text class="filter-arrow">▾</text>
       </view>
       <view class="filter-item" :class="{ active: currentSort !== 'latest' }" @tap="showSortPicker = true">
@@ -32,7 +32,7 @@
 
     <!-- 热门标签 -->
     <view class="recommend-tags" v-if="!keyword && demandList.length">
-      <text class="recommend-title">热门搜索</text>
+      <text class="recommend-title">{{ t('listPage.hotSearch') }}</text>
       <view class="tags-wrap">
         <text class="hot-tag" v-for="t in hotKeywords" :key="t" @tap="searchTag(t)">{{ t }}</text>
       </view>
@@ -43,7 +43,7 @@
 
       <!-- 搜索历史 -->
       <view class="search-history" v-if="!demandList.length && !loading && searchHistory.length">
-        <text class="history-title">搜索历史</text>
+        <text class="history-title">{{ t('listPage.searchHistory') }}</text>
         <view class="history-tags">
           <text class="history-tag" v-for="(h, i) in searchHistory" :key="i" @tap="useHistory(h)">{{ h }}</text>
         </view>
@@ -74,9 +74,9 @@
           </view>
           <view class="item-bottom">
             <view class="item-stats">
-              <view class="stat-box card-press"><text class="stat-val">{{ formatCount(item.view_count) }}</text><text class="stat-label">浏览</text></view>
-              <view class="stat-box card-press"><text class="stat-val">{{ item.lead_count }}</text><text class="stat-label">对接</text></view>
-              <view class="stat-box card-press"><text class="stat-val">{{ item.favorite_count }}</text><text class="stat-label">收藏</text></view>
+              <view class="stat-box card-press"><text class="stat-val">{{ formatCount(item.view_count) }}</text><text class="stat-label">{{ t('demandDetail.views') }}</text></view>
+              <view class="stat-box card-press"><text class="stat-val">{{ item.lead_count }}</text><text class="stat-label">{{ t('demandDetail.leads') }}</text></view>
+              <view class="stat-box card-press"><text class="stat-val">{{ item.favorite_count }}</text><text class="stat-label">{{ t('demandDetail.favorites') }}</text></view>
             </view>
             <view class="heat-indicator" :class="getHeatClass(item)">
               <text>{{ getHeatLevel(item) }}</text>
@@ -85,21 +85,21 @@
         </view>
       </view>
 
-      <view v-if="loading && demandList.length" class="loading"><text>加载中...</text></view>
-      <view v-if="noMore && demandList.length" class="end"><text>— 已加载全部 —</text></view>
+      <view v-if="loading && demandList.length" class="loading"><text>{{ t('common.loading') }}</text></view>
+      <view v-if="noMore && demandList.length" class="end"><text>— {{ t('listPage.noMore') }} —</text></view>
       <view v-if="!demandList.length && !loading" class="empty">
         <text class="empty-icon">📭</text>
-        <text class="empty-text">暂无相关需求</text>
-        <text class="empty-hint" @tap="resetFilter">清空筛选</text>
+        <text class="empty-text">{{ t('listPage.emptyDemand') }}</text>
+        <text class="empty-hint" @tap="resetFilter">{{ t('listPage.clearFilter') }}</text>
       </view>
     </scroll-view>
 
     <!-- 分类选择 -->
     <view v-if="showCatPicker" class="picker-mask" @tap="showCatPicker = false">
       <view class="picker-panel" @tap.stop>
-        <view class="picker-header"><text>选择分类</text><text class="picker-close" @tap="showCatPicker = false">✕</text></view>
+        <view class="picker-header"><text>{{ t('listPage.selectCategory') }}</text><text class="picker-close" @tap="showCatPicker = false">✕</text></view>
         <view class="picker-grid">
-          <view class="picker-opt" :class="{ active: !currentCat }" @tap="selectCat(null)"><text>全部</text></view>
+          <view class="picker-opt" :class="{ active: !currentCat }" @tap="selectCat(null)"><text>{{ t('common.all') }}</text></view>
           <view class="picker-opt" :class="{ active: currentCat === cat.id }" v-for="cat in categories" :key="cat.id" @tap="selectCat(cat.id)">
             <text>{{ cat.icon }} {{ cat.name }}</text>
           </view>
@@ -110,9 +110,9 @@
     <!-- 地区选择 -->
     <view v-if="showRegionPicker" class="picker-mask" @tap="showRegionPicker = false">
       <view class="picker-panel" @tap.stop>
-        <view class="picker-header"><text>选择地区</text><text class="picker-close" @tap="showRegionPicker = false">✕</text></view>
+        <view class="picker-header"><text>{{ t('listPage.selectRegion') }}</text><text class="picker-close" @tap="showRegionPicker = false">✕</text></view>
         <view class="picker-grid">
-          <view class="picker-opt" :class="{ active: !currentRegion }" @tap="selectRegion(null)"><text>全部</text></view>
+          <view class="picker-opt" :class="{ active: !currentRegion }" @tap="selectRegion(null)"><text>{{ t('common.all') }}</text></view>
           <view class="picker-opt" :class="{ active: currentRegion === r }" v-for="r in regions" :key="r" @tap="selectRegion(r)"><text>{{ r }}</text></view>
         </view>
       </view>
@@ -121,7 +121,7 @@
     <!-- 排序选择 -->
     <view v-if="showSortPicker" class="picker-mask" @tap="showSortPicker = false">
       <view class="picker-panel" @tap.stop>
-        <view class="picker-header"><text>排序方式</text><text class="picker-close" @tap="showSortPicker = false">✕</text></view>
+        <view class="picker-header"><text>{{ t('listPage.sortBy') }}</text><text class="picker-close" @tap="showSortPicker = false">✕</text></view>
         <view class="picker-list">
           <view class="picker-opt" :class="{ active: currentSort === s.value }" v-for="s in sortOptions" :key="s.value" @tap="selectSort(s.value)">
             <text>{{ s.icon }} {{ s.label }}</text>
@@ -143,11 +143,11 @@ useNavTitle('titles.demandHall')
 
 const categories = DEMAND_CATEGORIES
 const regions = REGIONS
-const sortOptions = [
-  { value: 'latest', label: '最新发布', icon: '🕐' },
-  { value: 'hot', label: '热度优先', icon: '🔥' },
-  { value: 'lead', label: '对接最多', icon: '🤝' }
-]
+const sortOptions = computed(() => [
+  { value: 'latest', label: t('demand.sortLatest'), icon: '🕐' },
+  { value: 'hot', label: t('demand.sortHot'), icon: '🔥' },
+  { value: 'lead', label: t('demand.sortLead'), icon: '🤝' }
+])
 
 const keyword = ref('')
 const searchFocused = ref(false)
@@ -158,7 +158,7 @@ const currentCat = ref(null)
 const currentRegion = ref(null)
 const currentSort = ref('latest')
 const currentCatName = computed(() => categories.find(c => c.id === currentCat.value)?.name || '')
-const sortLabel = computed(() => sortOptions.find(s => s.value === currentSort.value)?.label || '排序')
+const sortLabel = computed(() => sortOptions.value.find(s => s.value === currentSort.value)?.label || t('demand.sort'))
 
 const demandList = ref([])
 const page = ref(1)
@@ -185,7 +185,11 @@ function saveHistory(k) {
   uni.setStorageSync('demand_search_history', JSON.stringify(list))
 }
 
-function formatQuote(type) { return QUOTE_TYPES.find(q => q.value === type)?.label || '面议' }
+function formatQuote(type) { return QUOTE_TYPES.find(q => q.value === type)?.label || t('demandDetail.negotiate') }
+
+function formatCount(n) { return n >= 10000 ? (n / 10000).toFixed(1) + 'w' : n >= 1000 ? (n / 1000).toFixed(1) + 'k' : n }
+function getHeatClass(item) { const v = item.view_count || 0; if (v >= 2000) return 'heat-hot'; if (v >= 500) return 'heat-medium'; return 'heat-normal' }
+function getHeatLevel(item) { const v = item.view_count || 0; if (v >= 2000) return t('listPage.heatHot'); if (v >= 500) return t('listPage.heatMedium'); return t('listPage.heatNormal') }
 
 function loadMore() { if (!loading.value && !noMore.value) { page.value++; loadList() } }
 function onRefresh() { refreshing.value = true; loadList(true) }
@@ -196,7 +200,7 @@ function clearSearch() { keyword.value = ''; loadList(true) }
 function useHistory(h) { keyword.value = h; doSearch() }
 function searchTag(t) { keyword.value = t; doSearch() }
 function resetFilter() { currentCat.value = null; currentRegion.value = null; keyword.value = ''; loadList(true) }
-function goSearch() { uni.showToast({ title: '请使用上方搜索框', icon: 'none' }) }
+function goSearch() { uni.showToast({ title: t('listPage.useSearchAbove'), icon: 'none' }) }
 
 function selectCat(id) { currentCat.value = id; showCatPicker.value = false; loadList(true) }
 function selectRegion(r) { currentRegion.value = r; showRegionPicker.value = false; loadList(true) }

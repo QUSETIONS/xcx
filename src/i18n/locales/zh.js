@@ -92,7 +92,12 @@ export default {
     quote: '报价方式',
     connect: '我要对接',
     favorite: '收藏',
-    share: '分享'
+    share: '分享',
+    searchPlaceholder: '搜索需求',
+    sort: '排序',
+    sortLatest: '最新发布',
+    sortHot: '热度优先',
+    sortLead: '对接最多'
   },  // 社区
   community: {
     title: '社区',
@@ -112,7 +117,8 @@ export default {
     addToCart: '加入购物车',
     cart: '购物车',
     orderConfirm: '订单确认',
-    checkout: '结算'
+    checkout: '结算',
+    searchPlaceholder: '搜索商品'
   },
   // 购物车
   cartPage: {
@@ -212,6 +218,23 @@ export default {
       certification: ['官方认证标识', '优先展示推荐', '信任背书支持', '运营指导服务', '年度审核续期'],
       default: ['标准服务内容', '客服支持']
     }
+  },
+  // 列表通用
+  listPage: {
+    hotSearch: '热门搜索',
+    searchHistory: '搜索历史',
+    noMore: '已加载全部',
+    emptyDemand: '暂无相关需求',
+    emptyProduct: '暂无商品',
+    clearFilter: '清空筛选',
+    clearSearch: '清空搜索',
+    selectCategory: '选择分类',
+    selectRegion: '选择地区',
+    sortBy: '排序方式',
+    useSearchAbove: '请使用上方搜索框',
+    heatHot: '热门',
+    heatMedium: '较热',
+    heatNormal: '普通'
   },
   // 用户
   user: {
