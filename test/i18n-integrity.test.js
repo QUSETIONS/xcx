@@ -11,6 +11,8 @@ import fs from 'fs'
 import path from 'path'
 import zh from '@/i18n/locales/zh'
 import en from '@/i18n/locales/en'
+import { demandStatusMap, orderStatusMap, leadStatusMap, quoteTypes, serviceTypes, quoteLabel } from '@/utils/i18n-maps'
+import { setLocale } from '@/i18n'
 
 // 把嵌套对象压平成 'a.b.c' 的叶子键集合（数组视为叶子）
 function flatten(obj, prefix = '', out = {}) {
@@ -111,5 +113,35 @@ describe('i18n 完整性：对象型 key 两语言结构可用', () => {
     expect(zh.points.days.length).toBe(en.points.days.length)
     expect(zh.chat.quick.length).toBe(en.chat.quick.length)
     expect(zh.campaign.tasks.length).toBe(en.campaign.tasks.length)
+  })
+})
+
+describe('i18n 完整性：枚举映射 helper', () => {
+  it('状态映射覆盖全部状态键', () => {
+    expect(Object.keys(demandStatusMap.value)).toEqual(['draft', 'pending', 'published', 'offline'])
+    expect(Object.keys(orderStatusMap.value)).toEqual(['created', 'paid', 'confirmed', 'serving', 'completed', 'cancelled'])
+    expect(Object.keys(leadStatusMap.value)).toEqual(['new', 'contacted', 'deal', 'invalid'])
+  })
+
+  it('映射值随语言切换变化', () => {
+    setLocale('zh-CN')
+    expect(demandStatusMap.value.published).toBe('已发布')
+    expect(orderStatusMap.value.completed).toBe('已完成')
+    setLocale('en-US')
+    expect(demandStatusMap.value.published).toBe('Published')
+    expect(orderStatusMap.value.completed).toBe('Completed')
+    setLocale('zh-CN') // 还原，避免污染其它用例
+  })
+
+  it('quoteTypes 数组与 quoteLabel 一致', () => {
+    expect(quoteTypes.value.length).toBe(3)
+    expect(quoteTypes.value.map(q => q.value)).toEqual(['self', 'negotiate', 'by_daren'])
+    expect(quoteLabel('self')).toBe(quoteTypes.value.find(q => q.value === 'self').label)
+    // 未知类型回退到"面议/Negotiable"（非 key 字符串）
+    expect(quoteLabel('unknown')).not.toBe('unknown')
+  })
+
+  it('serviceTypes 覆盖五种服务类型', () => {
+    expect(Object.keys(serviceTypes.value).sort()).toEqual(['certification', 'linker', 'member', 'resource_pack', 'survey'])
   })
 })

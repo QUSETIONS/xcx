@@ -27,8 +27,8 @@ jobs:
       - name: 类型检查
         run: npm run typecheck
 
-      - name: 运行测试
-        run: npm test
+      - name: 运行测试（含覆盖率门禁）
+        run: npm run test:coverage
 
       - name: 上传覆盖率报告
         if: always()

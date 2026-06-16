@@ -49,14 +49,13 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { DEMAND_STATUS } from '@/config/constants'
+import { demandStatusMap as statusMap } from '@/utils/i18n-maps'
 import { demandService } from '@/mock/service'
 import { formatDate } from "@/utils/util"
 import { useNavTitle } from '@/hooks/useNavTitle'
 import { t } from '@/i18n'
 useNavTitle('titles.demandManage')
 
-const statusMap = DEMAND_STATUS
 const statusFilter = ref('')
 const refreshing = ref(false)
 const showStatusPicker = ref(false)

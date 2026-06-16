@@ -682,6 +682,13 @@ export default {
     kpiConv: 'Conv. Rate',
     kpiAOV: 'AOV'
   },
+  status: {
+    demand: { draft: 'Draft', pending: 'Pending', published: 'Published', offline: 'Offline' },
+    order: { created: 'Unconfirmed', paid: 'Paid', confirmed: 'Confirmed', serving: 'In Service', completed: 'Completed', cancelled: 'Cancelled' },
+    lead: { new: 'New', contacted: 'Contacted', deal: 'Deal', invalid: 'Invalid' },
+    quote: { self: 'Self-quote', negotiate: 'Negotiable', byDaren: 'By Creator' },
+    service: { member: 'Membership', linker: 'Linker', survey: 'Survey', resourcePack: 'Resource Pack', certification: 'Certification' }
+  },
   settings: {
     title: 'Settings',
     account: 'Account',

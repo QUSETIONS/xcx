@@ -134,9 +134,10 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { DEMAND_CATEGORIES, REGIONS, QUOTE_TYPES } from '@/config/constants'
+import { DEMAND_CATEGORIES, REGIONS } from '@/config/constants'
 import { demandService } from '@/mock/service'
 import { formatRelativeTime as formatTime } from "@/utils/util"
+import { quoteLabel } from '@/utils/i18n-maps'
 import { t } from '@/i18n'
 import { useNavTitle } from '@/hooks/useNavTitle'
 useNavTitle('titles.demandHall')
@@ -185,7 +186,7 @@ function saveHistory(k) {
   uni.setStorageSync('demand_search_history', JSON.stringify(list))
 }
 
-function formatQuote(type) { return QUOTE_TYPES.find(q => q.value === type)?.label || t('demandDetail.negotiate') }
+function formatQuote(type) { return quoteLabel(type) }
 
 function formatCount(n) { return n >= 10000 ? (n / 10000).toFixed(1) + 'w' : n >= 1000 ? (n / 1000).toFixed(1) + 'k' : n }
 function getHeatClass(item) { const v = item.view_count || 0; if (v >= 2000) return 'heat-hot'; if (v >= 500) return 'heat-medium'; return 'heat-normal' }

@@ -96,7 +96,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-import { SERVICE_TYPES } from '@/config/constants'
+import { serviceTypes } from '@/utils/i18n-maps'
 import { productService, orderService, couponService, pointsService } from '@/mock/service'
 import { guardClick, toastSuccess, toastError, hapticSuccess } from '@/utils/feedback'
 import { useNavTitle } from '@/hooks/useNavTitle'
@@ -105,7 +105,6 @@ useNavTitle('titles.orderConfirm')
 
 const productId = ref('')
 const product = ref(null)
-const serviceTypes = SERVICE_TYPES
 const form = ref({ contact_name: '', phone: '', remark: '' })
 const submitting = ref(false)
 

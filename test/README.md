@@ -45,7 +45,14 @@ app/
 
 ```
 Test Files  10 passed (10)
-     Tests  163 passed (163)
+     Tests  167 passed (167)
+
+Coverage（含门禁，见 vitest.config.js thresholds: stmts≥95 / branch≥80 / funcs≥72 / lines≥95）
+  All files   96%+ statements | 84%+ branch | 75%+ functions
+  i18n        100% statements | locales 100%
+  utils       97%+ statements（util/i18n-maps 100%）
+  smart.js    95%+ statements | 100% functions
+  service.js  90%+ statements
 ```
 
 > 测试过程中发现并修复的真实 bug：

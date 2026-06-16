@@ -43,14 +43,13 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { LEAD_STATUS } from '@/config/constants'
+import { leadStatusMap as statusMap } from '@/utils/i18n-maps'
 import { leadService } from '@/mock/service'
 import { formatDate } from "@/utils/util"
 import { useNavTitle } from '@/hooks/useNavTitle'
 import { t } from '@/i18n'
 useNavTitle('titles.leadManage')
 
-const statusMap = LEAD_STATUS
 const statusFilter = ref('')
 const refreshing = ref(false)
 const showStatusPicker = ref(false)
@@ -67,7 +66,7 @@ function onRefresh() { refreshing.value = true; allLeads.value = leadService.myL
 function goDemand(id) { uni.navigateTo({ url: `/pages/demand/detail?id=${id}` }) }
 function updateStatus(item, newStatus) {
   item.status = newStatus
-  uni.showToast({ title: t('admin.statusUpdated').replace('{status}', statusMap[newStatus]), icon: 'success' })
+  uni.showToast({ title: t('admin.statusUpdated').replace('{status}', statusMap.value[newStatus]), icon: 'success' })
 }
 </script>
 

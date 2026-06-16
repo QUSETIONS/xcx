@@ -73,13 +73,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { SERVICE_TYPES } from '@/config/constants'
+import { serviceTypes } from '@/utils/i18n-maps'
 import { productService } from '@/mock/service'
 import { t } from '@/i18n'
 import { useNavTitle } from '@/hooks/useNavTitle'
 useNavTitle('titles.mall')
 
-const serviceTypes = SERVICE_TYPES
 const currentType = ref(null)
 const keyword = ref('')
 const searchFocused = ref(false)

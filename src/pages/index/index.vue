@@ -126,9 +126,10 @@
 
 <script setup>
 import { ref } from 'vue'
-import { DEMAND_CATEGORIES, QUOTE_TYPES } from '@/config/constants'
+import { DEMAND_CATEGORIES } from '@/config/constants'
 import { demandService, productService } from '@/mock/service'
 import { getRecommendedDemands, getRecommendedProducts } from '@/mock/smart'
+import { quoteLabel } from '@/utils/i18n-maps'
 import { t } from '@/i18n'
 import { useNavTitle } from '@/hooks/useNavTitle'
 useNavTitle('titles.home')
@@ -149,7 +150,7 @@ function getServiceIcon(type) {
   const map = { member: '👑', linker: '🔗', survey: '📊', resource_pack: '📦', certification: '✅' }
   return map[type] || '📦'
 }
-function formatQuote(type) { return QUOTE_TYPES.find(q => q.value === type)?.label || t('demandDetail.negotiate') }
+function formatQuote(type) { return quoteLabel(type) }
 
 function goSearch() { uni.navigateTo({ url: '/pages/search/index' }) }
 function goMember() { uni.navigateTo({ url: '/pages/member/index' }) }

@@ -27,14 +27,13 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { ORDER_STATUS } from '@/config/constants'
+import { orderStatusMap as statusMap } from '@/utils/i18n-maps'
 import { orderService } from '@/mock/service'
 import { formatDate } from "@/utils/util"
 import { useNavTitle } from '@/hooks/useNavTitle'
 import { t } from '@/i18n'
 useNavTitle('titles.myOrders')
 
-const statusMap = ORDER_STATUS
 const list = ref([])
 const refreshing = ref(false)
 const animated = ref(false)

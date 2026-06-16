@@ -59,7 +59,7 @@
 <script setup>
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-import { SERVICE_TYPES } from '@/config/constants'
+import { serviceTypes } from '@/utils/i18n-maps'
 import { productService, favoriteService, cartService } from '@/mock/service'
 import { trackBrowse } from '@/mock/smart'
 import { hapticLight, toastSuccess } from '@/utils/feedback'
@@ -69,7 +69,6 @@ useNavTitle('titles.mallDetail')
 
 const productId = ref('')
 const product = ref(null)
-const serviceTypes = SERVICE_TYPES
 const isFavorited = ref(false)
 
 function getServiceIcon(type) {

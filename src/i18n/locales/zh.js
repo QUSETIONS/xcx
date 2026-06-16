@@ -710,6 +710,14 @@ export default {
     kpiConv: '转化率',
     kpiAOV: '客单价'
   },
+  // 状态枚举（响应式映射）
+  status: {
+    demand: { draft: '草稿', pending: '待审核', published: '已发布', offline: '已下架' },
+    order: { created: '待确认', paid: '已支付', confirmed: '已确认', serving: '服务中', completed: '已完成', cancelled: '已取消' },
+    lead: { new: '新对接', contacted: '已联系', deal: '已成交', invalid: '无效' },
+    quote: { self: '自报价', negotiate: '面议', byDaren: '看达人' },
+    service: { member: '会员服务', linker: '链接官', survey: '调研卡', resourcePack: '资源包', certification: '认证服务' }
+  },
   // 设置
   settings: {
     title: '设置',

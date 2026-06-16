@@ -41,13 +41,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { SERVICE_TYPES } from '@/config/constants'
+import { serviceTypes } from '@/utils/i18n-maps'
 import { productService } from '@/mock/service'
 import { useNavTitle } from '@/hooks/useNavTitle'
 import { t } from '@/i18n'
 useNavTitle('titles.productManage')
 
-const serviceTypes = SERVICE_TYPES
 const productList = ref([])
 const refreshing = ref(false)
 const animated = ref(false)

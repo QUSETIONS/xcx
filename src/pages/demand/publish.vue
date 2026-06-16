@@ -140,17 +140,17 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { DEMAND_CATEGORIES, REGIONS, QUOTE_TYPES } from '@/config/constants'
+import { DEMAND_CATEGORIES, REGIONS } from '@/config/constants'
 import { demandService } from '@/mock/service'
 import { getPriceSuggestion, scoreDemandQuality } from '@/mock/smart'
 import { guardClick } from '@/utils/feedback'
+import { quoteTypes } from '@/utils/i18n-maps'
 import { useNavTitle } from '@/hooks/useNavTitle'
 import { t } from '@/i18n'
 useNavTitle('titles.demandPublish')
 
 const categories = DEMAND_CATEGORIES
 const regions = REGIONS
-const quoteTypes = QUOTE_TYPES
 
 const isEdit = ref(false)
 const editId = ref(null)

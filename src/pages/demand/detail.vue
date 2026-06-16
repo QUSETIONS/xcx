@@ -137,7 +137,7 @@
 <script setup>
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-import { QUOTE_TYPES } from '@/config/constants'
+import { quoteLabel } from '@/utils/i18n-maps'
 import { demandService, leadService, favoriteService, reviewService, matchService } from '@/mock/service'
 import { trackBrowse } from '@/mock/smart'
 import { useNavTitle } from '@/hooks/useNavTitle'
@@ -155,7 +155,7 @@ const showLeadModal = ref(false)
 const submitting = ref(false)
 const leadForm = ref({ contact_name: '', phone: '', wechat: '', message: '' })
 
-function formatQuote(type) { return QUOTE_TYPES.find(q => q.value === type)?.label || t('demandDetail.negotiate') }
+function formatQuote(type) { return quoteLabel(type) }
 function formatDate(t) { if (!t) return ''; const d = new Date(t); return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}` }
 function getHeat() { return demand.value ? Math.min(100, Math.round((demand.value.view_count / 3000) * 100)) : 0 }
 function getStars(rating) { const r = Math.round(rating); return '⭐'.repeat(r) + '☆'.repeat(5 - r) }

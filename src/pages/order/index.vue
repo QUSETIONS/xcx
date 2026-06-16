@@ -73,7 +73,7 @@
 <script setup>
 import { ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
-import { ORDER_STATUS } from '@/config/constants'
+import { orderStatusMap } from '@/utils/i18n-maps'
 import { orderService } from '@/mock/service'
 import { formatDateTime as formatTime } from "@/utils/util"
 import { useNavTitle } from '@/hooks/useNavTitle'
@@ -93,7 +93,7 @@ function loadOrders() {
 
 function switchTab(t) { tab.value = t; loadOrders() }
 
-function getStatusText(s) { return ORDER_STATUS[s] || s }
+function getStatusText(s) { return orderStatusMap.value[s] || s }
 function getIcon(type) {
   const map = { member: '👑', linker: '🔗', survey: '📊', resource_pack: '📦', certification: '✅' }
   return map[type] || '📦'
