@@ -1,16 +1,16 @@
 <template>
   <view class="page">
     <view class="header">
-      <text class="header-title">消息中心</text>
-      <text class="read-all-btn" @tap="readAll" v-if="unreadCount > 0">全部已读</text>
+      <text class="header-title">{{ t('user.message') }}</text>
+      <text class="read-all-btn" @tap="readAll" v-if="unreadCount > 0">{{ t('message.readAll') }}</text>
     </view>
 
     <view class="tab-bar">
-      <text class="tab-item" :class="{ active: tab === 'all' }" @tap="tab = 'all'">全部</text>
-      <text class="tab-item" :class="{ active: tab === 'system' }" @tap="tab = 'system'">系统</text>
-      <text class="tab-item" :class="{ active: tab === 'lead' }" @tap="tab = 'lead'">对接</text>
-      <text class="tab-item" :class="{ active: tab === 'deal' }" @tap="tab = 'deal'">成交</text>
-      <text class="tab-item" :class="{ active: tab === 'interact' }" @tap="tab = 'interact'">互动</text>
+      <text class="tab-item" :class="{ active: tab === 'all' }" @tap="tab = 'all'">{{ t('common.all') }}</text>
+      <text class="tab-item" :class="{ active: tab === 'system' }" @tap="tab = 'system'">{{ t('message.tabSystem') }}</text>
+      <text class="tab-item" :class="{ active: tab === 'lead' }" @tap="tab = 'lead'">{{ t('message.tabLead') }}</text>
+      <text class="tab-item" :class="{ active: tab === 'deal' }" @tap="tab = 'deal'">{{ t('message.tabDeal') }}</text>
+      <text class="tab-item" :class="{ active: tab === 'interact' }" @tap="tab = 'interact'">{{ t('message.tabInteract') }}</text>
     </view>
 
     <scroll-view class="list-scroll" scroll-y :refresher-enabled="true" :refresher-triggered="refreshing" @refresherrefresh="onRefresh">
@@ -32,7 +32,7 @@
       </view>
       <view v-if="!filteredList.length" class="empty">
         <text class="empty-icon">📭</text>
-        <text class="empty-text">暂无消息</text>
+        <text class="empty-text">{{ t('message.empty') }}</text>
       </view>
     </scroll-view>
   </view>
@@ -42,6 +42,7 @@
 import { ref, computed } from 'vue'
 import { notifyService } from '@/mock/service'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.message')
 
 const tab = ref('all')
@@ -79,7 +80,7 @@ function readAll() {
   notifyService.readAll()
   messages.value.forEach(m => m.read = true)
   unreadCount.value = 0
-  uni.showToast({ title: '全部已读', icon: 'success' })
+  uni.showToast({ title: t('message.allRead'), icon: 'success' })
 }
 
 function onRefresh() { refreshing.value = true; messages.value = notifyService.list().list; refreshing.value = false }

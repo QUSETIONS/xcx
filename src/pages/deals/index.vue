@@ -1,11 +1,11 @@
 <template>
   <view class="page">
     <view class="header">
-      <text class="header-title">成交管理</text>
+      <text class="header-title">{{ t('user.dealsManage') }}</text>
       <view class="filter-row">
-        <text class="filter-tab" :class="{ active: tab === 'all' }" @tap="tab = 'all'">全部</text>
-        <text class="filter-tab" :class="{ active: tab === 'in_progress' }" @tap="tab = 'in_progress'">进行中</text>
-        <text class="filter-tab" :class="{ active: tab === 'completed' }" @tap="tab = 'completed'">已完成</text>
+        <text class="filter-tab" :class="{ active: tab === 'all' }" @tap="tab = 'all'">{{ t('common.all') }}</text>
+        <text class="filter-tab" :class="{ active: tab === 'in_progress' }" @tap="tab = 'in_progress'">{{ t('deals.inProgress') }}</text>
+        <text class="filter-tab" :class="{ active: tab === 'completed' }" @tap="tab = 'completed'">{{ t('orderPage.completed') }}</text>
       </view>
     </view>
 
@@ -19,27 +19,27 @@
         </view>
         <view class="deal-info">
           <view class="info-row">
-            <text class="info-label">服务方</text>
+            <text class="info-label">{{ t('deals.provider') }}</text>
             <text class="info-value">{{ item.provider_name }}</text>
           </view>
           <view class="info-row">
-            <text class="info-label">联系方式</text>
+            <text class="info-label">{{ t('deals.contact') }}</text>
             <text class="info-value">{{ item.provider_phone }}</text>
           </view>
           <view class="info-row">
-            <text class="info-label">成交时间</text>
+            <text class="info-label">{{ t('deals.dealTime') }}</text>
             <text class="info-value">{{ formatDate(item.created_at) }}</text>
           </view>
         </view>
         <view class="deal-actions">
           <view class="action-btn" v-if="item.status === 'in_progress'" @tap="completeDeal(item)">
-            <text>确认完成</text>
+            <text>{{ t('orderPage.complete') }}</text>
           </view>
           <view class="action-btn review-btn" v-if="item.can_review && !item.has_review" @tap="openReview(item)">
-            <text>评价</text>
+            <text>{{ t('deals.review') }}</text>
           </view>
           <view class="action-btn done-btn" v-if="item.has_review">
-            <text>已评价 ✓</text>
+            <text>{{ t('deals.reviewed') }}</text>
           </view>
         </view>
       </view>
@@ -47,23 +47,23 @@
 
     <view v-if="!filteredList.length" class="empty">
       <text class="empty-icon">🤝</text>
-      <text class="empty-text">暂无成交记录</text>
+      <text class="empty-text">{{ t('deals.empty') }}</text>
     </view>
 
     <!-- 评价弹窗 -->
     <view v-if="showReviewModal" class="modal-mask" @tap="showReviewModal = false">
       <view class="modal-panel" @tap.stop>
-        <text class="modal-title">评价本次合作</text>
+        <text class="modal-title">{{ t('deals.reviewTitle') }}</text>
         <view class="star-row">
           <text class="star" v-for="i in 5" :key="i" @tap="reviewForm.rating = i">{{ i <= reviewForm.rating ? '⭐' : '☆' }}</text>
         </view>
-        <textarea class="review-input" v-model="reviewForm.content" placeholder="请评价本次合作体验..." maxlength="200" />
+        <textarea class="review-input" v-model="reviewForm.content" :placeholder="t('deals.reviewPlaceholder')" maxlength="200" />
         <view class="tag-row">
-          <text class="review-tag-opt" :class="{ active: reviewForm.tags.includes(t) }" v-for="t in tagOptions" :key="t" @tap="toggleTag(t)">{{ t }}</text>
+          <text class="review-tag-opt" :class="{ active: reviewForm.tags.includes(tg) }" v-for="tg in tagOptions" :key="tg" @tap="toggleTag(tg)">{{ tg }}</text>
         </view>
         <view class="modal-actions">
-          <view class="modal-cancel" @tap="showReviewModal = false"><text>取消</text></view>
-          <view class="modal-submit" @tap="submitReview"><text>提交评价</text></view>
+          <view class="modal-cancel" @tap="showReviewModal = false"><text>{{ t('common.cancel') }}</text></view>
+          <view class="modal-submit" @tap="submitReview"><text>{{ t('deals.submitReview') }}</text></view>
         </view>
       </view>
     </view>
@@ -75,15 +75,20 @@ import { ref, computed } from 'vue'
 import { dealService } from '@/mock/service'
 import { formatDate } from "@/utils/util"
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.deals')
 
 const tab = ref('all')
 const showReviewModal = ref(false)
 const currentDeal = ref(null)
 const reviewForm = ref({ rating: 5, content: '', tags: [] })
-const tagOptions = ['专业', '及时', '靠谱', '性价比高', '沟通顺畅', '创意好']
+const tagOptions = computed(() => t('deals.tags'))
 
-const statusMap = { in_progress: '进行中', completed: '已完成', cancelled: '已取消' }
+const statusMap = computed(() => ({
+  in_progress: t('deals.statusInProgress'),
+  completed: t('deals.statusCompleted'),
+  cancelled: t('deals.statusCancelled')
+}))
 const deals = ref(dealService.myDeals().list)
 
 const filteredList = computed(() => {
@@ -94,14 +99,14 @@ const filteredList = computed(() => {
 
 function completeDeal(item) {
   uni.showModal({
-    title: '确认完成',
-    content: '确认本次合作已完成？完成后可以进行评价',
+    title: t('deals.confirmTitle'),
+    content: t('deals.confirmContent'),
     success: (res) => {
       if (res.confirm) {
         dealService.updateStatus(item._id, 'completed')
         item.status = 'completed'
         item.can_review = true
-        uni.showToast({ title: '已确认完成', icon: 'success' })
+        uni.showToast({ title: t('deals.confirmed'), icon: 'success' })
       }
     }
   })
@@ -121,7 +126,7 @@ function toggleTag(tag) {
 
 function submitReview() {
   if (!reviewForm.value.content.trim()) {
-    uni.showToast({ title: '请填写评价内容', icon: 'none' })
+    uni.showToast({ title: t('deals.enterReview'), icon: 'none' })
     return
   }
   if (currentDeal.value) {
@@ -130,7 +135,7 @@ function submitReview() {
     currentDeal.value.can_review = false
   }
   showReviewModal.value = false
-  uni.showToast({ title: '评价成功', icon: 'success' })
+  uni.showToast({ title: t('deals.reviewSuccess'), icon: 'success' })
 }
 </script>
 

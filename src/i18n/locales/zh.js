@@ -530,6 +530,62 @@ export default {
     unfollowConfirm: '确定取消关注「{name}」吗？',
     unfollowed: '已取消关注'
   },
+  // 成交管理
+  deals: {
+    inProgress: '进行中',
+    provider: '服务方',
+    contact: '联系方式',
+    dealTime: '成交时间',
+    review: '评价',
+    reviewed: '已评价 ✓',
+    empty: '暂无成交记录',
+    reviewTitle: '评价本次合作',
+    reviewPlaceholder: '请评价本次合作体验...',
+    submitReview: '提交评价',
+    confirmTitle: '确认完成',
+    confirmContent: '确认本次合作已完成？完成后可以进行评价',
+    confirmed: '已确认完成',
+    enterReview: '请填写评价内容',
+    reviewSuccess: '评价成功',
+    statusInProgress: '进行中',
+    statusCompleted: '已完成',
+    statusCancelled: '已取消',
+    tags: ['专业', '及时', '靠谱', '性价比高', '沟通顺畅', '创意好']
+  },
+  // 消息中心
+  message: {
+    readAll: '全部已读',
+    tabSystem: '系统',
+    tabLead: '对接',
+    tabDeal: '成交',
+    tabInteract: '互动',
+    empty: '暂无消息',
+    allRead: '全部已读'
+  },
+  // 数据看板
+  dashboard: {
+    overviewTitle: '数据概览',
+    totalViews: '总浏览',
+    totalLeads: '总对接',
+    totalDeals: '总成交',
+    conversionRate: '转化率',
+    trendTitle: '浏览趋势',
+    days7: '7天',
+    days30: '30天',
+    viewsCount: '浏览量',
+    leadsCount: '对接数',
+    categoryTitle: '需求分类分布',
+    countUnit: '个',
+    metricsTitle: '核心指标',
+    avgResponse: '平均响应时间',
+    totalRevenue: '累计成交金额',
+    creditScore: '信用评分',
+    scoreUnit: '分',
+    todoTitle: '待办事项',
+    todoOrder: '待处理订单',
+    todoLead: '新对接待回复',
+    todoMessage: '未读消息'
+  },
   // 设置
   settings: {
     title: '设置',

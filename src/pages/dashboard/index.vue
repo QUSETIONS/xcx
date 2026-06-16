@@ -4,26 +4,26 @@
     <block v-else>
     <!-- 概览卡片 -->
     <view class="overview-card">
-      <text class="overview-title">数据概览</text>
+      <text class="overview-title">{{ t('dashboard.overviewTitle') }}</text>
       <view class="overview-grid">
         <view class="ov-item">
           <text class="ov-num">{{ overview.total_views }}</text>
-          <text class="ov-label">总浏览</text>
+          <text class="ov-label">{{ t('dashboard.totalViews') }}</text>
           <text class="ov-trend" :class="trend.views.startsWith('+') ? 'up' : 'down'">{{ trend.views }}</text>
         </view>
         <view class="ov-item">
           <text class="ov-num">{{ overview.total_leads }}</text>
-          <text class="ov-label">总对接</text>
+          <text class="ov-label">{{ t('dashboard.totalLeads') }}</text>
           <text class="ov-trend up">{{ trend.leads }}</text>
         </view>
         <view class="ov-item">
           <text class="ov-num">{{ overview.total_deals }}</text>
-          <text class="ov-label">总成交</text>
+          <text class="ov-label">{{ t('dashboard.totalDeals') }}</text>
           <text class="ov-trend up">{{ trend.deals }}</text>
         </view>
         <view class="ov-item">
           <text class="ov-num">{{ overview.conversion_rate }}%</text>
-          <text class="ov-label">转化率</text>
+          <text class="ov-label">{{ t('dashboard.conversionRate') }}</text>
         </view>
       </view>
     </view>
@@ -31,10 +31,10 @@
     <!-- 趋势图 -->
     <view class="chart-card">
       <view class="chart-header">
-        <text class="chart-title">浏览趋势</text>
+        <text class="chart-title">{{ t('dashboard.trendTitle') }}</text>
         <view class="chart-tabs">
-          <text class="chart-tab" :class="{ active: period === 7 }" @tap="period = 7; loadTrend()">7天</text>
-          <text class="chart-tab" :class="{ active: period === 30 }" @tap="period = 30; loadTrend()">30天</text>
+          <text class="chart-tab" :class="{ active: period === 7 }" @tap="period = 7; loadTrend()">{{ t('dashboard.days7') }}</text>
+          <text class="chart-tab" :class="{ active: period === 30 }" @tap="period = 30; loadTrend()">{{ t('dashboard.days30') }}</text>
         </view>
       </view>
       <!-- CSS柱状图 -->
@@ -48,19 +48,19 @@
         </view>
       </view>
       <view class="chart-legend">
-        <view class="legend-item"><view class="legend-dot dot-views"></view><text>浏览量</text></view>
-        <view class="legend-item"><view class="legend-dot dot-leads"></view><text>对接数</text></view>
+        <view class="legend-item"><view class="legend-dot dot-views"></view><text>{{ t('dashboard.viewsCount') }}</text></view>
+        <view class="legend-item"><view class="legend-dot dot-leads"></view><text>{{ t('dashboard.leadsCount') }}</text></view>
       </view>
     </view>
 
     <!-- 分类分布 -->
     <view class="chart-card">
-      <text class="chart-title">需求分类分布</text>
+      <text class="chart-title">{{ t('dashboard.categoryTitle') }}</text>
       <view class="category-bars">
         <view class="cat-bar" v-for="(item, idx) in categoryStats" :key="idx">
           <view class="cat-bar-header">
             <text class="cat-bar-name">{{ item.name }}</text>
-            <text class="cat-bar-count">{{ item.count }}个</text>
+            <text class="cat-bar-count">{{ item.count }}{{ t('dashboard.countUnit') }}</text>
           </view>
           <view class="cat-bar-track">
             <view class="cat-bar-fill" :style="{ width: getCatWidth(item.count) + '%', background: item.color }"></view>
@@ -71,39 +71,39 @@
 
     <!-- 核心指标 -->
     <view class="metrics-card">
-      <text class="chart-title">核心指标</text>
+      <text class="chart-title">{{ t('dashboard.metricsTitle') }}</text>
       <view class="metric-item">
-        <text class="metric-label">平均响应时间</text>
+        <text class="metric-label">{{ t('dashboard.avgResponse') }}</text>
         <text class="metric-value">{{ overview.avg_response_time }}</text>
       </view>
       <view class="metric-item">
-        <text class="metric-label">累计成交金额</text>
+        <text class="metric-label">{{ t('dashboard.totalRevenue') }}</text>
         <text class="metric-value">¥{{ (overview.total_revenue / 100).toFixed(0) }}</text>
       </view>
       <view class="metric-item">
-        <text class="metric-label">信用评分</text>
-        <text class="metric-value credit">{{ credit.score }}分</text>
+        <text class="metric-label">{{ t('dashboard.creditScore') }}</text>
+        <text class="metric-value credit">{{ credit.score }}{{ t('dashboard.scoreUnit') }}</text>
       </view>
     </view>
 
     <!-- 待办提醒 -->
     <view class="metrics-card">
-      <text class="chart-title">待办事项</text>
+      <text class="chart-title">{{ t('dashboard.todoTitle') }}</text>
       <view class="todo-item" @tap="goOrder">
         <text class="todo-icon">📦</text>
-        <text class="todo-text">待处理订单</text>
+        <text class="todo-text">{{ t('dashboard.todoOrder') }}</text>
         <text class="todo-badge">3</text>
         <text class="todo-arrow">›</text>
       </view>
       <view class="todo-item" @tap="goDeals">
         <text class="todo-icon">🤝</text>
-        <text class="todo-text">新对接待回复</text>
+        <text class="todo-text">{{ t('dashboard.todoLead') }}</text>
         <text class="todo-badge">5</text>
         <text class="todo-arrow">›</text>
       </view>
       <view class="todo-item" @tap="goMessage">
         <text class="todo-icon">💬</text>
-        <text class="todo-text">未读消息</text>
+        <text class="todo-text">{{ t('dashboard.todoMessage') }}</text>
         <text class="todo-badge">2</text>
         <text class="todo-arrow">›</text>
       </view>
@@ -118,6 +118,7 @@
 import { ref, onMounted } from 'vue'
 import { dashboardService, reviewService } from '@/mock/service'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.dashboard')
 
 const overview = ref({})
