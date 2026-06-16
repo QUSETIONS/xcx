@@ -434,6 +434,68 @@ export default {
       { name: '团队协作', free: '—', pro: '—', enterprise: '✓' }
     ]
   },
+  // 搜索
+  search: {
+    placeholder: '搜索需求、服务、社区内容',
+    resultCount: '共找到 {total} 条结果',
+    groupDemand: '需求',
+    groupService: '服务',
+    groupCommunity: '社区',
+    sales: '销量',
+    noResult: '未找到「{kw}」相关内容',
+    clear: '清空',
+    enterKeyword: '请输入搜索词'
+  },
+  // 用户主页
+  profile: {
+    followAction: '+ 关注',
+    posts: '帖子',
+    followers: '粉丝',
+    rating: '评分',
+    tabDemands: '需求',
+    tabReviews: '评价',
+    emptyPosts: '暂无帖子',
+    emptyDemands: '暂无需求'
+  },
+  // 企业认证
+  verify: {
+    bannerTitle: '企业实名认证',
+    bannerDesc: '完成认证，获得专属标识，提升信任度与接单率',
+    b1Title: '专属认证标识',
+    b1Desc: '企业主页展示官方认证标',
+    b2Title: '接单率提升60%',
+    b2Desc: '认证企业优先推荐',
+    b3Title: '需求方更信赖',
+    b3Desc: '认证标识增强信任',
+    formTitle: '填写认证信息',
+    companyLabel: '企业名称 *',
+    companyPlaceholder: '请输入营业执照上的企业全称',
+    creditLabel: '统一社会信用代码 *',
+    creditPlaceholder: '18位信用代码',
+    legalLabel: '法人姓名 *',
+    legalPlaceholder: '法定代表人姓名',
+    phoneLabel: '联系电话 *',
+    phonePlaceholder: '企业联系电话',
+    licenseLabel: '营业执照照片 *',
+    uploadLicense: '上传营业执照',
+    uploaded: '已上传',
+    submit: '提交认证申请',
+    pendingTitle: '认证审核中',
+    pendingDesc: '您的认证申请已提交，预计1-3个工作日完成审核',
+    companyName: '企业名称',
+    submittedAt: '提交时间',
+    simulateApprove: '模拟审核通过（Demo）',
+    verifiedTitle: '认证成功',
+    verifiedBadge: '企业认证 · 已通过',
+    creditCode: '信用代码',
+    legalPerson: '法人',
+    verifiedAt: '认证时间',
+    verifiedTip: '认证标识已展示在您的需求与主页',
+    uploadSuccess: '上传成功（模拟）',
+    creditLength: '信用代码需18位',
+    uploadLicenseRequired: '请上传营业执照',
+    verifySuccess: '认证成功'
+  },
   // 设置
   settings: {
     title: '设置',

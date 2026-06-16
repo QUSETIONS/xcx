@@ -4,80 +4,80 @@
     <block v-if="status === 'none'">
       <view class="banner">
         <text class="banner-icon">🏛️</text>
-        <text class="banner-title">企业实名认证</text>
-        <text class="banner-desc">完成认证，获得专属标识，提升信任度与接单率</text>
+        <text class="banner-title">{{ t('verify.bannerTitle') }}</text>
+        <text class="banner-desc">{{ t('verify.bannerDesc') }}</text>
       </view>
 
       <view class="benefits">
         <view class="benefit-item">
           <text class="b-icon">✓</text>
-          <view><text class="b-title">专属认证标识</text><text class="b-desc">企业主页展示官方认证标</text></view>
+          <view><text class="b-title">{{ t('verify.b1Title') }}</text><text class="b-desc">{{ t('verify.b1Desc') }}</text></view>
         </view>
         <view class="benefit-item">
           <text class="b-icon">📈</text>
-          <view><text class="b-title">接单率提升60%</text><text class="b-desc">认证企业优先推荐</text></view>
+          <view><text class="b-title">{{ t('verify.b2Title') }}</text><text class="b-desc">{{ t('verify.b2Desc') }}</text></view>
         </view>
         <view class="benefit-item">
           <text class="b-icon">🤝</text>
-          <view><text class="b-title">需求方更信赖</text><text class="b-desc">认证标识增强信任</text></view>
+          <view><text class="b-title">{{ t('verify.b3Title') }}</text><text class="b-desc">{{ t('verify.b3Desc') }}</text></view>
         </view>
       </view>
 
       <view class="form-section">
-        <text class="section-title">填写认证信息</text>
+        <text class="section-title">{{ t('verify.formTitle') }}</text>
         <view class="form-card">
-          <text class="form-label">企业名称 *</text>
-          <input class="form-input" v-model="form.company_name" placeholder="请输入营业执照上的企业全称" />
+          <text class="form-label">{{ t('verify.companyLabel') }}</text>
+          <input class="form-input" v-model="form.company_name" :placeholder="t('verify.companyPlaceholder')" />
         </view>
         <view class="form-card">
-          <text class="form-label">统一社会信用代码 *</text>
-          <input class="form-input" v-model="form.credit_code" placeholder="18位信用代码" maxlength="18" />
+          <text class="form-label">{{ t('verify.creditLabel') }}</text>
+          <input class="form-input" v-model="form.credit_code" :placeholder="t('verify.creditPlaceholder')" maxlength="18" />
         </view>
         <view class="form-card">
-          <text class="form-label">法人姓名 *</text>
-          <input class="form-input" v-model="form.legal_person" placeholder="法定代表人姓名" />
+          <text class="form-label">{{ t('verify.legalLabel') }}</text>
+          <input class="form-input" v-model="form.legal_person" :placeholder="t('verify.legalPlaceholder')" />
         </view>
         <view class="form-card">
-          <text class="form-label">联系电话 *</text>
-          <input class="form-input" type="number" v-model="form.phone" placeholder="企业联系电话" />
+          <text class="form-label">{{ t('verify.phoneLabel') }}</text>
+          <input class="form-input" type="number" v-model="form.phone" :placeholder="t('verify.phonePlaceholder')" />
         </view>
         <view class="form-card">
-          <text class="form-label">营业执照照片 *</text>
+          <text class="form-label">{{ t('verify.licenseLabel') }}</text>
           <view class="upload-box" @tap="uploadLicense">
-            <text class="upload-text" v-if="!form.license_uploaded">📷 上传营业执照</text>
-            <text class="upload-done" v-else>✓ 已上传</text>
+            <text class="upload-text" v-if="!form.license_uploaded">📷 {{ t('verify.uploadLicense') }}</text>
+            <text class="upload-done" v-else>✓ {{ t('verify.uploaded') }}</text>
           </view>
         </view>
       </view>
 
-      <view class="submit-btn" @tap="submit"><text>提交认证申请</text></view>
+      <view class="submit-btn" @tap="submit"><text>{{ t('verify.submit') }}</text></view>
       <view style="height: 60rpx;"></view>
     </block>
 
     <!-- 审核中 -->
     <view v-else-if="status === 'pending'" class="status-box">
       <text class="status-icon">⏳</text>
-      <text class="status-title">认证审核中</text>
-      <text class="status-desc">您的认证申请已提交，预计1-3个工作日完成审核</text>
+      <text class="status-title">{{ t('verify.pendingTitle') }}</text>
+      <text class="status-desc">{{ t('verify.pendingDesc') }}</text>
       <view class="status-info">
-        <view class="info-row"><text class="info-label">企业名称</text><text class="info-value">{{ info.company_name }}</text></view>
-        <view class="info-row"><text class="info-label">提交时间</text><text class="info-value">{{ formatTime(info.submitted_at) }}</text></view>
+        <view class="info-row"><text class="info-label">{{ t('verify.companyName') }}</text><text class="info-value">{{ info.company_name }}</text></view>
+        <view class="info-row"><text class="info-label">{{ t('verify.submittedAt') }}</text><text class="info-value">{{ formatTime(info.submitted_at) }}</text></view>
       </view>
-      <view class="simulate-btn" @tap="simulateApprove"><text>模拟审核通过（Demo）</text></view>
+      <view class="simulate-btn" @tap="simulateApprove"><text>{{ t('verify.simulateApprove') }}</text></view>
     </view>
 
     <!-- 已认证 -->
     <view v-else-if="status === 'verified'" class="status-box">
       <text class="status-icon verified">✓</text>
-      <text class="status-title verified">认证成功</text>
-      <view class="verified-badge"><text>企业认证 · 已通过</text></view>
+      <text class="status-title verified">{{ t('verify.verifiedTitle') }}</text>
+      <view class="verified-badge"><text>{{ t('verify.verifiedBadge') }}</text></view>
       <view class="status-info">
-        <view class="info-row"><text class="info-label">企业名称</text><text class="info-value">{{ info.company_name }}</text></view>
-        <view class="info-row"><text class="info-label">信用代码</text><text class="info-value">{{ info.credit_code }}</text></view>
-        <view class="info-row"><text class="info-label">法人</text><text class="info-value">{{ info.legal_person }}</text></view>
-        <view class="info-row"><text class="info-label">认证时间</text><text class="info-value">{{ formatTime(info.verified_at) }}</text></view>
+        <view class="info-row"><text class="info-label">{{ t('verify.companyName') }}</text><text class="info-value">{{ info.company_name }}</text></view>
+        <view class="info-row"><text class="info-label">{{ t('verify.creditCode') }}</text><text class="info-value">{{ info.credit_code }}</text></view>
+        <view class="info-row"><text class="info-label">{{ t('verify.legalPerson') }}</text><text class="info-value">{{ info.legal_person }}</text></view>
+        <view class="info-row"><text class="info-label">{{ t('verify.verifiedAt') }}</text><text class="info-value">{{ formatTime(info.verified_at) }}</text></view>
       </view>
-      <text class="verified-tip">认证标识已展示在您的需求与主页</text>
+      <text class="verified-tip">{{ t('verify.verifiedTip') }}</text>
     </view>
   </view>
 </template>
@@ -87,6 +87,7 @@ import { ref, onMounted } from 'vue'
 import { verifyService } from '@/mock/service'
 import { formatDateFull as formatTime } from "@/utils/util"
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.verify')
 
 const status = ref('none')
@@ -100,26 +101,26 @@ onMounted(() => {
 
 function uploadLicense() {
   form.value.license_uploaded = true
-  uni.showToast({ title: '上传成功（模拟）', icon: 'success' })
+  uni.showToast({ title: t('verify.uploadSuccess'), icon: 'success' })
 }
 
 function submit() {
   if (!form.value.company_name || !form.value.credit_code || !form.value.legal_person || !form.value.phone) {
-    uni.showToast({ title: '请填写完整信息', icon: 'none' }); return
+    uni.showToast({ title: t('demandPublish.fillComplete'), icon: 'none' }); return
   }
-  if (form.value.credit_code.length !== 18) { uni.showToast({ title: '信用代码需18位', icon: 'none' }); return }
-  if (!form.value.license_uploaded) { uni.showToast({ title: '请上传营业执照', icon: 'none' }); return }
+  if (form.value.credit_code.length !== 18) { uni.showToast({ title: t('verify.creditLength'), icon: 'none' }); return }
+  if (!form.value.license_uploaded) { uni.showToast({ title: t('verify.uploadLicenseRequired'), icon: 'none' }); return }
   verifyService.submit(form.value)
   info.value = verifyService.getInfo()
   status.value = 'pending'
-  uni.showToast({ title: '提交成功', icon: 'success' })
+  uni.showToast({ title: t('demandDetail.submitSuccess'), icon: 'success' })
 }
 
 function simulateApprove() {
   verifyService.approve()
   info.value = verifyService.getInfo()
   status.value = 'verified'
-  uni.showToast({ title: '认证成功', icon: 'success' })
+  uni.showToast({ title: t('verify.verifySuccess'), icon: 'success' })
 }
 
 </script>

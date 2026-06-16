@@ -11,7 +11,7 @@
         <text class="bio">{{ user.bio }}</text>
       </view>
       <view class="follow-btn" :class="{ following: isFollowing }" @tap="toggleFollow">
-        <text>{{ isFollowing ? '已关注' : '+ 关注' }}</text>
+        <text>{{ isFollowing ? t('community.followed') : t('profile.followAction') }}</text>
       </view>
     </view>
 
@@ -19,25 +19,25 @@
     <view class="stats-bar">
       <view class="stat-item">
         <text class="stat-num">{{ user.posts }}</text>
-        <text class="stat-label">帖子</text>
+        <text class="stat-label">{{ t('profile.posts') }}</text>
       </view>
       <view class="stat-divider"></view>
       <view class="stat-item">
         <text class="stat-num">{{ user.followers }}</text>
-        <text class="stat-label">粉丝</text>
+        <text class="stat-label">{{ t('profile.followers') }}</text>
       </view>
       <view class="stat-divider"></view>
       <view class="stat-item">
         <text class="stat-num">{{ reviewAvg }}</text>
-        <text class="stat-label">评分</text>
+        <text class="stat-label">{{ t('profile.rating') }}</text>
       </view>
     </view>
 
     <!-- Tab切换 -->
     <view class="tab-bar">
-      <text class="tab-item" :class="{ active: tab === 'posts' }" @tap="tab = 'posts'">帖子</text>
-      <text class="tab-item" :class="{ active: tab === 'demands' }" @tap="tab = 'demands'">需求</text>
-      <text class="tab-item" :class="{ active: tab === 'reviews' }" @tap="tab = 'reviews'">评价</text>
+      <text class="tab-item" :class="{ active: tab === 'posts' }" @tap="tab = 'posts'">{{ t('profile.posts') }}</text>
+      <text class="tab-item" :class="{ active: tab === 'demands' }" @tap="tab = 'demands'">{{ t('profile.tabDemands') }}</text>
+      <text class="tab-item" :class="{ active: tab === 'reviews' }" @tap="tab = 'reviews'">{{ t('profile.tabReviews') }}</text>
     </view>
 
     <!-- 帖子列表 -->
@@ -49,7 +49,7 @@
           <text class="post-stats">❤️ {{ item.like_count }}  💬 {{ item.comment_count }}</text>
         </view>
       </view>
-      <view v-if="!userPosts.length" class="empty"><text>暂无帖子</text></view>
+      <view v-if="!userPosts.length" class="empty"><text>{{ t('profile.emptyPosts') }}</text></view>
     </view>
 
     <!-- 需求列表 -->
@@ -62,14 +62,14 @@
           <text class="demand-stats">👁 {{ item.view_count }}  🤝 {{ item.lead_count }}</text>
         </view>
       </view>
-      <view v-if="!userDemands.length" class="empty"><text>暂无需求</text></view>
+      <view v-if="!userDemands.length" class="empty"><text>{{ t('profile.emptyDemands') }}</text></view>
     </view>
 
     <!-- 评价列表 -->
     <view v-if="tab === 'reviews'" class="content-list">
       <view class="review-item" v-for="item in userReviews" :key="item._id">
         <view class="review-top">
-          <text class="reviewer">{{ item.reviewer?.nickname || '匿名用户' }}</text>
+          <text class="reviewer">{{ item.reviewer?.nickname || t('demandDetail.anonymous') }}</text>
           <text class="review-stars">{{ getStars(item.rating) }}</text>
         </view>
         <text class="review-content">{{ item.content }}</text>
@@ -77,7 +77,7 @@
           <text class="review-tag" v-for="(tag, i) in item.tags" :key="i">{{ tag }}</text>
         </view>
       </view>
-      <view v-if="!userReviews.length" class="empty"><text>暂无评价</text></view>
+      <view v-if="!userReviews.length" class="empty"><text>{{ t('demandDetail.noReviews') }}</text></view>
     </view>
 
     <view style="height: 40rpx;"></view>
@@ -89,6 +89,7 @@ import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { communityService, demandService, reviewService, followService } from '@/mock/service'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.userProfile')
 
 const userId = ref('')
@@ -140,7 +141,7 @@ function toggleFollow() {
   isFollowing.value = res.followed
   if (res.followed) user.value.followers++
   else user.value.followers--
-  uni.showToast({ title: res.followed ? '关注成功' : '已取消', icon: 'none' })
+  uni.showToast({ title: res.followed ? t('community.followSuccess') : t('demandDetail.unfavorited'), icon: 'none' })
 }
 
 function goPost(id) { uni.navigateTo({ url: '/pages/community/detail?id=' + id }) }

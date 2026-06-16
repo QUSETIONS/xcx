@@ -7,19 +7,19 @@
         <input class="search-input" v-model="keyword" :placeholder="placeholder" confirm-type="search" @confirm="doSearch" :focus="true" />
         <text class="clear-btn" v-if="keyword" @tap="clearKeyword">✕</text>
       </view>
-      <text class="search-btn" @tap="doSearch">搜索</text>
+      <text class="search-btn" @tap="doSearch">{{ t('common.search') }}</text>
     </view>
 
     <!-- 搜索结果 -->
     <view v-if="searched" class="result-section">
       <view class="result-summary">
-        <text>共找到 {{ result.total }} 条结果</text>
+        <text>{{ t('search.resultCount').replace('{total}', result.total) }}</text>
       </view>
 
       <block v-if="result.total">
         <!-- 需求结果 -->
         <view v-if="result.demands.length" class="result-group">
-          <text class="group-title">📌 需求 ({{ result.demands.length }})</text>
+          <text class="group-title">📌 {{ t('search.groupDemand') }} ({{ result.demands.length }})</text>
           <view class="result-item card-press" v-for="item in result.demands" :key="item._id" @tap="goDemand(item._id)">
             <text class="ri-title">{{ item.title }}</text>
             <view class="ri-meta">
@@ -31,19 +31,19 @@
 
         <!-- 服务结果 -->
         <view v-if="result.products.length" class="result-group">
-          <text class="group-title">🛍️ 服务 ({{ result.products.length }})</text>
+          <text class="group-title">🛍️ {{ t('search.groupService') }} ({{ result.products.length }})</text>
           <view class="result-item card-press" v-for="item in result.products" :key="item._id" @tap="goProduct(item._id)">
             <view class="ri-row">
               <text class="ri-title">{{ item.title }}</text>
               <text class="ri-price">¥{{ (item.price / 100).toFixed(0) }}</text>
             </view>
-            <text class="ri-stat">销量 {{ item.sale_count }}</text>
+            <text class="ri-stat">{{ t('search.sales') }} {{ item.sale_count }}</text>
           </view>
         </view>
 
         <!-- 帖子结果 -->
         <view v-if="result.posts.length" class="result-group">
-          <text class="group-title">💬 社区 ({{ result.posts.length }})</text>
+          <text class="group-title">💬 {{ t('search.groupCommunity') }} ({{ result.posts.length }})</text>
           <view class="result-item card-press" v-for="item in result.posts" :key="item._id" @tap="goPost(item._id)">
             <text class="ri-content">{{ item.content.slice(0, 50) }}...</text>
             <text class="ri-stat">❤️ {{ item.like_count }} · 💬 {{ item.comment_count }}</text>
@@ -53,7 +53,7 @@
 
       <view v-else class="empty-result">
         <text class="empty-icon">🔍</text>
-        <text class="empty-text">未找到「{{ searchedKeyword }}」相关内容</text>
+        <text class="empty-text">{{ t('search.noResult').replace('{kw}', searchedKeyword) }}</text>
       </view>
     </view>
 
@@ -62,8 +62,8 @@
       <!-- 搜索历史 -->
       <view v-if="history.length" class="suggest-section">
         <view class="suggest-header">
-          <text class="suggest-title">搜索历史</text>
-          <text class="suggest-clear" @tap="clearHistory">清空</text>
+          <text class="suggest-title">{{ t('listPage.searchHistory') }}</text>
+          <text class="suggest-clear" @tap="clearHistory">{{ t('search.clear') }}</text>
         </view>
         <view class="tag-list">
           <view class="tag-item" v-for="(h, i) in history" :key="i" @tap="quickSearch(h)"><text>{{ h }}</text></view>
@@ -72,7 +72,7 @@
 
       <!-- 热门搜索 -->
       <view class="suggest-section">
-        <text class="suggest-title">🔥 热门搜索</text>
+        <text class="suggest-title">🔥 {{ t('listPage.hotSearch') }}</text>
         <view class="hot-list">
           <view class="hot-item" v-for="(k, i) in hotKeywords" :key="i" @tap="quickSearch(k)">
             <text class="hot-rank" :class="'r' + (i < 3 ? i + 1 : 'n')">{{ i + 1 }}</text>
@@ -89,12 +89,13 @@ import { ref, onMounted, watch } from 'vue'
 import { searchService } from '@/mock/service'
 import { debounce } from '@/utils/util'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.search')
 
 const keyword = ref('')
 const searched = ref(false)
 const searchedKeyword = ref('')
-const placeholder = '搜索需求、服务、社区内容'
+const placeholder = t('search.placeholder')
 const history = ref([])
 const hotKeywords = ref([])
 const result = ref({ demands: [], products: [], posts: [], total: 0 })
@@ -112,7 +113,7 @@ watch(keyword, () => { debouncedSearch() })
 
 function doSearch() {
   const kw = keyword.value.trim()
-  if (!kw) { uni.showToast({ title: '请输入搜索词', icon: 'none' }); return }
+  if (!kw) { uni.showToast({ title: t('search.enterKeyword'), icon: 'none' }); return }
   searched.value = true
   searchedKeyword.value = kw
   searchService.addHistory(kw)
