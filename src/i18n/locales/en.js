@@ -76,7 +76,22 @@ export default {
     recommend: 'For You',
     publishDemand: 'Publish',
     banner1Title: 'Precise Matching',
-    banner1Desc: 'Publish · Response in 30 min'
+    banner1Desc: 'Publish · Response in 30 min',
+    searchHint: 'Search demands, resources, providers...',
+    banner1Eyebrow: 'Hot Picks',
+    banner2Eyebrow: 'Membership',
+    banner2Title: 'Unlock All Features',
+    banner2Desc: 'Priority matching · Precise fit · Dedicated service',
+    learnMore: 'Learn More',
+    banner3Eyebrow: 'Campaigns',
+    banner3Title: 'Tasks for Points',
+    banner3Desc: 'Flash deals · Newcomer gifts · Referral rewards',
+    joinNow: 'Join Now',
+    categories: 'Categories',
+    zoneBuyer: 'Buyers',
+    zoneSeller: 'Providers',
+    zoneCommunity: 'Community',
+    featured: 'Featured Services'
   },
   demand: {
     hall: 'Demand Hall',

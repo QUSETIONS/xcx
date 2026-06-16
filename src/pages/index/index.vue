@@ -3,33 +3,33 @@
     <!-- 搜索 -->
     <view class="search-box" @tap="goSearch">
       <text class="search-icon">🔍</text>
-      <text class="search-hint">搜索需求、资源、服务商...</text>
+      <text class="search-hint">{{ t('home.searchHint') }}</text>
     </view>
 
     <!-- Banner -->
     <swiper class="banner-swiper" autoplay circular indicator-dots indicator-color="rgba(0,0,0,0.2)" indicator-active-color="#FF6B35">
       <swiper-item>
         <view class="banner banner-orange" @tap="goDemandPublish">
-          <text class="banner-eyebrow">🔥 热门推荐</text>
-          <text class="banner-title">需求精准匹配</text>
-          <text class="banner-desc">发布需求 · 30分钟内响应</text>
-          <view class="banner-action"><text>立即发布</text></view>
+          <text class="banner-eyebrow">🔥 {{ t('home.banner1Eyebrow') }}</text>
+          <text class="banner-title">{{ t('home.banner1Title') }}</text>
+          <text class="banner-desc">{{ t('home.banner1Desc') }}</text>
+          <view class="banner-action"><text>{{ t('home.publishDemand') }}</text></view>
         </view>
       </swiper-item>
       <swiper-item>
         <view class="banner banner-purple" @tap="goMember">
-          <text class="banner-eyebrow">👑 会员专区</text>
-          <text class="banner-title">解锁全部功能</text>
-          <text class="banner-desc">优先对接 · 精准匹配 · 专属服务</text>
-          <view class="banner-action"><text>了解详情</text></view>
+          <text class="banner-eyebrow">👑 {{ t('home.banner2Eyebrow') }}</text>
+          <text class="banner-title">{{ t('home.banner2Title') }}</text>
+          <text class="banner-desc">{{ t('home.banner2Desc') }}</text>
+          <view class="banner-action"><text>{{ t('home.learnMore') }}</text></view>
         </view>
       </swiper-item>
       <swiper-item>
         <view class="banner banner-green" @tap="goCampaign">
-          <text class="banner-eyebrow">🎉 活动中心</text>
-          <text class="banner-title">做任务赢积分</text>
-          <text class="banner-desc">限时秒杀 · 新人礼包 · 邀请有奖</text>
-          <view class="banner-action"><text>立即参与</text></view>
+          <text class="banner-eyebrow">🎉 {{ t('home.banner3Eyebrow') }}</text>
+          <text class="banner-title">{{ t('home.banner3Title') }}</text>
+          <text class="banner-desc">{{ t('home.banner3Desc') }}</text>
+          <view class="banner-action"><text>{{ t('home.joinNow') }}</text></view>
         </view>
       </swiper-item>
     </swiper>
@@ -38,21 +38,21 @@
     <view class="stats-row">
       <view class="stat-box card-press stat-orange">
         <text class="stat-num">{{ todayDemands }}</text>
-        <text class="stat-label">今日需求</text>
+        <text class="stat-label">{{ t('home.todayDemand') }}</text>
       </view>
       <view class="stat-box card-press stat-blue">
         <text class="stat-num">{{ activeLeads }}</text>
-        <text class="stat-label">活跃对接</text>
+        <text class="stat-label">{{ t('home.activeLead') }}</text>
       </view>
       <view class="stat-box card-press stat-green">
         <text class="stat-num">{{ totalUsers }}</text>
-        <text class="stat-label">平台用户</text>
+        <text class="stat-label">{{ t('home.totalUser') }}</text>
       </view>
     </view>
 
     <!-- 分类 -->
     <view class="section">
-      <text class="section-title">资源分类</text>
+      <text class="section-title">{{ t('home.categories') }}</text>
       <view class="cat-grid">
         <view class="cat-item card-press" v-for="(cat, idx) in categories" :key="cat.id" @tap="goDemandByCategory(cat)">
           <view class="cat-icon-box" :class="'cat-color-' + (idx % 8)">
@@ -67,15 +67,15 @@
     <view class="zone-row">
       <view class="zone-box card-press zone-orange" @tap="goDemandList">
         <text class="zone-icon">🎯</text>
-        <text class="zone-label">甲方专区</text>
+        <text class="zone-label">{{ t('home.zoneBuyer') }}</text>
       </view>
       <view class="zone-box card-press zone-blue" @tap="goDemandList">
         <text class="zone-icon">💼</text>
-        <text class="zone-label">乙方专区</text>
+        <text class="zone-label">{{ t('home.zoneSeller') }}</text>
       </view>
       <view class="zone-box card-press zone-green" @tap="goCommunity">
         <text class="zone-icon">💬</text>
-        <text class="zone-label">社区讨论</text>
+        <text class="zone-label">{{ t('home.zoneCommunity') }}</text>
       </view>
     </view>
 
@@ -106,8 +106,8 @@
     <!-- 精选服务 -->
     <view class="section">
       <view class="section-header">
-        <text class="section-title">精选服务</text>
-        <text class="section-more" @tap="goMallList">更多</text>
+        <text class="section-title">{{ t('home.featured') }}</text>
+        <text class="section-more" @tap="goMallList">{{ t('common.more') }}</text>
       </view>
       <view class="service-grid">
         <view class="service-item card-press" v-for="item in featuredProducts" :key="item._id" @tap="goProductDetail(item._id)">
@@ -149,7 +149,7 @@ function getServiceIcon(type) {
   const map = { member: '👑', linker: '🔗', survey: '📊', resource_pack: '📦', certification: '✅' }
   return map[type] || '📦'
 }
-function formatQuote(type) { return QUOTE_TYPES.find(q => q.value === type)?.label || '面议' }
+function formatQuote(type) { return QUOTE_TYPES.find(q => q.value === type)?.label || t('demandDetail.negotiate') }
 
 function goSearch() { uni.navigateTo({ url: '/pages/search/index' }) }
 function goMember() { uni.navigateTo({ url: '/pages/member/index' }) }

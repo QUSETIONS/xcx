@@ -79,7 +79,22 @@ export default {
     recommend: '为你推荐',
     publishDemand: '立即发布',
     banner1Title: '需求精准匹配',
-    banner1Desc: '发布需求 · 30分钟内响应'
+    banner1Desc: '发布需求 · 30分钟内响应',
+    searchHint: '搜索需求、资源、服务商...',
+    banner1Eyebrow: '热门推荐',
+    banner2Eyebrow: '会员专区',
+    banner2Title: '解锁全部功能',
+    banner2Desc: '优先对接 · 精准匹配 · 专属服务',
+    learnMore: '了解详情',
+    banner3Eyebrow: '活动中心',
+    banner3Title: '做任务赢积分',
+    banner3Desc: '限时秒杀 · 新人礼包 · 邀请有奖',
+    joinNow: '立即参与',
+    categories: '资源分类',
+    zoneBuyer: '甲方专区',
+    zoneSeller: '乙方专区',
+    zoneCommunity: '社区讨论',
+    featured: '精选服务'
   },
   // 需求
   demand: {
