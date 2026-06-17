@@ -93,7 +93,7 @@
           </view>
           <text class="demand-title">{{ item.title }}</text>
           <view class="demand-meta">
-            <text class="demand-company">{{ item.company_name }}</text>
+            <text class="demand-company">{{ companyName(item.company_name) }}</text>
             <text class="demand-region">{{ regionName(item.region) }}</text>
           </view>
           <view class="demand-bottom">
@@ -129,7 +129,7 @@ import { ref } from 'vue'
 import { DEMAND_CATEGORIES } from '@/config/constants'
 import { demandService, productService } from '@/mock/service'
 import { getRecommendedDemands, getRecommendedProducts } from '@/mock/smart'
-import { quoteLabel, categoryName, regionName } from '@/utils/i18n-maps'
+import { quoteLabel, categoryName, regionName, companyName } from '@/utils/i18n-maps'
 import { t } from '@/i18n'
 import { useNavTitle } from '@/hooks/useNavTitle'
 useNavTitle('titles.home')

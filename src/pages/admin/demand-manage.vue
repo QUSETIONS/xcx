@@ -16,7 +16,7 @@
             <view class="status-tag" :class="'status-' + item.status"><text>{{ statusMap[item.status] || item.status }}</text></view>
           </view>
           <view class="item-meta">
-            <text class="item-company">{{ item.company_name }}</text>
+            <text class="item-company">{{ companyName(item.company_name) }}</text>
             <text class="item-region">{{ regionName(item.region) }}</text>
           </view>
           <view class="item-stats">
@@ -49,7 +49,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { demandStatusMap as statusMap, regionName } from '@/utils/i18n-maps'
+import { demandStatusMap as statusMap, regionName, companyName } from '@/utils/i18n-maps'
 import { demandService } from '@/mock/service'
 import { formatDate } from "@/utils/util"
 import { useNavTitle } from '@/hooks/useNavTitle'

@@ -69,7 +69,7 @@
           </view>
           <text class="item-title">{{ item.title }}</text>
           <view class="item-company-row">
-            <text class="item-company">{{ item.company_name }}</text>
+            <text class="item-company">{{ companyName(item.company_name) }}</text>
             <text class="item-region">{{ regionName(item.region) }}</text>
           </view>
           <view class="item-bottom">
@@ -137,7 +137,7 @@ import { ref, computed, onMounted } from 'vue'
 import { DEMAND_CATEGORIES, REGIONS } from '@/config/constants'
 import { demandService } from '@/mock/service'
 import { formatRelativeTime as formatTime } from "@/utils/util"
-import { quoteLabel, categoryName, regionName } from '@/utils/i18n-maps'
+import { quoteLabel, categoryName, regionName, companyName } from '@/utils/i18n-maps'
 import { t } from '@/i18n'
 import { useNavTitle } from '@/hooks/useNavTitle'
 useNavTitle('titles.demandHall')

@@ -11,7 +11,7 @@ import fs from 'fs'
 import path from 'path'
 import zh from '@/i18n/locales/zh'
 import en from '@/i18n/locales/en'
-import { demandStatusMap, orderStatusMap, leadStatusMap, quoteTypes, serviceTypes, quoteLabel, categoryName, regionName } from '@/utils/i18n-maps'
+import { demandStatusMap, orderStatusMap, leadStatusMap, quoteTypes, serviceTypes, quoteLabel, categoryName, regionName, companyName } from '@/utils/i18n-maps'
 import { setLocale } from '@/i18n'
 
 // 把嵌套对象压平成 'a.b.c' 的叶子键集合（数组视为叶子）
@@ -162,6 +162,15 @@ describe('i18n 完整性：枚举映射 helper', () => {
     setLocale('en-US')
     expect(regionName('北京')).toBe('Beijing')
     expect(regionName('未知城市')).toBe('未知城市') // 未收录原样返回
+    setLocale('zh-CN')
+  })
+
+  it('companyName 英文翻译、中文原样', () => {
+    setLocale('zh-CN')
+    expect(companyName('字节跳动')).toBe('字节跳动')
+    setLocale('en-US')
+    expect(companyName('字节跳动')).toBe('ByteDance')
+    expect(companyName('某新公司')).toBe('某新公司') // 未收录原样
     setLocale('zh-CN')
   })
 })

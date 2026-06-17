@@ -9,7 +9,7 @@
       </view>
       <text class="hero-title">{{ demand.title }}</text>
       <view class="hero-company">
-        <text class="hero-name">{{ demand.company_name }}</text>
+        <text class="hero-name">{{ companyName(demand.company_name) }}</text>
         <text class="hero-region">{{ regionName(demand.region) }}</text>
       </view>
     </view>
@@ -56,7 +56,7 @@
       <view class="similar-list">
         <view class="similar-item card-press" v-for="item in similarDemands" :key="item._id" @tap="goDetail(item._id)">
           <text class="similar-title">{{ item.title }}</text>
-          <text class="similar-company">{{ item.company_name }}</text>
+          <text class="similar-company">{{ companyName(item.company_name) }}</text>
         </view>
       </view>
     </view>
@@ -137,7 +137,7 @@
 <script setup>
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-import { quoteLabel, categoryName, regionName } from '@/utils/i18n-maps'
+import { quoteLabel, categoryName, regionName, companyName } from '@/utils/i18n-maps'
 import { demandService, leadService, favoriteService, reviewService, matchService } from '@/mock/service'
 import { trackBrowse } from '@/mock/smart'
 import { useNavTitle } from '@/hooks/useNavTitle'

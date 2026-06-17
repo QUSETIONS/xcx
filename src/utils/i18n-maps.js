@@ -80,3 +80,15 @@ export function regionName(name) {
   if (!name) return ''
   return locale.value === 'en-US' ? (REGION_EN[name] || name) : name
 }
+
+// 公司名：数据里 company_name 存的是中文字符串（无 id），英文模式下查表翻译，其余原样。
+const COMPANY_EN = {
+  '字节跳动': 'ByteDance', '腾讯科技': 'Tencent', '阿里巴巴': 'Alibaba', '美团点评': 'Meituan',
+  '京东集团': 'JD.com', '小米科技': 'Xiaomi', '华为技术': 'Huawei', '网易': 'NetEase',
+  '百度': 'Baidu', '拼多多': 'Pinduoduo', '快手科技': 'Kuaishou', '滴滴出行': 'Didi',
+  '携程旅行': 'Trip.com', '小红书': 'Xiaohongshu', 'B站': 'Bilibili'
+}
+export function companyName(name) {
+  if (!name) return ''
+  return locale.value === 'en-US' ? (COMPANY_EN[name] || name) : name
+}
