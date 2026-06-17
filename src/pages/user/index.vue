@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :style="a11yStyle">
     <view class="header">
       <view class="user-info">
         <view class="avatar-box">
@@ -107,6 +107,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { demandService, leadService, favoriteService, reviewService, pointsService, couponService, followService } from '@/mock/service'
 import { t } from '@/i18n'
+import { a11yStyle } from '@/utils/accessibility'
 import { useNavTitle } from '@/hooks/useNavTitle'
 useNavTitle('titles.me')
 

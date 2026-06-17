@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :style="a11yStyle">
     <view class="header">
       <text class="header-title">{{ t('demand.hall') }}</text>
       <view class="header-actions">
@@ -138,6 +138,7 @@ import { DEMAND_CATEGORIES, REGIONS } from '@/config/constants'
 import { demandService } from '@/mock/service'
 import { formatRelativeTime as formatTime } from "@/utils/util"
 import { quoteLabel, categoryName, regionName, companyName } from '@/utils/i18n-maps'
+import { a11yStyle } from '@/utils/accessibility'
 import { t } from '@/i18n'
 import { useNavTitle } from '@/hooks/useNavTitle'
 useNavTitle('titles.demandHall')

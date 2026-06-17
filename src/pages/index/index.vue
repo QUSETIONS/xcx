@@ -1,5 +1,5 @@
 <template>
-  <view class="home">
+  <view class="home" :style="a11yStyle">
     <!-- 搜索 -->
     <view class="search-box" @tap="goSearch">
       <text class="search-icon">🔍</text>
@@ -130,6 +130,7 @@ import { DEMAND_CATEGORIES } from '@/config/constants'
 import { demandService, productService } from '@/mock/service'
 import { getRecommendedDemands, getRecommendedProducts } from '@/mock/smart'
 import { quoteLabel, categoryName, regionName, companyName } from '@/utils/i18n-maps'
+import { a11yStyle } from '@/utils/accessibility'
 import { t } from '@/i18n'
 import { useNavTitle } from '@/hooks/useNavTitle'
 useNavTitle('titles.home')

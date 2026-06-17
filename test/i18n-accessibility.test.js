@@ -133,6 +133,23 @@ describe('accessibility - 无障碍', () => {
     const contrastPrimary = contrastColors.value.primary
     expect(contrastPrimary).not.toBe(normalPrimary)
   })
+
+  it('a11yStyle 随 fontScale / highContrast 变化', async () => {
+    vi.resetModules()
+    globalThis.__resetStore()
+    const { a11yStyle, setFontScale, toggleContrast } = await import('@/utils/accessibility')
+    // 默认标准字号
+    expect(a11yStyle.value.fontSize).toBe('28rpx')
+    // 字体缩放
+    setFontScale(1.25)
+    expect(a11yStyle.value.fontSize).toBe('35rpx') // 28 * 1.25
+    // 高对比度翻转底色/正文色
+    const bgBefore = a11yStyle.value.background
+    const colorBefore = a11yStyle.value.color
+    toggleContrast()
+    expect(a11yStyle.value.background).not.toBe(bgBefore)
+    expect(a11yStyle.value.color).not.toBe(colorBefore)
+  })
 })
 
 // ============ API 桥接 ============

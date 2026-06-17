@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :style="a11yStyle">
     <!-- 账户信息 -->
     <view class="section">
       <text class="section-title">{{ t('settings.account') }}</text>
@@ -138,7 +138,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { verifyService, memberService } from '@/mock/service'
 import { locale, locales, setLocale } from '@/i18n'
-import { fontScales, fontScale, setFontScale, highContrast, toggleContrast, currentFontLabel } from '@/utils/accessibility'
+import { fontScales, fontScale, setFontScale, highContrast, toggleContrast, currentFontLabel, a11yStyle } from '@/utils/accessibility'
 import { useNavTitle } from '@/hooks/useNavTitle'
 useNavTitle('titles.settings')
 

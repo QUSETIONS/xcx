@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :style="a11yStyle">
     <!-- 头部 -->
     <view class="header">
       <text class="header-title">{{ t('community.title') }}</text>
@@ -99,6 +99,7 @@ import { ref } from 'vue'
 import { communityService } from '@/mock/service'
 import { formatRelativeTime as formatTime } from "@/utils/util"
 import { t } from '@/i18n'
+import { a11yStyle } from '@/utils/accessibility'
 import { useNavTitle } from '@/hooks/useNavTitle'
 useNavTitle('titles.community')
 

@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :style="a11yStyle">
     <view class="header">
       <text class="header-title">{{ t('mall.title') }}</text>
     </view>
@@ -76,6 +76,7 @@ import { ref, onMounted } from 'vue'
 import { serviceTypes } from '@/utils/i18n-maps'
 import { productService } from '@/mock/service'
 import { t } from '@/i18n'
+import { a11yStyle } from '@/utils/accessibility'
 import { useNavTitle } from '@/hooks/useNavTitle'
 useNavTitle('titles.mall')
 
