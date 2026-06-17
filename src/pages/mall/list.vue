@@ -48,7 +48,7 @@
         <view class="product-item card-press" v-for="(item, idx) in productList" :key="item._id" @tap="goDetail(item._id)"
           :class="{ 'fade-in': animated }" :style="{ animationDelay: (idx * 0.06) + 's' }">
           <view class="product-icon-box" :class="'type-' + item.service_type">
-            <image class="product-icon" :src="'/static/icons/service/' + item.service_type + '.svg'" mode="aspectFit"/>
+            <image class="product-icon" :src="'/static/icons/service/' + item.service_type + '.svg'" mode="aspectFit" lazy-load/>
           </view>
           <text class="product-title">{{ item.title }}</text>
           <text class="product-type">{{ serviceTypes[item.service_type] }}</text>
@@ -113,7 +113,7 @@ function loadList(reset = false) {
     // 关键词过滤
     if (keyword.value) {
       const kw = keyword.value.toLowerCase()
-      res.list = res.list.filter(p => p.title.toLowerCase().includes(kw) || serviceTypes[p.service_type]?.toLowerCase().includes(kw))
+      res.list = res.list.filter(p => p.title.toLowerCase().includes(kw) || serviceTypes.value[p.service_type]?.toLowerCase().includes(kw))
     }
     productList.value = reset ? res.list : [...productList.value, ...res.list]
     noMore.value = res.list.length < 10
