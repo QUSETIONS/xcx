@@ -33,7 +33,8 @@ app/
 │   ├── i18n-integrity.test.js    # i18n 完整性护栏（键对等/引用可解析/对象型 key）
 │   ├── determinism.test.js       # 种子数据确定性（源码守护 + 固定快照）
 │   ├── regression.test.js        # 回归（价格建议区间一致性等）
-│   └── vue-wiring-guard.test.js  # Vue 页面接线静态守卫（生命周期必调用/淡入开关有效/无未定义调用）
+│   ├── vue-wiring-guard.test.js  # Vue 页面接线静态守卫（生命周期必调用/淡入开关有效/无未定义调用）
+│   └── render-smoke.test.js      # 渲染冒烟（@vue/test-utils 挂载关键列表页，断言非空渲染）
 └── src/mock/                     # 被测纯逻辑模块
 ```
 
@@ -42,13 +43,14 @@ app/
 1. **不加载 uni-app 插件**：`vitest.config.js` 故意不引入 `@dcloudio/vite-plugin-uni`，因为它依赖 vuex 等编译期模块，与单元测试无关。测试只针对纯 JS 逻辑。
 2. **mock `uni` 全局**：小程序 API（`uni.getStorageSync` 等）在 Node 环境不存在，由 `test/setup.js` 用内存实现注入。
 3. **每个用例前重置存储**：`beforeEach(() => globalThis.__resetStore())` 保证用例间隔离（注意：仅重置 storage，模块级内存状态如 points/follow 由 vitest 按测试文件隔离）。
-4. **页面级接线用静态守卫补偿**：测试套件从不挂载 `.vue` 组件（无 `@vue/test-utils`），因此"进页是否加载数据/列表是否可见"这类 bug 对单测不可见。`vue-wiring-guard.test.js` 直接扫描每个 `<script setup>`，固化三类不变量：(A) 从 vue 导入的生命周期钩子必须被调用；(B) `const animated = ref(...)` 淡入开关必须有效；(C) 不允许调用未定义的裸函数。这把曾经溜过 20+ 次提交的"列表整页不可见"类缺陷永久钉死。
+4. **页面级接线用静态守卫补偿**：`vue-wiring-guard.test.js` 直接扫描每个 `<script setup>`，固化三类不变量：(A) 从 vue 导入的生命周期钩子必须被调用；(B) `const animated = ref(...)` 淡入开关必须有效；(C) 不允许调用未定义的裸函数。把曾经溜过 20+ 次提交的"列表整页不可见"类缺陷钉死在接线层。
+5. **关键页渲染冒烟（@vue/test-utils）**：静态守卫只查接线、查不到"渲染出来是空的"。`render-smoke.test.js` 用 `@vitejs/plugin-vue`（接入 vitest）+ 一层 uni 内置组件 stub（view/text/image/scroll-view…→ div 透传 class）+ mock `@dcloudio/uni-app` 生命周期，真正挂起这次被修的 7 个关键列表页（demand/mall/resource 列表 + my-demands/leads/orders/favorites），断言渲染出非空列表——接线守卫之上的第二道网。挂载顺带把 mock/util/i18n 覆盖率抬升（见下）。
 
 ## 测试结果
 
 ```
-Test Files  12 passed (12)
-     Tests  252 passed (252)
+Test Files  13 passed (13)
+     Tests  261 passed (261)
 
 Coverage（含门禁，见 vitest.config.js thresholds: stmts≥95 / branch≥80 / funcs≥72 / lines≥95）
   All files   96%+ statements | 84%+ branch | 75%+ functions

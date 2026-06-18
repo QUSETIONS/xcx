@@ -1,10 +1,13 @@
 import { defineConfig } from 'vitest/config'
 import { resolve } from 'path'
+import vue from '@vitejs/plugin-vue'
 
 // 注意：测试配置不加载 @dcloudio/vite-plugin-uni
 // 单元测试只针对纯 JS 逻辑（mock 服务 / 智能引擎），
 // 仅需 @ 别名 + 全局 uni mock（见 test/setup.js）
+// vue() 插件用于渲染冒烟测试编译 .vue（见 test/render-smoke.test.js）
 export default defineConfig({
+  plugins: [vue()],
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src')
