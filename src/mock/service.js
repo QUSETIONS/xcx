@@ -253,8 +253,7 @@ const commentsData = Array.from({ length: 50 }, (_, i) => ({
 export const userService = {
   async login(code) { await delay(); return userData },
   async demoLogin(role) { await delay(); return role === 'admin' ? adminData : userData },
-  async getInfo() { await delay(); return userData.user },
-  async updateProfile(data) { await delay(); return { ...userData.user, ...data } }
+  async getInfo() { await delay(); return userData.user }
 }
 
 export const demandService = {
@@ -323,11 +322,6 @@ export const leadService = {
   },
   myLeads() {
     return { list: leadData.filter(l => l.from_user_id === 'demo_user_001'), total: leadData.filter(l => l.from_user_id === 'demo_user_001').length }
-  },
-  // 需求方收到的对接（别人对接了我的需求）
-  receivedLeads() {
-    const list = leadData.filter(l => l.demand_owner === 'demo_user_001').slice(0, 10)
-    return { list, total: list.length }
   },
   updateStatus(id, status) {
     const lead = leadData.find(l => l._id === id)
@@ -737,18 +731,7 @@ export const matchService = {
 
     list.sort((a, b) => b.match_score - a.match_score)
     return list.slice(0, 5)
-  },
-  // 推荐服务商列表
-  listProviders(params = {}) {
-    const { page = 1, pageSize = 10, category_id, keyword } = params
-    let list = [...providersData]
-    if (category_id) list = list.filter(p => p.category_id === category_id)
-    if (keyword) list = list.filter(p => p.name.includes(keyword) || p.category_name.includes(keyword))
-    list.sort((a, b) => b.deal_count - a.deal_count)
-    const start = (page - 1) * pageSize
-    return { list: list.slice(start, start + pageSize), total: list.length }
-  },
-  providerDetail(id) { return providersData.find(p => p._id === id) || null }
+  }
 }
 
 // ========== 数据看板服务 ==========
