@@ -61,14 +61,14 @@ const refreshing = ref(false)
 const showStatusPicker = ref(false)
 const animated = ref(true)
 
-const allDemands = ref(demandService.list({ pageSize: 50, sort: 'latest' }).list)
+const allDemands = ref(demandService.list({ pageSize: 50, sort: 'latest', includeAll: true }).list)
 const filteredList = computed(() => {
   let list = allDemands.value
   if (statusFilter.value) list = list.filter(d => d.status === statusFilter.value)
   return list
 })
 
-function onRefresh() { refreshing.value = true; allDemands.value = demandService.list({ pageSize: 50, sort: 'latest' }).list; refreshing.value = false }
+function onRefresh() { refreshing.value = true; allDemands.value = demandService.list({ pageSize: 50, sort: 'latest', includeAll: true }).list; refreshing.value = false }
 function goDetail(id) { uni.navigateTo({ url: `/pages/demand/detail?id=${id}` }) }
 
 function editDemand(item) { uni.navigateTo({ url: `/pages/demand/publish?id=${item._id}` }) }

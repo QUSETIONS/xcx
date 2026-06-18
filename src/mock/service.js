@@ -259,8 +259,8 @@ export const userService = {
 
 export const demandService = {
   list(params = {}) {
-    const { page = 1, pageSize = 10, sort = 'latest', keyword, category_id, region, quote_type } = params
-    let list = [...demandData].filter(d => d.status === 'published')
+    const { page = 1, pageSize = 10, sort = 'latest', keyword, category_id, region, quote_type, includeAll = false } = params
+    let list = includeAll ? [...demandData] : [...demandData].filter(d => d.status === 'published')
 
     if (keyword) list = list.filter(d => d.title.includes(keyword) || d.company_name.includes(keyword))
     if (category_id) list = list.filter(d => d.category_id === category_id)

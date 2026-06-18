@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { leadService, chatService } from '@/mock/service'
+import { leadService, chatService, demandService } from '@/mock/service'
 import { getPriceSuggestion } from '@/mock/smart'
 
 beforeEach(() => {
@@ -62,5 +62,22 @@ describe('回归：聊天消息 id 唯一', () => {
     const ids = list.map(m => m.id)
     const unique = new Set(ids)
     expect(unique.size).toBe(ids.length) // 无重复
+  })
+})
+
+// 回归：需求列表 includeAll 语义——后台管理必须能看到待审核需求，公开大厅只看 published
+describe('回归：demandService.list includeAll', () => {
+  it('默认（公开大厅）只返回 published', () => {
+    const res = demandService.list({ pageSize: 100 })
+    expect(res.list.length).toBeGreaterThan(0)
+    expect(res.list.every(d => d.status === 'published')).toBe(true)
+  })
+
+  it('includeAll=true（后台管理）能看到 pending 等非 published 状态', () => {
+    const pub = demandService.list({ pageSize: 100 }).list
+    const all = demandService.list({ pageSize: 100, includeAll: true }).list
+    expect(all.length).toBeGreaterThan(pub.length) // 后台看到更多
+    expect(all.some(d => d.status !== 'published')).toBe(true)
+    expect(all.some(d => d.status === 'pending')).toBe(true) // seed 确有 pending
   })
 })
