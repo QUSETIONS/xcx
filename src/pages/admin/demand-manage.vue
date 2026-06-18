@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { demandStatusMap as statusMap, regionName, companyName } from '@/utils/i18n-maps'
 import { demandService } from '@/mock/service'
 import { formatDate } from "@/utils/util"
@@ -59,7 +59,7 @@ useNavTitle('titles.demandManage')
 const statusFilter = ref('')
 const refreshing = ref(false)
 const showStatusPicker = ref(false)
-const animated = ref(false)
+const animated = ref(true)
 
 const allDemands = ref(demandService.list({ pageSize: 50, sort: 'latest' }).list)
 const filteredList = computed(() => {

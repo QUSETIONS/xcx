@@ -32,7 +32,8 @@ app/
 │   ├── i18n-accessibility.test.js   # i18n 切换 + 无障碍 + bridge
 │   ├── i18n-integrity.test.js    # i18n 完整性护栏（键对等/引用可解析/对象型 key）
 │   ├── determinism.test.js       # 种子数据确定性（源码守护 + 固定快照）
-│   └── regression.test.js        # 回归（价格建议区间一致性等）
+│   ├── regression.test.js        # 回归（价格建议区间一致性等）
+│   └── vue-wiring-guard.test.js  # Vue 页面接线静态守卫（生命周期必调用/淡入开关有效/无未定义调用）
 └── src/mock/                     # 被测纯逻辑模块
 ```
 
@@ -41,12 +42,13 @@ app/
 1. **不加载 uni-app 插件**：`vitest.config.js` 故意不引入 `@dcloudio/vite-plugin-uni`，因为它依赖 vuex 等编译期模块，与单元测试无关。测试只针对纯 JS 逻辑。
 2. **mock `uni` 全局**：小程序 API（`uni.getStorageSync` 等）在 Node 环境不存在，由 `test/setup.js` 用内存实现注入。
 3. **每个用例前重置存储**：`beforeEach(() => globalThis.__resetStore())` 保证用例间隔离（注意：仅重置 storage，模块级内存状态如 points/follow 由 vitest 按测试文件隔离）。
+4. **页面级接线用静态守卫补偿**：测试套件从不挂载 `.vue` 组件（无 `@vue/test-utils`），因此"进页是否加载数据/列表是否可见"这类 bug 对单测不可见。`vue-wiring-guard.test.js` 直接扫描每个 `<script setup>`，固化三类不变量：(A) 从 vue 导入的生命周期钩子必须被调用；(B) `const animated = ref(...)` 淡入开关必须有效；(C) 不允许调用未定义的裸函数。这把曾经溜过 20+ 次提交的"列表整页不可见"类缺陷永久钉死。
 
 ## 测试结果
 
 ```
-Test Files  11 passed (11)
-     Tests  173 passed (173)
+Test Files  12 passed (12)
+     Tests  252 passed (252)
 
 Coverage（含门禁，见 vitest.config.js thresholds: stmts≥95 / branch≥80 / funcs≥72 / lines≥95）
   All files   96%+ statements | 84%+ branch | 75%+ functions
@@ -64,6 +66,10 @@ Coverage（含门禁，见 vitest.config.js thresholds: stmts≥95 / branch≥80
 > 3. `favoriteService.toggle()`：取消收藏时未持久化，重启后收藏仍在 → 补上 setStorageSync
 > 4. mock `budget_min/budget_max` 独立随机抽取产生 min>max 非法数据 → 改成对区间，`getPriceSuggestion` 区间不再倒置
 > 5. `demand/list.vue` 模板引用未定义的 `formatCount/getHeatClass/getHeatLevel` → 补全函数
+> 6. `demand/list.vue`：核心"需求"tab 调用 `loadList` 9 次却从未定义 → 进页 `ReferenceError`、列表空白；按 `demandService.list` 真实签名补全 `loadList(reset)`
+> 7. **12 个列表页** `const animated = ref(false)` 从未置真 → 列表容器 `opacity:0` 永久不可见（经 20+ 次提交未被发现，因测试从不挂载组件）；统一改 `ref(true)`
+> 8. `my-demands / my-leads / my-orders / my-favorites` 与 `admin/product-manage`：`onMounted` 已 import 却未调用 → 进页空白、需手动下拉刷新才出数据；补 `onMounted(loadList)`
+> 9. `admin/{demand,lead,order}-manage`：`onMounted` 已 import 但页面用 setup 期同步初始化、实为死导入 → 删除
 
 ## CI
 

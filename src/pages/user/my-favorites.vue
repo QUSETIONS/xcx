@@ -34,7 +34,7 @@ useNavTitle('titles.myFavorites')
 
 const favList = ref([])
 const refreshing = ref(false)
-const animated = ref(false)
+const animated = ref(true)
 
 
 function loadList() {
@@ -75,6 +75,7 @@ function goDetail(item) {
 
 function goBrowse() { uni.switchTab({ url: '/pages/demand/list' }) }
 function onRefresh() { refreshing.value = true; loadList(); refreshing.value = false }
+onMounted(loadList)
 </script>
 
 <style lang="scss" scoped>

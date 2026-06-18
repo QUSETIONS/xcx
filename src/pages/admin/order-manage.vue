@@ -36,7 +36,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { orderStatusMap as statusMap } from '@/utils/i18n-maps'
 import { orderService } from '@/mock/service'
 import { formatDate } from "@/utils/util"
@@ -47,7 +47,7 @@ useNavTitle('titles.orderManage')
 const statusFilter = ref('')
 const refreshing = ref(false)
 const showStatusPicker = ref(false)
-const animated = ref(false)
+const animated = ref(true)
 
 const allOrders = ref(orderService.myOrders().list)
 const filteredList = computed(() => {

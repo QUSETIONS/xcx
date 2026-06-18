@@ -49,7 +49,7 @@ useNavTitle('titles.productManage')
 
 const productList = ref([])
 const refreshing = ref(false)
-const animated = ref(false)
+const animated = ref(true)
 
 
 function loadList() {
@@ -58,6 +58,7 @@ function loadList() {
 }
 
 function onRefresh() { refreshing.value = true; loadList(); refreshing.value = false }
+onMounted(loadList)
 function goAdd() {
   uni.showModal({
     title: t('admin.addTitle'),

@@ -31,7 +31,7 @@ import { useNavTitle } from '@/hooks/useNavTitle'
 import { t } from '@/i18n'
 useNavTitle('titles.admin')
 
-const animated = ref(false)
+const animated = ref(true)
 const todayDemands = ref(0)
 const todayLeads = ref(0)
 const todayOrders = ref(0)

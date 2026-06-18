@@ -36,11 +36,12 @@ useNavTitle('titles.myOrders')
 
 const list = ref([])
 const refreshing = ref(false)
-const animated = ref(false)
+const animated = ref(true)
 
 function loadList() { list.value = orderService.myOrders().list }
 function goMall() { uni.switchTab({ url: '/pages/mall/list' }) }
 function onRefresh() { refreshing.value = true; loadList(); refreshing.value = false }
+onMounted(loadList)
 </script>
 
 <style lang="scss" scoped>

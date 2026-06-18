@@ -89,7 +89,7 @@ const page = ref(1)
 const loading = ref(false)
 const refreshing = ref(false)
 const noMore = ref(false)
-const animated = ref(false)
+const animated = ref(true)
 
 onMounted(() => {
   loadHistory()

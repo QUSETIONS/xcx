@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { leadStatusMap as statusMap } from '@/utils/i18n-maps'
 import { leadService } from '@/mock/service'
 import { formatDate } from "@/utils/util"
@@ -53,7 +53,7 @@ useNavTitle('titles.leadManage')
 const statusFilter = ref('')
 const refreshing = ref(false)
 const showStatusPicker = ref(false)
-const animated = ref(false)
+const animated = ref(true)
 
 const allLeads = ref(leadService.myLeads().list)
 const filteredList = computed(() => {

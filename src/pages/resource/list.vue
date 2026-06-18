@@ -45,7 +45,7 @@ useNavTitle('titles.resource')
 
 const list = ref([])
 const refreshing = ref(false)
-const animated = ref(false)
+const animated = ref(true)
 
 onMounted(() => {
   const res = resourceService.list({ page: 1, pageSize: 20 })

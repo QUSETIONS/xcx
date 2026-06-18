@@ -167,7 +167,7 @@ const page = ref(1)
 const loading = ref(false)
 const refreshing = ref(false)
 const noMore = ref(false)
-const animated = ref(false)
+const animated = ref(true)
 const showCatPicker = ref(false)
 const showRegionPicker = ref(false)
 const showSortPicker = ref(false)
@@ -193,6 +193,22 @@ function formatCount(n) { return n >= 10000 ? (n / 10000).toFixed(1) + 'w' : n >
 function getHeatClass(item) { const v = item.view_count || 0; if (v >= 2000) return 'heat-hot'; if (v >= 500) return 'heat-medium'; return 'heat-normal' }
 function getHeatLevel(item) { const v = item.view_count || 0; if (v >= 2000) return t('listPage.heatHot'); if (v >= 500) return t('listPage.heatMedium'); return t('listPage.heatNormal') }
 
+function loadList(reset = false) {
+  if (reset) { page.value = 1; noMore.value = false }
+  loading.value = true
+  try {
+    const res = demandService.list({
+      page: page.value,
+      pageSize: 10,
+      sort: currentSort.value,
+      keyword: keyword.value,
+      category_id: currentCat.value,
+      region: currentRegion.value
+    })
+    demandList.value = reset ? res.list : [...demandList.value, ...res.list]
+    noMore.value = res.list.length < 10
+  } finally { loading.value = false; refreshing.value = false }
+}
 function loadMore() { if (!loading.value && !noMore.value) { page.value++; loadList() } }
 function onRefresh() { refreshing.value = true; loadList(true) }
 function goDetail(id) { uni.navigateTo({ url: `/pages/demand/detail?id=${id}` }) }

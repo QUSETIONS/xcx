@@ -44,12 +44,13 @@ useNavTitle('titles.myDemands')
 
 const list = ref([])
 const refreshing = ref(false)
-const animated = ref(false)
+const animated = ref(true)
 
 function loadList() { list.value = demandService.myDemands().list }
 function goDetail(id) { uni.navigateTo({ url: `/pages/demand/detail?id=${id}` }) }
 function goPublish() { uni.navigateTo({ url: '/pages/demand/publish' }) }
 function onRefresh() { refreshing.value = true; loadList(); refreshing.value = false }
+onMounted(loadList)
 </script>
 
 <style lang="scss" scoped>
