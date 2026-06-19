@@ -47,15 +47,16 @@ app/
 4. **页面级接线用静态守卫补偿**：`vue-wiring-guard.test.js` 直接扫描每个 `<script setup>`，固化三类不变量：(A) 从 vue 导入的生命周期钩子必须被调用；(B) `const animated = ref(...)` 淡入开关必须有效；(C) 不允许调用未定义的裸函数。把曾经溜过 20+ 次提交的"列表整页不可见"类缺陷钉死在接线层。
 5. **页面渲染 + 交互冒烟（@vue/test-utils）**：静态守卫只查接线、查不到"渲染/行为是否正确"。`render-smoke.test.js` 用 `@vitejs/plugin-vue`（接入 vitest）+ 一层 uni 内置组件 stub（view/text/image/scroll-view…→ div 透传 `$attrs`，故 `@tap` 经 inheritAttrs 落到 div、可 `.trigger('tap')` 触发）+ mock `@dcloudio/uni-app` 生命周期（onLoad 回调可由 `fireOnLoad(params)` 触发以模拟路由参数），挂起 11 个场景：7 列表页非空渲染、demand/detail 带路由参数渲染详情与 AI 匹配、i18n 切语言响应式重渲染、以及 mall 关键词搜索/服务类型筛选交互（`.trigger('tap')` + `setValue` 驱动 v-model）。接线守卫之上的第二、第三道网；挂载顺带把 mock/util/i18n 覆盖率抬升（见下）。
 6. **service 写路径覆盖**：`service-write.test.js` 专门覆盖 create/update/状态变更（成交）、发帖/评论/点赞、趋势 7·30 天分支等变更方法与边界（不存在 id 返回 null/false），把 service.js 的 functions 覆盖从 ~74% 抬到 87%、statements 到 100%。
+7. **全页面挂载守卫**：`render-smoke.test.js` 用 `import.meta.glob('/src/pages/**/*.vue')` 自动发现全部 ~39 页，逐个挂载 + 喂路由参数（`fireOnLoad`）+ 装 Pinia，断言无一在 onMounted/onLoad 数据路径抛错。把"进页崩溃"类缺陷覆盖从采样 8 页扩到**全部页面**——正是它发现了 #10/#11 两个渲染崩溃 bug。
 
 ## 测试结果
 
 ```
 Test Files  14 passed (14)
-     Tests  277 passed (277)
+     Tests  316 passed (316)
 
 Coverage（含门禁，见 vitest.config.js thresholds: stmts≥96 / branch≥82 / funcs≥86 / lines≥96）
-  All files   99%+ statements | 85%+ branch | 89%+ functions
+  All files   99%+ statements | 86%+ branch | 94%+ functions
   i18n        100% statements | locales 100%
   utils       97%+ statements（util/i18n-maps 100%）
   smart.js    95%+ statements | 100% functions
@@ -74,6 +75,8 @@ Coverage（含门禁，见 vitest.config.js thresholds: stmts≥96 / branch≥82
 > 7. **12 个列表页** `const animated = ref(false)` 从未置真 → 列表容器 `opacity:0` 永久不可见（经 20+ 次提交未被发现，因测试从不挂载组件）；统一改 `ref(true)`
 > 8. `my-demands / my-leads / my-orders / my-favorites` 与 `admin/product-manage`：`onMounted` 已 import 却未调用 → 进页空白、需手动下拉刷新才出数据；补 `onMounted(loadList)`
 > 9. `admin/{demand,lead,order}-manage`：`onMounted` 已 import 但页面用 setup 期同步初始化、实为死导入 → 删除
+> 10. `settings/index.vue`：模板用 `t()` 却未从 '@/i18n' 导入 → 进页 `_ctx.t is not a function` 渲染崩溃；补导入（由全页面挂载守卫发现）
+> 11. `member/index.vue`：`tiers` 在 onMounted 异步加载，首帧 `currentTier` 为 undefined → `currentTier.color` 渲染崩溃；改 setup 期同步初始化（同上）
 
 ## CI
 

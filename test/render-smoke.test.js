@@ -13,6 +13,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { h } from 'vue'
+import { createPinia } from 'pinia'
 
 // 解耦 uni-app 运行时；onLoad 回调被捕获，可用 fireOnLoad(params) 模拟带路由参数的页面加载
 const _onLoadCbs = []
@@ -30,10 +31,10 @@ const fireOnLoad = (params = {}) => { _onLoadCbs.forEach(cb => cb(params)); _onL
 // uni 内置组件 → 渲染为 div，透传 class 并渲染子节点。
 // 用安全组件名 'UniStub' 避免 Vue「保留 HTML 元素名」告警（image/switch 等是 SVG 保留名）。
 const uniStub = { name: 'UniStub', inheritAttrs: false, render() { return h('div', this.$attrs, this.$slots.default?.()) } }
-const STUB_TAGS = ['view', 'text', 'image', 'scroll-view', 'swiper', 'swiper-item', 'switch', 'picker', 'picker-view', 'picker-view-column', 'movable-area', 'movable-view', 'cover-view', 'cover-image', 'webview']
+const STUB_TAGS = ['view', 'text', 'image', 'scroll-view', 'swiper', 'swiper-item', 'switch', 'picker', 'picker-view', 'picker-view-column', 'movable-area', 'movable-view', 'cover-view', 'cover-image', 'web-view', 'rich-text', 'navigator', 'slider', 'progress', 'icon', 'map', 'canvas']
 const stubs = STUB_TAGS.reduce((m, tag) => (m[tag] = uniStub, m), {})
 
-const mountPage = (comp) => mount(comp, { global: { stubs } })
+const mountPage = (comp) => mount(comp, { global: { stubs, plugins: [createPinia()] } })
 
 beforeEach(() => { globalThis.__resetStore(); _onLoadCbs.length = 0 })
 
@@ -149,4 +150,22 @@ describe('交互：筛选 / 搜索路径', () => {
       expect(types.every(t => t === types[0]), '筛选后商品服务类型应一致').toBe(true)
     }
   })
+})
+
+// 全页面挂载守卫：自动发现 src/pages 下所有 .vue，逐个挂载并喂通用路由参数，
+// 断言无一在 onMounted/onLoad 数据路径上抛错。这是 demand/list loadList 那类
+// "进页即崩"缺陷的可扩展版——从采样 8 页扩到全部 ~46 页。
+const pageModules = import.meta.glob('/src/pages/**/*.vue', { eager: true })
+
+describe('渲染冒烟：全页面挂载不抛错', () => {
+  expect(Object.keys(pageModules).length, '应发现页面模块').toBeGreaterThan(20)
+  for (const [file, mod] of Object.entries(pageModules)) {
+    const rel = file.replace('/src/pages/', '').replace(/\.vue$/, '')
+    it(`${rel} 挂载与数据加载不抛错`, async () => {
+      const wrapper = mountPage(mod.default)        // 触发 onMounted 数据加载
+      fireOnLoad({ id: 'demand_1' })                // 喂通用路由参数（详情页用，其余忽略）
+      await wrapper.vm.$nextTick()
+      expect(wrapper.exists(), `${rel} 应挂载成功`).toBe(true)
+    })
+  }
 })

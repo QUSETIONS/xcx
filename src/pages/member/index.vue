@@ -86,7 +86,7 @@ import { useNavTitle } from '@/hooks/useNavTitle'
 import { t } from '@/i18n'
 useNavTitle('titles.member')
 
-const tiers = ref([])
+const tiers = ref(memberService.tiers())
 const current = ref({ tier: 'free' })
 const selectedTier = ref('pro')
 

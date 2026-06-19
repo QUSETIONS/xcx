@@ -137,7 +137,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { verifyService, memberService } from '@/mock/service'
-import { locale, locales, setLocale } from '@/i18n'
+import { t, locale, locales, setLocale } from '@/i18n'
 import { fontScales, fontScale, setFontScale, highContrast, toggleContrast, currentFontLabel, a11yStyle } from '@/utils/accessibility'
 import { useNavTitle } from '@/hooks/useNavTitle'
 useNavTitle('titles.settings')
