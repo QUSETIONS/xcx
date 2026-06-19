@@ -74,7 +74,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { serviceTypes } from '@/utils/i18n-maps'
-import { productService } from '@/mock/service'
+import { bridge } from '@/api/bridge'
+import { useList } from '@/hooks/useList'
 import { t } from '@/i18n'
 import { a11yStyle } from '@/utils/accessibility'
 import { useNavTitle } from '@/hooks/useNavTitle'
@@ -84,12 +85,18 @@ const currentType = ref(null)
 const keyword = ref('')
 const searchFocused = ref(false)
 const searchHistory = ref([])
-const productList = ref([])
-const page = ref(1)
-const loading = ref(false)
-const refreshing = ref(false)
-const noMore = ref(false)
 const animated = ref(true)
+const { list: productList, loading, refreshing, noMore, load: loadList, loadMore, refresh } = useList(
+  async (p) => {
+    const res = await bridge.product.list({ ...p, service_type: currentType.value })
+    if (keyword.value) {
+      const kw = keyword.value.toLowerCase()
+      res.list = res.list.filter(it => it.title.toLowerCase().includes(kw) || serviceTypes.value[it.service_type]?.toLowerCase().includes(kw))
+    }
+    return res
+  },
+  10
+)
 
 onMounted(() => {
   loadHistory()
@@ -106,23 +113,7 @@ function saveHistory(k) {
   uni.setStorageSync('mall_search_history', JSON.stringify(list))
 }
 
-function loadList(reset = false) {
-  if (reset) { page.value = 1; noMore.value = false }
-  loading.value = true
-  try {
-    let res = productService.list({ page: page.value, pageSize: 10, service_type: currentType.value })
-    // 关键词过滤
-    if (keyword.value) {
-      const kw = keyword.value.toLowerCase()
-      res.list = res.list.filter(p => p.title.toLowerCase().includes(kw) || serviceTypes.value[p.service_type]?.toLowerCase().includes(kw))
-    }
-    productList.value = reset ? res.list : [...productList.value, ...res.list]
-    noMore.value = res.list.length < 10
-  } finally { loading.value = false; refreshing.value = false }
-}
-
-function loadMore() { if (!loading.value && !noMore.value) { page.value++; loadList() } }
-function onRefresh() { refreshing.value = true; loadList(true) }
+function onRefresh() { refresh() }
 function selectType(t) { currentType.value = t; loadList(true) }
 function goDetail(id) { uni.navigateTo({ url: `/pages/mall/detail?id=${id}` }) }
 

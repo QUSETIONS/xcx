@@ -96,22 +96,22 @@
 
 <script setup>
 import { ref } from 'vue'
-import { communityService } from '@/mock/service'
+import { bridge } from '@/api/bridge'
+import { useList } from '@/hooks/useList'
 import { formatRelativeTime as formatTime } from "@/utils/util"
 import { t } from '@/i18n'
 import { a11yStyle } from '@/utils/accessibility'
 import { useNavTitle } from '@/hooks/useNavTitle'
 useNavTitle('titles.community')
 
-const topics = ref(communityService.topics())
+const topics = ref([])
 const currentTopic = ref(null)
 const sortMode = ref('latest')
-const postList = ref([])
 const hotPosts = ref([])
-const page = ref(1)
-const loading = ref(false)
-const refreshing = ref(false)
-const noMore = ref(false)
+const { list: postList, loading, refreshing, noMore, load: loadList, loadMore, refresh } = useList(
+  (p) => bridge.community.posts({ ...p, topic_id: currentTopic.value, sort: sortMode.value }),
+  10
+)
 
 const avatarColors = [
   'linear-gradient(135deg, #FF6B35, #FF9A5C)',
@@ -127,32 +127,17 @@ function getAvatarColor(id) {
 }
 
 
-function loadList(reset = false) {
-  if (reset) { page.value = 1; noMore.value = false }
-  loading.value = true
-  try {
-    const res = communityService.posts({
-      page: page.value, pageSize: 10,
-      topic_id: currentTopic.value,
-      sort: sortMode.value
-    })
-    postList.value = reset ? res.list : [...postList.value, ...res.list]
-    noMore.value = res.list.length < 10
-  } finally { loading.value = false; refreshing.value = false }
-}
-
-function loadHotPosts() {
-  const res = communityService.posts({ hot: true, pageSize: 3 })
+async function loadHotPosts() {
+  const res = await bridge.community.posts({ hot: true, pageSize: 3 })
   hotPosts.value = res.list
 }
 
-function loadMore() { if (!loading.value && !noMore.value) { page.value++; loadList() } }
-function onRefresh() { refreshing.value = true; loadList(true) }
+function onRefresh() { refresh() }
 function selectTopic(id) { currentTopic.value = id; loadList(true) }
 
 function likePost(item) {
   item._liked = !item._liked
-  if (item._liked) { communityService.like(item._id); item.like_count++ }
+  if (item._liked) { bridge.community.like(item._id); item.like_count++ }
   else { item.like_count-- }
 }
 
@@ -164,6 +149,7 @@ function sharePost() { uni.showModal({ title: t('community.share'), content: t('
 
 loadList(true)
 loadHotPosts()
+bridge.community.topics().then(list => { topics.value = list })
 </script>
 
 <style lang="scss" scoped>

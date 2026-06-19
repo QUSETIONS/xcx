@@ -65,7 +65,7 @@ const GLOBALS = new Set([
 ])
 
 const KEYWORDS = new Set([
-  'if', 'for', 'while', 'switch', 'catch', 'function', 'return', 'typeof', 'new', 'await',
+  'if', 'for', 'while', 'switch', 'catch', 'function', 'return', 'typeof', 'new', 'await', 'async',
   'void', 'delete', 'in', 'of', 'do', 'else', 'instanceof', 'yield', 'throw', 'try', 'finally'
 ])
 
@@ -79,9 +79,9 @@ function collectDefined(script) {
   const defined = new Set(GLOBALS)
   for (const m of script.matchAll(/function\s+([A-Za-z_$][\w$]*)/g)) defined.add(m[1])
   for (const m of script.matchAll(/\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=/g)) defined.add(m[1])
-  // 解构声明 const { a, b as c } = ... / const [x] = ...
+  // 解构声明 const { a, b as c, d: e } = ... / const [x] = ...（支持 as 与冒号两种重命名）
   for (const m of script.matchAll(/\b(?:const|let|var)\s*\{([^}]*)\}\s*=/g))
-    for (const p of m[1].split(',')) { const mm = p.trim().match(/([A-Za-z_$][\w$]*)\s*(?:as\s+([A-Za-z_$][\w$]*))?/); if (mm) defined.add(mm[2] || mm[1]) }
+    for (const p of m[1].split(',')) { const mm = p.trim().match(/([A-Za-z_$][\w$]*)\s*(?::\s*([A-Za-z_$][\w$]*)|\s+as\s+([A-Za-z_$][\w$]*))?/); if (mm) defined.add(mm[2] || mm[3] || mm[1]) }
   for (const m of script.matchAll(/\b(?:const|let|var)\s*\[([^\]]*)\]\s*=/g))
     for (const p of m[1].split(',')) { const mm = p.trim().match(/([A-Za-z_$][\w$]*)/); if (mm) defined.add(mm[1]) }
   // 具名导入 { a, b as c }

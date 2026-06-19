@@ -35,7 +35,8 @@ app/
 │   ├── regression.test.js        # 回归（价格建议区间一致性等）
 │   ├── vue-wiring-guard.test.js  # Vue 页面接线静态守卫（生命周期必调用/淡入开关有效/无未定义调用）
 │   ├── render-smoke.test.js      # 渲染冒烟（@vue/test-utils 挂载关键列表页，断言非空渲染）
-│   └── service-write.test.js     # 写路径覆盖（create/update/状态变更/评论点赞/趋势分支）
+│   ├── service-write.test.js     # 写路径覆盖（create/update/状态变更/评论点赞/趋势分支）
+│   └── bridge.test.js            # bridge mock/real 契约（USE_MOCK 切换、真实端点调用）
 └── src/mock/                     # 被测纯逻辑模块
 ```
 
@@ -48,12 +49,13 @@ app/
 5. **页面渲染 + 交互冒烟（@vue/test-utils）**：静态守卫只查接线、查不到"渲染/行为是否正确"。`render-smoke.test.js` 用 `@vitejs/plugin-vue`（接入 vitest）+ 一层 uni 内置组件 stub（view/text/image/scroll-view…→ div 透传 `$attrs`，故 `@tap` 经 inheritAttrs 落到 div、可 `.trigger('tap')` 触发）+ mock `@dcloudio/uni-app` 生命周期（onLoad 回调可由 `fireOnLoad(params)` 触发以模拟路由参数），挂起 11 个场景：7 列表页非空渲染、demand/detail 带路由参数渲染详情与 AI 匹配、i18n 切语言响应式重渲染、以及 mall 关键词搜索/服务类型筛选交互（`.trigger('tap')` + `setValue` 驱动 v-model）。接线守卫之上的第二、第三道网；挂载顺带把 mock/util/i18n 覆盖率抬升（见下）。
 6. **service 写路径覆盖**：`service-write.test.js` 专门覆盖 create/update/状态变更（成交）、发帖/评论/点赞、趋势 7·30 天分支等变更方法与边界（不存在 id 返回 null/false），把 service.js 的 functions 覆盖从 ~74% 抬到 87%、statements 到 100%。
 7. **全页面挂载守卫**：`render-smoke.test.js` 用 `import.meta.glob('/src/pages/**/*.vue')` 自动发现全部 ~39 页，逐个挂载 + 喂路由参数（`fireOnLoad`）+ 装 Pinia，断言无一在 onMounted/onLoad 数据路径抛错。把"进页崩溃"类缺陷覆盖从采样 8 页扩到**全部页面**——正是它发现了 #10/#11 两个渲染崩溃 bug。
+8. **真实后端桥接（Stage 1）**：`bridge.js` 补全到全量服务面（mock/real 异步切换，`realFn` = 后端 REST 契约）；`demand/mall/community` 3 个列表 tab 已迁到 `useList + bridge`（同步→异步）。`bridge.test.js` 验证 `USE_MOCK` 切换与端点调用；渲染冒烟用 `vi.useFakeTimers()` + `advanceTimersByTimeAsync` flush 200ms 异步加载。迁移模式与剩余 35 页清单见 `docs/real-backend-migration.md`。
 
 ## 测试结果
 
 ```
-Test Files  14 passed (14)
-     Tests  316 passed (316)
+Test Files  15 passed (15)
+     Tests  325 passed (325)
 
 Coverage（含门禁，见 vitest.config.js thresholds: stmts≥96 / branch≥82 / funcs≥86 / lines≥96）
   All files   99%+ statements | 86%+ branch | 94%+ functions

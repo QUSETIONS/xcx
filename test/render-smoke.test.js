@@ -8,11 +8,11 @@
  * 约束：
  * - 用 @vue/test-utils 挂载，uni 内置组件（view/text/image/scroll-view…）stub 为占位元素
  * - mock @dcloudio/uni-app 的页面生命周期（onLoad 等），解耦 uni 运行时
- * - mock 数据是同步的，挂载 + nextTick 后列表即就绪
+ * - mock 数据同步（未迁移页）/ 经 bridge 带 200ms 延迟（迁移页）；用 fake timers + flushLoads 让异步加载在断言前就绪
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { mount } from '@vue/test-utils'
-import { h } from 'vue'
+import { h, nextTick } from 'vue'
 import { createPinia } from 'pinia'
 
 // 解耦 uni-app 运行时；onLoad 回调被捕获，可用 fireOnLoad(params) 模拟带路由参数的页面加载
@@ -36,13 +36,21 @@ const stubs = STUB_TAGS.reduce((m, tag) => (m[tag] = uniStub, m), {})
 
 const mountPage = (comp) => mount(comp, { global: { stubs, plugins: [createPinia()] } })
 
-beforeEach(() => { globalThis.__resetStore(); _onLoadCbs.length = 0 })
+// 迁移页经 bridge 加载有 ~200ms 延迟（setTimeout + Promise 链）；
+// 用异步版 advanceTimersByTimeAsync 推进计时器并 flush 其间所有微任务（对同步页无害）
+const flushLoads = async () => {
+  await vi.advanceTimersByTimeAsync(300)
+  await nextTick()
+}
+
+beforeEach(() => { globalThis.__resetStore(); _onLoadCbs.length = 0; vi.useFakeTimers() })
+afterEach(() => { vi.useRealTimers() })
 
 describe('渲染冒烟：关键列表页', () => {
   it('demand/list 渲染出非空需求列表', async () => {
     const DemandList = (await import('@/pages/demand/list.vue')).default
     const wrapper = mountPage(DemandList)
-    await wrapper.vm.$nextTick()
+    await flushLoads()
     const items = wrapper.findAll('.demand-item')
     expect(items.length, '需求大厅应渲染出需求卡片').toBeGreaterThan(0)
   })
@@ -50,35 +58,35 @@ describe('渲染冒烟：关键列表页', () => {
   it('mall/list 渲染出非空商品列表', async () => {
     const MallList = (await import('@/pages/mall/list.vue')).default
     const wrapper = mountPage(MallList)
-    await wrapper.vm.$nextTick()
+    await flushLoads()
     expect(wrapper.findAll('.product-item').length, '商城应渲染出商品卡片').toBeGreaterThan(0)
   })
 
   it('resource/list 渲染出非空资料列表', async () => {
     const ResourceList = (await import('@/pages/resource/list.vue')).default
     const wrapper = mountPage(ResourceList)
-    await wrapper.vm.$nextTick()
+    await flushLoads()
     expect(wrapper.findAll('.resource-item').length, '资料库应渲染出资料卡片').toBeGreaterThan(0)
   })
 
   it('user/my-demands 渲染出我的需求', async () => {
     const MyDemands = (await import('@/pages/user/my-demands.vue')).default
     const wrapper = mountPage(MyDemands)
-    await wrapper.vm.$nextTick()
+    await flushLoads()
     expect(wrapper.findAll('.demand-item').length, '我的需求应非空').toBeGreaterThan(0)
   })
 
   it('user/my-leads 渲染出我的对接', async () => {
     const MyLeads = (await import('@/pages/user/my-leads.vue')).default
     const wrapper = mountPage(MyLeads)
-    await wrapper.vm.$nextTick()
+    await flushLoads()
     expect(wrapper.findAll('.lead-item').length, '我的对接应非空').toBeGreaterThan(0)
   })
 
   it('user/my-orders 渲染出我的订单', async () => {
     const MyOrders = (await import('@/pages/user/my-orders.vue')).default
     const wrapper = mountPage(MyOrders)
-    await wrapper.vm.$nextTick()
+    await flushLoads()
     expect(wrapper.findAll('.order-item').length, '我的订单应非空').toBeGreaterThan(0)
   })
 
@@ -88,7 +96,7 @@ describe('渲染冒烟：关键列表页', () => {
     favoriteService.toggle({ userId: 'demo_user_001', targetType: 'demand', targetId: 'demand_1' })
     const MyFavorites = (await import('@/pages/user/my-favorites.vue')).default
     const wrapper = mountPage(MyFavorites)
-    await wrapper.vm.$nextTick()
+    await flushLoads()
     expect(wrapper.findAll('.fav-item').length, '我的收藏应非空').toBeGreaterThan(0)
   })
 
@@ -97,7 +105,7 @@ describe('渲染冒烟：关键列表页', () => {
     const DemandDetail = (await import('@/pages/demand/detail.vue')).default
     const wrapper = mountPage(DemandDetail)
     fireOnLoad({ id: 'demand_1' })
-    await wrapper.vm.$nextTick()
+    await flushLoads()
     expect(wrapper.find('.hero-title').text().length, '详情头部标题应非空').toBeGreaterThan(0)
     expect(wrapper.findAll('.provider-item').length, 'AI 匹配服务商应渲染').toBeGreaterThan(0)
     expect(wrapper.findAll('.review-item').length + wrapper.find('.review-empty').exists(), '评价区应渲染（列表或空态）').toBeGreaterThan(0)
@@ -108,11 +116,11 @@ describe('渲染冒烟：关键列表页', () => {
     const { setLocale } = await import('@/i18n')
     setLocale('zh-CN')
     const wrapper = mountPage((await import('@/pages/demand/list.vue')).default)
-    await wrapper.vm.$nextTick()
+    await flushLoads()
     const zh = wrapper.find('.header-title').text()
     expect(zh.length).toBeGreaterThan(0)
     setLocale('en-US')
-    await wrapper.vm.$nextTick()
+    await flushLoads()
     const en = wrapper.find('.header-title').text()
     expect(en, '切到英文后标题文本应变化').not.toBe(zh)
     setLocale('zh-CN') // 还原，避免污染其他用例
@@ -126,11 +134,11 @@ describe('交互：筛选 / 搜索路径', () => {
   it('mall/list 搜索无匹配关键词后过滤为空并显示空状态', async () => {
     const MallList = (await import('@/pages/mall/list.vue')).default
     const wrapper = mountPage(MallList)
-    await wrapper.vm.$nextTick()
+    await flushLoads()
     expect(wrapper.findAll('.product-item').length, '初始应有商品').toBeGreaterThan(0)
     await wrapper.find('input.search-input').setValue('zzz_no_match_zzz')
     await wrapper.find('.search-btn').trigger('tap') // 触发 doSearch → 客户端关键词过滤
-    await wrapper.vm.$nextTick()
+    await flushLoads()
     expect(wrapper.findAll('.product-item').length, '无匹配应过滤为空').toBe(0)
     expect(wrapper.find('.empty').exists(), '应显示空状态').toBe(true)
   })
@@ -138,11 +146,11 @@ describe('交互：筛选 / 搜索路径', () => {
   it('mall/list 点服务类型筛选后商品类型同质', async () => {
     const MallList = (await import('@/pages/mall/list.vue')).default
     const wrapper = mountPage(MallList)
-    await wrapper.vm.$nextTick()
+    await flushLoads()
     const cats = wrapper.findAll('.cat-item')
     expect(cats.length, '应有"全部"+若干类型').toBeGreaterThan(1)
     await cats.at(1).trigger('tap') // 选第一个具体服务类型 → selectType → loadList
-    await wrapper.vm.$nextTick()
+    await flushLoads()
     const nodes = wrapper.findAll('.product-item .product-type')
     const types = []
     for (let i = 0; i < nodes.length; i++) types.push(nodes.at(i).text())
@@ -164,7 +172,7 @@ describe('渲染冒烟：全页面挂载不抛错', () => {
     it(`${rel} 挂载与数据加载不抛错`, async () => {
       const wrapper = mountPage(mod.default)        // 触发 onMounted 数据加载
       fireOnLoad({ id: 'demand_1' })                // 喂通用路由参数（详情页用，其余忽略）
-      await wrapper.vm.$nextTick()
+      await flushLoads()
       expect(wrapper.exists(), `${rel} 应挂载成功`).toBe(true)
     })
   }
