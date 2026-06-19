@@ -32,12 +32,12 @@ export default defineConfig({
         'src/config/index.js'     // 纯 re-export 桶文件，无逻辑
       ],
       // 覆盖率门禁：低于阈值则 vitest run --coverage 非零退出，CI 失败
-      // 阈值设在当前基线(96/84/74/96)下方，留出波动空间，仍能拦截显著回退
+      // 阈值随基线收紧：写路径补齐后基线约 99/86/89/99，门禁留 ~3pt 波动空间
       thresholds: {
-        statements: 95,
-        branches: 80,
-        functions: 72,
-        lines: 95
+        statements: 96,
+        branches: 82,
+        functions: 86,
+        lines: 96
       }
     }
   }

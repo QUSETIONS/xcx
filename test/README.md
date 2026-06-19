@@ -34,7 +34,8 @@ app/
 │   ├── determinism.test.js       # 种子数据确定性（源码守护 + 固定快照）
 │   ├── regression.test.js        # 回归（价格建议区间一致性等）
 │   ├── vue-wiring-guard.test.js  # Vue 页面接线静态守卫（生命周期必调用/淡入开关有效/无未定义调用）
-│   └── render-smoke.test.js      # 渲染冒烟（@vue/test-utils 挂载关键列表页，断言非空渲染）
+│   ├── render-smoke.test.js      # 渲染冒烟（@vue/test-utils 挂载关键列表页，断言非空渲染）
+│   └── service-write.test.js     # 写路径覆盖（create/update/状态变更/评论点赞/趋势分支）
 └── src/mock/                     # 被测纯逻辑模块
 ```
 
@@ -45,19 +46,20 @@ app/
 3. **每个用例前重置存储**：`beforeEach(() => globalThis.__resetStore())` 保证用例间隔离（注意：仅重置 storage，模块级内存状态如 points/follow 由 vitest 按测试文件隔离）。
 4. **页面级接线用静态守卫补偿**：`vue-wiring-guard.test.js` 直接扫描每个 `<script setup>`，固化三类不变量：(A) 从 vue 导入的生命周期钩子必须被调用；(B) `const animated = ref(...)` 淡入开关必须有效；(C) 不允许调用未定义的裸函数。把曾经溜过 20+ 次提交的"列表整页不可见"类缺陷钉死在接线层。
 5. **页面渲染 + 交互冒烟（@vue/test-utils）**：静态守卫只查接线、查不到"渲染/行为是否正确"。`render-smoke.test.js` 用 `@vitejs/plugin-vue`（接入 vitest）+ 一层 uni 内置组件 stub（view/text/image/scroll-view…→ div 透传 `$attrs`，故 `@tap` 经 inheritAttrs 落到 div、可 `.trigger('tap')` 触发）+ mock `@dcloudio/uni-app` 生命周期（onLoad 回调可由 `fireOnLoad(params)` 触发以模拟路由参数），挂起 11 个场景：7 列表页非空渲染、demand/detail 带路由参数渲染详情与 AI 匹配、i18n 切语言响应式重渲染、以及 mall 关键词搜索/服务类型筛选交互（`.trigger('tap')` + `setValue` 驱动 v-model）。接线守卫之上的第二、第三道网；挂载顺带把 mock/util/i18n 覆盖率抬升（见下）。
+6. **service 写路径覆盖**：`service-write.test.js` 专门覆盖 create/update/状态变更（成交）、发帖/评论/点赞、趋势 7·30 天分支等变更方法与边界（不存在 id 返回 null/false），把 service.js 的 functions 覆盖从 ~74% 抬到 87%、statements 到 100%。
 
 ## 测试结果
 
 ```
-Test Files  13 passed (13)
-     Tests  265 passed (265)
+Test Files  14 passed (14)
+     Tests  277 passed (277)
 
-Coverage（含门禁，见 vitest.config.js thresholds: stmts≥95 / branch≥80 / funcs≥72 / lines≥95）
-  All files   96%+ statements | 84%+ branch | 75%+ functions
+Coverage（含门禁，见 vitest.config.js thresholds: stmts≥96 / branch≥82 / funcs≥86 / lines≥96）
+  All files   99%+ statements | 85%+ branch | 89%+ functions
   i18n        100% statements | locales 100%
   utils       97%+ statements（util/i18n-maps 100%）
   smart.js    95%+ statements | 100% functions
-  service.js  90%+ statements
+  service.js  100% statements | 87% functions（写路径补齐后）
 ```
 
 > mock 种子数据用**固定种子 PRNG(mulberry32)** 生成，跨进程完全可复现（`test/determinism.test.js` 守护：源码禁用 `Math.random` + 固定快照）。
