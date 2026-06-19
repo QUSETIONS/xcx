@@ -14,9 +14,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { h } from 'vue'
 
-// 解耦 uni-app 运行时（页面经 useNavTitle 引入 onLoad）
+// 解耦 uni-app 运行时；onLoad 回调被捕获，可用 fireOnLoad(params) 模拟带路由参数的页面加载
+const _onLoadCbs = []
 vi.mock('@dcloudio/uni-app', () => ({
-  onLoad: () => {},
+  onLoad: (cb) => { _onLoadCbs.push(cb) },
   onShow: () => {},
   onHide: () => {},
   onUnload: () => {},
@@ -24,6 +25,7 @@ vi.mock('@dcloudio/uni-app', () => ({
   onPullDownRefresh: () => {},
   onReachBottom: () => {}
 }))
+const fireOnLoad = (params = {}) => { _onLoadCbs.forEach(cb => cb(params)); _onLoadCbs.length = 0 }
 
 // uni 内置组件 → 渲染为 div，透传 class 并渲染子节点。
 // 用安全组件名 'UniStub' 避免 Vue「保留 HTML 元素名」告警（image/switch 等是 SVG 保留名）。
@@ -33,7 +35,7 @@ const stubs = STUB_TAGS.reduce((m, tag) => (m[tag] = uniStub, m), {})
 
 const mountPage = (comp) => mount(comp, { global: { stubs } })
 
-beforeEach(() => { globalThis.__resetStore() })
+beforeEach(() => { globalThis.__resetStore(); _onLoadCbs.length = 0 })
 
 describe('渲染冒烟：关键列表页', () => {
   it('demand/list 渲染出非空需求列表', async () => {
@@ -87,5 +89,31 @@ describe('渲染冒烟：关键列表页', () => {
     const wrapper = mountPage(MyFavorites)
     await wrapper.vm.$nextTick()
     expect(wrapper.findAll('.fav-item').length, '我的收藏应非空').toBeGreaterThan(0)
+  })
+
+  it('demand/detail 带路由参数渲染出详情与 AI 匹配服务商', async () => {
+    // 详情页靠 onLoad 的 query.id 加载数据；fireOnLoad 模拟进入 ?id=demand_1
+    const DemandDetail = (await import('@/pages/demand/detail.vue')).default
+    const wrapper = mountPage(DemandDetail)
+    fireOnLoad({ id: 'demand_1' })
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.hero-title').text().length, '详情头部标题应非空').toBeGreaterThan(0)
+    expect(wrapper.findAll('.provider-item').length, 'AI 匹配服务商应渲染').toBeGreaterThan(0)
+    expect(wrapper.findAll('.review-item').length + wrapper.find('.review-empty').exists(), '评价区应渲染（列表或空态）').toBeGreaterThan(0)
+  })
+
+  it('切换语言后页面文本随之更新（i18n 渲染响应式）', async () => {
+    // 验证 t() 在 render 中调用确实是响应式的：切语言 → 页面文本重渲染
+    const { setLocale } = await import('@/i18n')
+    setLocale('zh-CN')
+    const wrapper = mountPage((await import('@/pages/demand/list.vue')).default)
+    await wrapper.vm.$nextTick()
+    const zh = wrapper.find('.header-title').text()
+    expect(zh.length).toBeGreaterThan(0)
+    setLocale('en-US')
+    await wrapper.vm.$nextTick()
+    const en = wrapper.find('.header-title').text()
+    expect(en, '切到英文后标题文本应变化').not.toBe(zh)
+    setLocale('zh-CN') // 还原，避免污染其他用例
   })
 })
