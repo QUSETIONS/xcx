@@ -117,3 +117,36 @@ describe('渲染冒烟：关键列表页', () => {
     setLocale('zh-CN') // 还原，避免污染其他用例
   })
 })
+
+// 挂载脚手架把 uni 内置组件 stub 为 div 并透传 $attrs（含 onTap），
+// 故 @tap 经 inheritAttrs 落到 div 上，可用 .trigger('tap') 触发页面处理器。
+// input/textarea 未 stub（原生），v-model 经 setValue 正常更新。
+describe('交互：筛选 / 搜索路径', () => {
+  it('mall/list 搜索无匹配关键词后过滤为空并显示空状态', async () => {
+    const MallList = (await import('@/pages/mall/list.vue')).default
+    const wrapper = mountPage(MallList)
+    await wrapper.vm.$nextTick()
+    expect(wrapper.findAll('.product-item').length, '初始应有商品').toBeGreaterThan(0)
+    await wrapper.find('input.search-input').setValue('zzz_no_match_zzz')
+    await wrapper.find('.search-btn').trigger('tap') // 触发 doSearch → 客户端关键词过滤
+    await wrapper.vm.$nextTick()
+    expect(wrapper.findAll('.product-item').length, '无匹配应过滤为空').toBe(0)
+    expect(wrapper.find('.empty').exists(), '应显示空状态').toBe(true)
+  })
+
+  it('mall/list 点服务类型筛选后商品类型同质', async () => {
+    const MallList = (await import('@/pages/mall/list.vue')).default
+    const wrapper = mountPage(MallList)
+    await wrapper.vm.$nextTick()
+    const cats = wrapper.findAll('.cat-item')
+    expect(cats.length, '应有"全部"+若干类型').toBeGreaterThan(1)
+    await cats.at(1).trigger('tap') // 选第一个具体服务类型 → selectType → loadList
+    await wrapper.vm.$nextTick()
+    const nodes = wrapper.findAll('.product-item .product-type')
+    const types = []
+    for (let i = 0; i < nodes.length; i++) types.push(nodes.at(i).text())
+    if (types.length) {
+      expect(types.every(t => t === types[0]), '筛选后商品服务类型应一致').toBe(true)
+    }
+  })
+})
