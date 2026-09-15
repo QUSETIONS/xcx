@@ -21,10 +21,19 @@ import { normalizeAgentResult, normalizeProviderMatches } from '@/api/contracts'
 import { normalizeProposal, normalizeProposalAction, normalizeProposalPool } from '@/api/contracts'
 import * as smartEngine from '@/utils/smart-engine'
 import { getStoredPublicIntakeSession, getStoredSession, hasStoredAccessToken, persistPublicIntakeSession, persistSession } from '@/utils/session'
-import { createApp as createWebAgentApp } from '../../../Main/MediaMatchWeb/Src/Boot/main.js'
-
 const useMock = () => ENV.USE_MOCK
-const webAgentApp = createWebAgentApp()
+
+// Agent 的请求路由是前端桥接层的本地控制流，不应依赖仓库外的 Web Main。
+async function runAgentRequest({ useMock: mockMode = false, mockRequest, realRequest, delay: wait, ensureLogin: login, skipEnsureLogin = false } = {}) {
+  if (mockMode) {
+    if (typeof wait === 'function') await wait()
+    if (typeof mockRequest !== 'function') throw new TypeError('mockRequest is required')
+    return mockRequest()
+  }
+  if (!skipEnsureLogin && typeof login === 'function') await login()
+  if (typeof realRequest !== 'function') throw new TypeError('realRequest is required')
+  return realRequest()
+}
 
 // mock 只保留极短的网络感知，避免本地演示把等待误认为接口卡顿。
 const delay = (ms = 80) => new Promise(r => setTimeout(r, ms))
@@ -334,7 +343,7 @@ export const bridge = {
       (id, payload) => mock.demandService.agentChat(id, payload),
       (id, payload) => http.post(`/agent/demand/${encodeURIComponent(id)}/chat`, payload, { timeout: 70000, retry: 0 })
     ),
-    chatStream: (id, payload, callbacks = {}) => webAgentApp.runAgentRequest({
+    chatStream: (id, payload, callbacks = {}) => runAgentRequest({
       useMock: useMock(),
       delay,
       ensureLogin,
@@ -650,7 +659,7 @@ export const bridge = {
 
   // Agent 需求整理
   agent: {
-    organize: (payload) => webAgentApp.runAgentRequest({
+    organize: (payload) => runAgentRequest({
       useMock: useMock(),
       delay,
       ensureLogin,
@@ -659,14 +668,14 @@ export const bridge = {
       // 同时关闭自动重试，避免一次输入触发多次模型调用。
       realRequest: () => http.post('/agent/organize', payload, { timeout: 70000, retry: 0 }).then(normalizeAgentResult)
     }),
-    chat: (payload) => webAgentApp.runAgentRequest({
+    chat: (payload) => runAgentRequest({
       useMock: useMock(),
       delay,
       ensureLogin,
       mockRequest: () => normalizeAgentResult(mock.agentService.chat(payload)),
       realRequest: () => http.post('/agent/chat', payload, { timeout: 70000, retry: 0 }).then(normalizeAgentResult)
     }),
-    chatStream: (payload, callbacks = {}) => webAgentApp.runAgentRequest({
+    chatStream: (payload, callbacks = {}) => runAgentRequest({
       useMock: useMock(),
       delay,
       ensureLogin,

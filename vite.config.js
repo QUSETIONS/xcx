@@ -1,4 +1,4 @@
-import { defineConfig, searchForWorkspaceRoot } from 'vite'
+import { defineConfig } from 'vite'
 import uni from '@dcloudio/vite-plugin-uni'
 import { createRequire } from 'module'
 import { dirname, resolve } from 'path'
@@ -30,9 +30,6 @@ export default defineConfig({
     }
   },
   server: {
-    fs: {
-      allow: [searchForWorkspaceRoot(__dirname), resolve(__dirname, '../server/domain')]
-    },
     port: 8080,
     host: '0.0.0.0',
     // 临时公网预览通过 SSH 反向隧道访问；生产构建不使用这份开发服务器配置。

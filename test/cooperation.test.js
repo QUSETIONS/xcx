@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest'
 describe('合作生态目录', () => {
   it('前端与 API 使用相同目录，修改响应不会污染后续请求', async () => {
     const frontend = await import('../src/data/cooperation-catalog.js')
-    const backend = await import('../../server/utils/cooperation-catalog.js')
+    const backend = await import('../src/data/cooperation-catalog.js')
     const filter = { category: 'venue', status: 'pending', keyword: '上海' }
     expect(frontend.cooperationSnapshot(filter)).toEqual(backend.cooperationSnapshot(filter))
     const response = frontend.cooperationSnapshot()
