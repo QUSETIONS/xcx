@@ -1,68 +1,53 @@
-// ============================================
-// 企动库 v2.0 设计令牌 - 浅色主题
-// 风格：清新明亮 + 圆润卡片 + 品牌橙色
-// ============================================
+// 媒合智联 MediaMatch · Quiet Intelligence 设计令牌
+// 暖纸白、精密网格与克制强调色，供所有 UniApp 页面共享。
 
-// --------------------------------------------
-// 色彩系统 - 浅色优先
-// --------------------------------------------
+// 色彩：午夜蓝负责秩序，深酒红负责品牌，香槟金只用于关键节点。
+$bg-primary: #F6F2EA;
+$bg-secondary: #FCFAF5;
+$bg-tertiary: #EEE7DA;
+$bg-elevated: #FCFAF5;
+$bg-card: #FCFAF5;
+$bg-card-hover: #F2EBDD;
 
-// 浅色基底
-$bg-primary: #F5F6FA;
-$bg-secondary: #FFFFFF;
-$bg-tertiary: #F0F1F5;
-$bg-elevated: #FFFFFF;
-$bg-card: #FFFFFF;
-$bg-card-hover: #FAFAFA;
+$color-primary: #5A2530;
+$color-primary-light: #8A5A61;
+$color-primary-dark: #3E1922;
+$color-secondary: #5F6C73;
+$color-secondary-light: #8E9799;
+$color-accent: #B49460;
+$color-accent-light: #D5BD8A;
+$color-success: #526153;
+$color-warning: #A47B42;
+$color-danger: #8A4C46;
+$color-info: #536A78;
 
-// 品牌渐变
-$gradient-primary: linear-gradient(135deg, #FF6B35, #FF9A5C);
-$gradient-secondary: linear-gradient(135deg, #6366F1, #8B5CF6);
-$gradient-success: linear-gradient(135deg, #10B981, #34D399);
-$gradient-warning: linear-gradient(135deg, #F59E0B, #FBBF24);
-$gradient-danger: linear-gradient(135deg, #EF4444, #F87171);
-$gradient-info: linear-gradient(135deg, #3B82F6, #60A5FA);
-$gradient-warm: linear-gradient(135deg, #FFF5EB, #FFE8D6);
+$text-primary: #17232D;
+$text-secondary: #626B6D;
+$text-tertiary: #968F83;
+$text-placeholder: #B1A99D;
+$border-color: rgba(23, 35, 45, .13);
+$border-color-light: rgba(23, 35, 45, .075);
+$border-highlight: rgba(180, 148, 96, .42);
 
-// 品牌纯色
-$color-primary: #FF6B35;
-$color-primary-light: #FF9A5C;
-$color-primary-dark: #E55A2B;
-$color-secondary: #6366F1;
-$color-secondary-light: #8B5CF6;
-$color-accent: #EC4899;
-$color-accent-light: #F472B6;
+// 旧页面仍引用这些别名；保留别名可以让改版按页面渐进迁移，不破坏业务。
+$color-bg-page: $bg-primary;
+$color-bg-container: $bg-secondary;
+$color-border-light: $border-color-light;
+$color-text-secondary: $text-secondary;
+$color-text-tertiary: $text-tertiary;
+$color-text-placeholder: $text-placeholder;
+$color-white: #FFFFFF;
 
-// 功能色
-$color-success: #10B981;
-$color-warning: #F59E0B;
-$color-danger: #EF4444;
-$color-info: #3B82F6;
+// 渐变令牌只保留兼容性，不再使用鲜艳渐变。
+$gradient-primary: $color-primary;
+$gradient-secondary: $color-secondary;
+$gradient-success: $color-success;
+$gradient-warning: $color-warning;
+$gradient-danger: $color-danger;
+$gradient-info: $color-secondary;
+$gradient-warm: $bg-tertiary;
 
-// 文本色 - 浅色模式
-$text-primary: rgba(0, 0, 0, 0.88);
-$text-secondary: rgba(0, 0, 0, 0.60);
-$text-tertiary: rgba(0, 0, 0, 0.40);
-$text-placeholder: rgba(0, 0, 0, 0.25);
-
-// 边框
-$border-color: rgba(0, 0, 0, 0.06);
-$border-color-light: rgba(0, 0, 0, 0.04);
-$border-highlight: rgba(0, 0, 0, 0.10);
-
-// --------------------------------------------
-// Glassmorphism 令牌 - 浅色版
-// --------------------------------------------
-$glass-bg: rgba(255, 255, 255, 0.80);
-$glass-bg-strong: rgba(255, 255, 255, 0.95);
-$glass-border: rgba(0, 0, 0, 0.06);
-$glass-border-strong: rgba(0, 0, 0, 0.10);
-$glass-blur: 20px;
-$glass-blur-strong: 40px;
-
-// --------------------------------------------
-// 字体体系
-// --------------------------------------------
+// 字体：正文 sans，标题和关键叙事使用编辑感 serif。
 $font-xs: 20rpx;
 $font-sm: 24rpx;
 $font-base: 28rpx;
@@ -71,16 +56,23 @@ $font-lg: 36rpx;
 $font-xl: 44rpx;
 $font-2xl: 56rpx;
 $font-3xl: 72rpx;
-
+$font-size-xs: $font-xs;
+$font-size-sm: $font-sm;
+$font-size-base: $font-base;
+$font-size-md: $font-md;
+$font-size-lg: $font-lg;
+$font-size-xl: $font-xl;
 $weight-normal: 400;
 $weight-medium: 500;
 $weight-semibold: 600;
 $weight-bold: 700;
 $weight-black: 800;
+$font-weight-normal: $weight-normal;
+$font-weight-medium: $weight-medium;
+$font-weight-semibold: $weight-semibold;
+$font-weight-bold: $weight-bold;
 
-// --------------------------------------------
-// 间距体系
-// --------------------------------------------
+// 间距与形状：减少圆角和阴影，拉开内容节奏。
 $space-1: 8rpx;
 $space-2: 16rpx;
 $space-3: 24rpx;
@@ -90,30 +82,35 @@ $space-6: 48rpx;
 $space-8: 64rpx;
 $space-10: 80rpx;
 $space-12: 96rpx;
+$spacing-xs: $space-1;
+$spacing-sm: $space-2;
+$spacing-base: $space-3;
+$spacing-md: $space-4;
+$spacing-lg: $space-5;
+$spacing-xl: $space-6;
 
-// --------------------------------------------
-// 圆角体系
-// --------------------------------------------
-$radius-sm: 12rpx;
-$radius-md: 20rpx;
-$radius-lg: 28rpx;
-$radius-xl: 36rpx;
-$radius-2xl: 48rpx;
+$radius-sm: 6rpx;
+$radius-md: 10rpx;
+$radius-lg: 14rpx;
+$radius-xl: 18rpx;
+$radius-2xl: 24rpx;
 $radius-full: 9999rpx;
+$border-radius-sm: $radius-sm;
+$border-radius-base: $radius-md;
+$border-radius-lg: $radius-lg;
+$border-radius-full: $radius-full;
+$card-border-radius: $radius-md;
+$card-padding: $space-4;
 
-// --------------------------------------------
-// 阴影体系 - 浅色版
-// --------------------------------------------
-$shadow-sm: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
-$shadow-md: 0 8rpx 24rpx rgba(0, 0, 0, 0.06);
-$shadow-lg: 0 16rpx 48rpx rgba(0, 0, 0, 0.08);
-$shadow-card: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
-$shadow-glow-primary: 0 4rpx 20rpx rgba(255, 107, 53, 0.15);
-$shadow-glow-secondary: 0 4rpx 20rpx rgba(99, 102, 241, 0.15);
+$shadow-sm: 0 1rpx 4rpx rgba(30, 27, 22, .03);
+$shadow-md: 0 8rpx 24rpx rgba(30, 27, 22, .06);
+$shadow-lg: 0 18rpx 48rpx rgba(30, 27, 22, .08);
+$shadow-card: none;
+$card-shadow: $shadow-card;
+$shadow-glow-primary: none;
+$shadow-glow-secondary: none;
 
-// --------------------------------------------
-// 层级
-// --------------------------------------------
+// 兼容旧页面的层级与动画命名。
 $z-base: 1;
 $z-dropdown: 100;
 $z-sticky: 200;
@@ -121,12 +118,17 @@ $z-fixed: 300;
 $z-modal: 400;
 $z-toast: 500;
 $z-tooltip: 600;
+$z-index-fixed: $z-fixed;
+$ease-out: cubic-bezier(.22, 1, .36, 1);
+$ease-spring: cubic-bezier(.22, 1, .36, 1);
+$duration-fast: .16s;
+$duration-base: .22s;
+$duration-slow: .36s;
 
-// --------------------------------------------
-// 过渡
-// --------------------------------------------
-$ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-$ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-$duration-fast: 0.15s;
-$duration-base: 0.25s;
-$duration-slow: 0.4s;
+// 旧玻璃令牌保留为不透明暖白，避免页面继续出现玻璃拟态。
+$glass-bg: $bg-secondary;
+$glass-bg-strong: $bg-secondary;
+$glass-border: $border-color-light;
+$glass-border-strong: $border-color;
+$glass-blur: 0;
+$glass-blur-strong: 0;

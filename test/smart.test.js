@@ -71,13 +71,13 @@ describe('scoreDemandQuality - 需求质量评分', () => {
 
 // ============ 价格建议 ============
 describe('getPriceSuggestion - 价格建议', () => {
-  it('非自报价类型应返回 null', () => {
-    expect(getPriceSuggestion('cat_01', 'negotiate')).toBeNull()
-    expect(getPriceSuggestion('cat_01', 'by_daren')).toBeNull()
+  it('非自报价类型应返回 null', async () => {
+    expect(await getPriceSuggestion('cat_01', 'negotiate')).toBeNull()
+    expect(await getPriceSuggestion('cat_01', 'by_daren')).toBeNull()
   })
 
-  it('自报价类型应返回建议对象', () => {
-    const r = getPriceSuggestion('cat_01', 'self')
+  it('自报价类型应返回建议对象', async () => {
+    const r = await getPriceSuggestion('cat_01', 'self')
     expect(r).not.toBeNull()
     expect(r).toHaveProperty('min')
     expect(r).toHaveProperty('max')
@@ -86,8 +86,8 @@ describe('getPriceSuggestion - 价格建议', () => {
     expect(r).toHaveProperty('tip')
   })
 
-  it('建议区间 min 应不大于 max', () => {
-    const r = getPriceSuggestion('cat_02', 'self')
+  it('建议区间 min 应不大于 max', async () => {
+    const r = await getPriceSuggestion('cat_02', 'self')
     expect(r.min).toBeLessThanOrEqual(r.max)
   })
 })
@@ -118,8 +118,8 @@ describe('trackBrowse + 推荐 - 个性化推荐', () => {
     expect(getBrowseHistory(100).length).toBe(50)
   })
 
-  it('getRecommendedDemands 返回指定数量且带评分', () => {
-    const list = getRecommendedDemands(6)
+  it('getRecommendedDemands 返回指定数量且带评分', async () => {
+    const list = await getRecommendedDemands(6)
     expect(list.length).toBeLessThanOrEqual(6)
     list.forEach(item => {
       expect(item).toHaveProperty('_score')
@@ -127,30 +127,30 @@ describe('trackBrowse + 推荐 - 个性化推荐', () => {
     })
   })
 
-  it('缓存：浏览历史不变时第二次调用复用缓存结果', () => {
-    const a = getRecommendedDemands(6)
-    const b = getRecommendedDemands(6)
+  it('缓存：浏览历史不变时第二次调用复用缓存结果', async () => {
+    const a = await getRecommendedDemands(6)
+    const b = await getRecommendedDemands(6)
     // 命中缓存应返回相同的数组引用（同一对象）
     expect(b).toBe(a)
   })
 
-  it('缓存：浏览新内容后缓存失效，重新计算', () => {
-    const a = getRecommendedDemands(6)
+  it('缓存：浏览新内容后缓存失效，重新计算', async () => {
+    const a = await getRecommendedDemands(6)
     trackBrowse('demand', 'demand_999', { title: '新浏览' })
-    const b = getRecommendedDemands(6)
+    const b = await getRecommendedDemands(6)
     // 历史变化后应重新计算，返回新数组
     expect(b).not.toBe(a)
   })
 
-  it('getRecommendedProducts 返回指定数量', () => {
-    const list = getRecommendedProducts(4)
+  it('getRecommendedProducts 返回指定数量', async () => {
+    const list = await getRecommendedProducts(4)
     expect(list.length).toBeLessThanOrEqual(4)
   })
 
-  it('已浏览的需求在推荐中应被降权', () => {
+  it('已浏览的需求在推荐中应被降权', async () => {
     // 浏览 demand_1
     trackBrowse('demand', 'demand_1', { category_id: 'cat_01', title: '浏览过的' })
-    const recs = getRecommendedDemands(100)
+    const recs = await getRecommendedDemands(100)
     const viewed = recs.find(r => r._id === 'demand_1')
     // 已浏览内容仍可能出现，但分数应较低（无法精确断言，仅验证不抛错）
     expect(Array.isArray(recs)).toBe(true)

@@ -4,7 +4,7 @@
     <view v-if="!noNav" class="nav" :style="{ paddingTop: `${statusBarHeight}px` }">
       <view class="nav-bar">
         <view class="nav-left" @tap="goBack">
-          <text v-if="canBack" class="nav-back">←</text>
+          <text v-if="canBack" class="nav-back" aria-label="返回">‹</text>
         </view>
         <text class="nav-title">{{ title }}</text>
         <view class="nav-right">
@@ -48,8 +48,12 @@ function goBack() {
 
 <style lang="scss" scoped>
 .page {
+  width: 100%;
+  max-width: 100%;
   min-height: 100vh;
-  background: $--color-bg;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  background: $bg-primary;
 }
 
 .nav {
@@ -57,21 +61,22 @@ function goBack() {
   top: 0;
   left: 0;
   right: 0;
-  z-index: $--z-index-nav;
-  background: #fff;
+  z-index: $z-sticky;
+  border-bottom: 1rpx solid var(--line-soft);
+  background: rgba(252, 251, 248, .985);
 }
 
 .nav-bar {
-  height: 88rpx;
+  height: 84rpx;
   display: flex;
   align-items: center;
   padding: 0 24rpx;
 }
 
-.nav-left { width: 80rpx; }
-.nav-back { font-size: 40rpx; color: $--color-text-primary; }
-.nav-title { flex: 1; text-align: center; font-size: $--font-size-lg; font-weight: 600; color: $--color-text-primary; }
-.nav-right { width: 80rpx; text-align: right; }
+.nav-left { display: flex; align-items: center; width: 72rpx; min-height: 64rpx; }
+.nav-back { color: $text-primary; font-family: 'Songti SC', 'Noto Serif CJK SC', serif; font-size: 54rpx; font-weight: 400; line-height: .8; }
+.nav-title { flex: 1; overflow: hidden; color: $text-primary; font-family: 'Songti SC', 'Noto Serif CJK SC', serif; font-size: 29rpx; font-weight: 400; letter-spacing: -.02em; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
+.nav-right { display: flex; align-items: center; justify-content: flex-end; width: 72rpx; min-height: 64rpx; text-align: right; }
 
 .safe-bottom { height: env(safe-area-inset-bottom); }
 </style>

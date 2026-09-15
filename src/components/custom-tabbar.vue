@@ -1,13 +1,9 @@
 <template>
   <view class="tabbar">
     <view class="tabbar-item" :class="{ active: current === item.key }" v-for="item in tabs" :key="item.key" @tap="switchTab(item)">
-      <view v-if="item.key === 'publish'" class="publish-btn">
-        <text class="publish-icon">✏️</text>
-      </view>
-      <template v-else>
-        <text class="tabbar-icon">{{ current === item.key ? item.activeIcon : item.icon }}</text>
-        <text class="tabbar-text">{{ item.label }}</text>
-      </template>
+      <view v-if="current === item.key" class="tabbar-active-marker" />
+      <image class="tabbar-icon" :src="current === item.key ? item.activeIcon : item.icon" mode="aspectFit" />
+      <text class="tabbar-text">{{ item.label }}</text>
     </view>
   </view>
 </template>
@@ -18,12 +14,11 @@ defineProps({
 })
 
 const tabs = [
-  { key: 'home', label: '首页', icon: '🏠', activeIcon: '🏠', path: '/pages/index/index', isTab: true },
-  { key: 'demand', label: '需求', icon: '📋', activeIcon: '📋', path: '/pages/demand/list', isTab: true },
-  { key: 'community', label: '社区', icon: '💬', activeIcon: '💬', path: '/pages/community/index', isTab: true },
-  { key: 'publish', label: '发布', icon: '', path: '/pages/demand/publish', isTab: false },
-  { key: 'mall', label: '商城', icon: '🛒', activeIcon: '🛒', path: '/pages/mall/list', isTab: true },
-  { key: 'user', label: '我的', icon: '👤', activeIcon: '👤', path: '/pages/user/index', isTab: true }
+  { key: 'demand', label: '需求', icon: '/static/icons/tab/list.svg', activeIcon: '/static/icons/tab/list-active.svg', path: '/pages/demand/list', isTab: true },
+  { key: 'network', label: '人脉', icon: '/static/icons/tab/community.svg', activeIcon: '/static/icons/tab/community-active.svg', path: '/pages/network/index', isTab: true },
+  { key: 'home', label: '首页', icon: '/static/icons/tab/home.svg', activeIcon: '/static/icons/tab/home-active.svg', path: '/pages/index/index', isTab: true },
+  { key: 'information', label: '资讯', icon: '/static/icons/file.svg', activeIcon: '/static/icons/file.svg', path: '/pages/information/index', isTab: true },
+  { key: 'user', label: '我的', icon: '/static/icons/tab/user.svg', activeIcon: '/static/icons/tab/user-active.svg', path: '/pages/user/index', isTab: true }
 ]
 
 function switchTab(item) {
@@ -38,20 +33,27 @@ function switchTab(item) {
 <style lang="scss" scoped>
 .tabbar {
   position: fixed; bottom: 0; left: 0; right: 0;
-  height: 110rpx; padding-bottom: env(safe-area-inset-bottom);
-  background: #FFFFFF; border-top: 1rpx solid rgba(0,0,0,0.06);
-  display: flex; z-index: 300;
+  height: 98rpx; padding-top: 2rpx; padding-bottom: env(safe-area-inset-bottom);
+  background: rgba(252,250,245,.985); border-top: 1rpx solid rgba(23,35,45,.13);
+  display: flex; z-index: 300; box-shadow: none;
+}
+
+@media (min-width: 561px) {
+  .tabbar {
+    left:50%;
+    right:auto;
+    width:var(--h5-shell-width, 720px);
+    transform:translate3d(-50%, 0, 0);
+  }
+  .tabbar-icon { width:24px; height:24px; flex-basis:24px; }
+  .tabbar-text { margin-top:4px; font-size:12px; }
 }
 .tabbar-item {
-  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  position: relative; min-width: 0; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
-.tabbar-item.active .tabbar-text { color: #FF6B35; }
-.tabbar-icon { font-size: 44rpx; line-height: 1; }
-.tabbar-text { font-size: 22rpx; color: rgba(0,0,0,0.5); margin-top: 6rpx; }
-.publish-btn {
-  width: 88rpx; height: 88rpx; background: linear-gradient(135deg, #FF6B35, #FF9A5C);
-  border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: -24rpx;
-  box-shadow: 0 6rpx 20rpx rgba(255,107,53,0.35);
-}
-.publish-icon { font-size: 36rpx; color: #FFFFFF; }
+.tabbar-active-marker { position: absolute; top: -2rpx; width: 34rpx; height: 3rpx; background: #B49460; }
+.tabbar-icon { display: block; width: 38rpx; height: 38rpx; flex: 0 0 38rpx; object-fit: contain; object-position: center; opacity: .78; }
+.tabbar-text { font-size: 19rpx; color: #968F83; margin-top: 6rpx; letter-spacing: .08em; }
+.tabbar-item.active .tabbar-icon { opacity: 1; }
+.tabbar-item.active .tabbar-text { color: #5A2530; font-weight: 600; }
 </style>

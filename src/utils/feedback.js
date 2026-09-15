@@ -44,6 +44,10 @@ export function toast(title) {
   uni.showToast({ title, icon: 'none', duration: 1500 })
 }
 
+export function isAuthError(error) {
+  return Number(error?.statusCode || error?.code || error?.data?.statusCode || error?.data?.code) === 401
+}
+
 // ============ 防重复点击 ============
 
 /**

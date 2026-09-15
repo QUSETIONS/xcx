@@ -96,15 +96,16 @@ describe('chatService - 客服会话', () => {
     expect(list.length).toBeGreaterThan(0)
   })
 
-  it('send 后消息数增加', () => {
+  it('send 后同时留下用户消息和客服答复', () => {
     const before = chatService.list().length
     chatService.send('你好')
     const after = chatService.list().length
-    expect(after).toBe(before + 1)
-    // 新消息应是用户发送
-    const last = chatService.list()[after - 1]
-    expect(last.from).toBe('user')
-    expect(last.content).toBe('你好')
+    expect(after).toBe(before + 2)
+    const list = chatService.list()
+    expect(list[after - 2].from).toBe('user')
+    expect(list[after - 2].content).toBe('你好')
+    expect(list[after - 1].from).toBe('service')
+    expect(list[after - 1].content).toContain('你好')
   })
 
   it('reply 后增加一条 service 消息', () => {
@@ -113,6 +114,13 @@ describe('chatService - 客服会话', () => {
     const last = chatService.list()[chatService.list().length - 1]
     expect(last.from).toBe('service')
     expect(chatService.list().length).toBe(before + 1)
+  })
+
+  it('send 支持把附件引用保存在用户消息上', () => {
+    const attachment = { id: 'attachment_test_001', name: '需求说明.txt', kind: 'file' }
+    chatService.send('请看附件', [], [attachment])
+    const lastUserMessage = [...chatService.list()].reverse().find((item) => item.from === 'user')
+    expect(lastUserMessage.attachments).toEqual([attachment])
   })
 })
 

@@ -1,10 +1,11 @@
 <template>
   <view class="page">
     <view class="header">
-      <text class="header-title">我的需求</text>
+      <text class="header-title">{{ t('user.myDemand') }}</text>
     </view>
 
     <scroll-view class="list-scroll" scroll-y :refresher-enabled="true" :refresher-triggered="refreshing" @refresherrefresh="onRefresh">
+      <view v-if="loading && !list.length" class="loading"><text>{{ t('common.loading') }}</text></view>
       <view class="demand-list" :class="{ 'animate-in': animated }">
         <view class="demand-item card-press" v-for="(item, idx) in list" :key="item._id" @tap="goDetail(item._id)"
           :class="{ 'fade-in': animated }" :style="{ animationDelay: (idx * 0.08) + 's' }">
@@ -13,8 +14,8 @@
             <view class="status-tag" :class="'status-' + item.status"><text>{{ statusMap[item.status] || item.status }}</text></view>
           </view>
           <view class="item-meta">
-            <text class="item-cat">{{ item.category_name }}</text>
-            <text class="item-region">{{ item.region }}</text>
+            <text class="item-cat">{{ categoryName(item.category_id, item.category_name) }}</text>
+            <text class="item-region">{{ regionName(item.region) }}</text>
           </view>
           <view class="item-stats">
             <view class="stat-box card-press"><image class="stat-icon" src="/static/icons/eye.svg"/><text>{{ item.view_count }}</text></view>
@@ -23,10 +24,11 @@
           </view>
         </view>
       </view>
-      <view v-if="!list.length" class="empty">
-        <text class="empty-icon">📋</text>
-        <text class="empty-text">暂无需求</text>
-        <text class="empty-btn" @tap="goPublish">发布需求</text>
+      <view v-if="loading && list.length" class="loading"><text>{{ t('common.loading') }}</text></view>
+      <view v-if="!list.length && !loading" class="empty">
+        <image class="empty-icon" src="/static/icons/edit.svg" mode="aspectFit" />
+        <text class="empty-text">{{ t('user.emptyDemand') }}</text>
+        <text class="empty-btn" @tap="goPublish">{{ t('demand.publish') }}</text>
       </view>
     </scroll-view>
   </view>
@@ -34,29 +36,35 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { DEMAND_STATUS } from '@/config/constants'
-import { demandService } from '@/mock/service'
+import { demandStatusMap as statusMap } from '@/utils/i18n-maps'
+import { bridge } from '@/api/bridge'
+import { useList } from '@/hooks/useList'
 import { formatDate } from "@/utils/util"
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { categoryName, regionName } from '@/utils/i18n-maps'
+import { t } from '@/i18n'
 useNavTitle('titles.myDemands')
 
-const statusMap = DEMAND_STATUS
-const list = ref([])
-const refreshing = ref(false)
-const animated = ref(false)
-
-function loadList() { list.value = demandService.myDemands().list }
+const animated = ref(true)
+const { list, loading, refreshing, load: loadList, refresh } = useList(
+  (params) => bridge.demand.myDemands({ ...params, page: 1, pageSize: 100 }),
+  100
+)
 function goDetail(id) { uni.navigateTo({ url: `/pages/demand/detail?id=${id}` }) }
 function goPublish() { uni.navigateTo({ url: '/pages/demand/publish' }) }
-function onRefresh() { refreshing.value = true; loadList(); refreshing.value = false }
+function onRefresh() { refresh() }
+onMounted(() => loadList(true))
 </script>
 
 <style lang="scss" scoped>
-.page { min-height: 100vh; background: #F5F6FA; padding-bottom: 120rpx; }
+.page { display: flex; flex-direction: column; width: 100%; height: 100vh; min-height: 0; overflow-x: hidden; background: #F5F6FA; padding-bottom: 120rpx; box-sizing: border-box; }
+/* #ifdef H5 */
+.page { height: calc(100vh - 44px); }
+/* #endif */
 .header { padding: 24rpx; }
 .header-title { font-size: 36rpx; font-weight: bold; color: rgba(0,0,0,0.85); }
 
-.list-scroll { height: calc(100vh - 80rpx); padding: 0 24rpx; }
+.list-scroll { flex: 1; min-height: 0; height: auto; padding: 0 24rpx; }
 .demand-list { display: flex; flex-direction: column; opacity: 0; }
 .animate-in { opacity: 1; transition: opacity 0.5s ease-out; }
 .demand-item { margin-bottom: 12rpx; background: #FFFFFF; border-radius: 20rpx; padding: 20rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04); opacity: 0; }
@@ -74,14 +82,41 @@ function onRefresh() { refreshing.value = true; loadList(); refreshing.value = f
 .item-region { font-size: 22rpx; color: rgba(0,0,0,0.4); }
 .item-stats { display: flex; align-items: center; }
 .stat-box { display: flex; align-items: center; }
-.stat-icon { width: 18rpx; height: 18rpx; }
+.stat-icon { display: block; width: 27rpx; height: 27rpx; margin-right: 5rpx; object-fit: contain; }
 .stat-box text { font-size: 22rpx; color: rgba(0,0,0,0.5); }
 .item-time { margin-left: auto; font-size: 22rpx; color: rgba(0,0,0,0.4); }
 
 .empty { text-align: center; padding: 64rpx; }
-.empty-icon { font-size: 64rpx; display: block; margin-bottom: 16rpx; }
+.empty-icon { display: inline-flex; align-items: center; justify-content: center; width: 72rpx; height: 72rpx; margin-bottom: 16rpx; font-size: 42rpx; line-height: 1; }
 .empty-text { font-size: 28rpx; color: rgba(0,0,0,0.5); display: block; margin-bottom: 16rpx; }
 .empty-btn { font-size: 24rpx; color: #FF6B35; background: rgba(255,107,53,0.1); padding: 12rpx 32rpx; border-radius: 24rpx; display: inline-flex; }
+.loading { text-align: center; padding: 32rpx; font-size: 24rpx; color: rgba(0,0,0,0.5); }
 
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(20rpx); } to { opacity: 1; transform: translateY(0); } }
+
+/* 需求标题和统计列在窄屏下允许收缩，避免状态标签把卡片撑出边界。 */
+.header,
+.item-top,
+.item-meta,
+.item-stats,
+.demand-item,
+.item-title { min-width: 0; }
+.header { flex: 0 0 auto; }
+.item-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.status-tag,
+.item-time { flex: 0 0 auto; white-space: nowrap; }
+.item-meta { overflow: hidden; }
+.item-cat,
+.item-region { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.item-cat { flex: 1; }
+.item-region { flex: 0 1 42%; text-align: right; }
+.item-stats { overflow: hidden; }
+.stat-box { min-width: 0; }
+.stat-box text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+@media (max-width: 360px) {
+  .page { padding-right: 18rpx; padding-left: 18rpx; }
+  .list-scroll { padding-right: 18rpx; padding-left: 18rpx; }
+  .demand-item { padding-right: 16rpx; padding-left: 16rpx; }
+}
 </style>

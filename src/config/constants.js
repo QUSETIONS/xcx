@@ -37,16 +37,23 @@ export const LEAD_STATUS = {
 
 // 需求分类
 export const DEMAND_CATEGORIES = [
-  { id: 'cat_01', name: '品牌公关', icon: '📢' },
-  { id: 'cat_02', name: '直播带货', icon: '📺' },
-  { id: 'cat_03', name: '企业服务', icon: '🏢' },
-  { id: 'cat_04', name: '线上媒体', icon: '📱' },
-  { id: 'cat_05', name: '线下媒体', icon: '📰' },
-  { id: 'cat_06', name: '代运营', icon: '🔧' },
-  { id: 'cat_07', name: '达人种草', icon: '🌟' },
-  { id: 'cat_08', name: '视频制作', icon: '🎬' },
-  { id: 'cat_09', name: '活动策划', icon: '🎉' },
-  { id: 'cat_10', name: '渠道资源', icon: '🤝' }
+  { id: 'cat_01', name: '品牌公关', icon: '/static/icons/cat/cat_01.svg' },
+  { id: 'cat_02', name: '直播与电商', icon: '/static/icons/cat/cat_02.svg' },
+  { id: 'cat_03', name: '企业服务', icon: '/static/icons/cat/cat_03.svg' },
+  { id: 'cat_04', name: '数字渠道', icon: '/static/icons/cat/cat_04.svg' },
+  { id: 'cat_05', name: '线下渠道', icon: '/static/icons/cat/cat_05.svg' },
+  { id: 'cat_06', name: '运营服务', icon: '/static/icons/cat/cat_06.svg' },
+  { id: 'cat_07', name: '创作者合作', icon: '/static/icons/cat/cat_07.svg' },
+  { id: 'cat_08', name: '视频制作', icon: '/static/icons/cat/cat_08.svg' },
+  { id: 'cat_09', name: '活动会展', icon: '/static/icons/cat/cat_09.svg' },
+  { id: 'cat_10', name: '渠道资源', icon: '/static/icons/cat/cat_10.svg' },
+  { id: 'cat_11', name: '投融资与资本', icon: '/static/icons/cat/cat_11.svg' },
+  { id: 'cat_12', name: '半导体与芯片', icon: '/static/icons/cat/cat_12.svg' },
+  { id: 'cat_13', name: '通信与连接', icon: '/static/icons/cat/cat_13.svg' },
+  { id: 'cat_14', name: '医药与健康', icon: '/static/icons/cat/cat_14.svg' },
+  { id: 'cat_15', name: '先进制造', icon: '/static/icons/cat/cat_15.svg' },
+  { id: 'cat_16', name: '量子科技', icon: '/static/icons/cat/cat_16.svg' },
+  { id: 'cat_17', name: '商业航天', icon: '/static/icons/cat/cat_17.svg' }
 ]
 
 // 服务类型
@@ -79,12 +86,16 @@ export const STORAGE_KEYS = {
   BROWSE_HISTORY: 'browse_history',
   USER_PREFERENCE: 'user_preference',
   SEARCH_HISTORY: 'search_history',
+  SAVED_SEARCHES: 'saved_searches',
   // 偏好设置
   LOCALE: 'qiye_ku_locale',
   FONT_SCALE: 'qiye_ku_font_scale',
   CONTRAST: 'qiye_ku_contrast',
   // 草稿与缓存
   DEMAND_DRAFT: 'demand_draft',
+  AGENT_DRAFT: 'agent_draft',
+  AGENT_CONVERSATION: 'agent_conversation',
+  AGENT_SESSION: 'agent_session',
   LAST_DEMAND_CONTACT: 'last_demand_contact',
   LAST_ORDER_CONTACT: 'last_order_contact'
 }

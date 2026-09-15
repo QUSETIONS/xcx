@@ -47,11 +47,14 @@ const uni = {
 
   // ===== 其他常用 =====
   getSystemInfoSync: vi.fn(() => ({ statusBarHeight: 44, platform: 'devtools' })),
-  getAccountInfoSync: vi.fn(() => ({ miniProgram: { envVersion: 'develop' } }))
+  getAccountInfoSync: vi.fn(() => ({ miniProgram: { envVersion: 'develop' } })),
+  getCurrentPages: () => []
 }
 
 // 注入到全局
 globalThis.uni = uni
+// getCurrentPages 是小程序裸全局（非 uni.getCurrentPages），页面在 setup 期调用
+globalThis.getCurrentPages = () => []
 
 // 暴露重置方法，每个测试用例前可清空存储
 globalThis.__resetStore = () => {

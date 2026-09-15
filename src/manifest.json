@@ -1,5 +1,5 @@
 {
-  "name": "企业库",
+  "name": "媒合智联 MediaMatch",
   "appid": "__UNI__QIYEKU",
   "description": "企业资源对接平台，连接甲方乙方，精准匹配需求与服务",
   "versionName": "1.0.0",
@@ -29,7 +29,7 @@
   },
   "quickapp": {},
   "mp-weixin": {
-    "appid": "touristappid",
+    "appid": "wx3ce308487062b482",
     "setting": {
       "urlCheck": true,
       "es6": true,
@@ -75,7 +75,7 @@
       "disableHostCheck": true,
       "proxy": {
         "/api": {
-          "target": "http://localhost:3000",
+          "target": "http://127.0.0.1:3101",
           "changeOrigin": true,
           "pathRewrite": {
             "^/api": "/api"
@@ -83,7 +83,7 @@
         }
       }
     },
-    "title": "企业库",
+    "title": "媒合智联 MediaMatch",
     "template": "index.html",
     "optimization": {
       "prefetch": true,

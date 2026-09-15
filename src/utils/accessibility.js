@@ -53,6 +53,19 @@ export const rootStyle = computed(() => ({
 }))
 
 /**
+ * 页面根无障碍样式：字体缩放 + 高对比度底色/正文色。
+ * 直接以 inline style 绑定到页面根 <view>（mp-weixin 内联样式 100% 生效，
+ * 无需依赖 CSS 变量/calc 的兼容性风险）。高对比度时翻转为更高对比的底色与纯黑正文，
+ * 字体缩放影响页面基准字号与未显式设定字号的文本。
+ *   <view class="page" :style="a11yStyle">
+ */
+export const a11yStyle = computed(() => ({
+  fontSize: (28 * fontScale.value) + 'rpx',
+  background: contrastColors.value.bg,
+  color: contrastColors.value.text
+}))
+
+/**
  * 高对比度主题色覆盖
  */
 export const contrastColors = computed(() => highContrast.value ? {

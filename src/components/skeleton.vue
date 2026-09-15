@@ -53,7 +53,7 @@ defineProps({
   100% { background-position: 0 50%; }
 }
 
-.sk-item { display: flex; align-items: center; background: #FFFFFF; border-radius: 16rpx; padding: 24rpx; margin-bottom: 16rpx; }
+.sk-item { display: flex; align-items: center; background: #FFFFFF; border: 1rpx solid #F0F1F3; border-radius: 12rpx; padding: 24rpx; margin-bottom: 16rpx; }
 .sk-avatar { width: 80rpx; height: 80rpx; border-radius: 50%; margin-right: 20rpx; flex-shrink: 0; }
 .sk-lines { flex: 1; }
 .sk-line { height: 24rpx; border-radius: 8rpx; margin-bottom: 16rpx; }
@@ -63,8 +63,8 @@ defineProps({
 .sk-line-lg { width: 80%; height: 32rpx; }
 .sk-line-full { width: 100%; }
 
-.sk-card { background: #FFFFFF; border-radius: 16rpx; padding: 24rpx; margin-bottom: 16rpx; }
+.sk-card { background: #FFFFFF; border: 1rpx solid #F0F1F3; border-radius: 12rpx; padding: 24rpx; margin-bottom: 16rpx; }
 
-.sk-detail { background: #FFFFFF; border-radius: 16rpx; padding: 24rpx; }
+.sk-detail { background: #FFFFFF; border: 1rpx solid #F0F1F3; border-radius: 12rpx; padding: 24rpx; }
 .sk-block { width: 100%; height: 240rpx; border-radius: 16rpx; margin-bottom: 24rpx; }
 </style>

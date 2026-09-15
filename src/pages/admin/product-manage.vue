@@ -1,11 +1,12 @@
 <template>
   <view class="page">
     <view class="header">
-      <text class="header-title">商品管理</text>
-      <view class="add-btn" @tap="goAdd"><text>+ 新增</text></view>
+      <text class="header-title">{{ t('titles.productManage') }}</text>
+      <view class="add-btn" @tap="goAdd"><text>{{ t('admin.add') }}</text></view>
     </view>
 
     <scroll-view class="list-scroll" scroll-y :refresher-enabled="true" :refresher-triggered="refreshing" @refresherrefresh="onRefresh">
+      <view v-if="loading && !productList.length" class="loading"><text>{{ t('common.loading') }}</text></view>
       <view class="product-list" :class="{ 'animate-in': animated }">
         <view class="product-item card-press" v-for="(item, idx) in productList" :key="item._id"
           :class="{ 'fade-in': animated }" :style="{ animationDelay: (idx * 0.08) + 's' }">
@@ -24,83 +25,61 @@
           </view>
           <view class="product-bottom">
             <view class="product-stats">
-              <text>销量: {{ item.sale_count }}</text>
-              <text class="product-status" :class="{ featured: item.is_featured }">{{ item.is_featured ? '精选' : '普通' }}</text>
+              <text>{{ t('admin.sales') }}{{ item.sale_count }}</text>
+              <text class="product-status" :class="{ featured: item.is_featured }">{{ item.is_featured ? t('admin.featured') : t('admin.normal') }}</text>
             </view>
             <view class="product-actions">
-              <text class="action-btn" @tap.stop="editProduct(item)">编辑</text>
-              <text class="action-btn danger" @tap.stop="deleteProduct(item)">删除</text>
+              <text class="action-btn" @tap.stop="editProduct(item)">{{ t('admin.edit') }}</text>
+              <text class="action-btn danger" @tap.stop="deleteProduct(item)">{{ t('admin.delete') }}</text>
             </view>
           </view>
         </view>
       </view>
-      <view v-if="!productList.length" class="empty"><text>暂无商品</text></view>
+      <view v-if="loading && productList.length" class="loading"><text>{{ t('common.loading') }}</text></view>
+      <view v-if="!productList.length && !loading" class="empty"><text>{{ t('admin.emptyProduct') }}</text></view>
     </scroll-view>
   </view>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { SERVICE_TYPES } from '@/config/constants'
-import { productService } from '@/mock/service'
+import { serviceTypes } from '@/utils/i18n-maps'
+import { bridge } from '@/api/bridge'
+import { useList } from '@/hooks/useList'
 import { useNavTitle } from '@/hooks/useNavTitle'
+import { t } from '@/i18n'
 useNavTitle('titles.productManage')
 
-const serviceTypes = SERVICE_TYPES
-const productList = ref([])
-const refreshing = ref(false)
-const animated = ref(false)
+const animated = ref(true)
 
+const { list: productList, loading, refreshing, load: loadList, refresh } = useList(
+  (params) => bridge.admin.products.list({ ...params, page: 1, pageSize: 100 }),
+  100
+)
 
-function loadList() {
-  const res = productService.list({ pageSize: 100 })
-  productList.value = res.list
-}
-
-function onRefresh() { refreshing.value = true; loadList(); refreshing.value = false }
+function onRefresh() { refresh() }
+onMounted(() => loadList(true))
 function goAdd() {
-  uni.showModal({
-    title: '新增商品',
-    content: '请在后台系统中添加商品信息（标题、价格、类型等）',
-    showCancel: false,
-    confirmText: '知道了'
-  })
+  uni.navigateTo({ url: '/pages/admin/product-edit' })
 }
 function editProduct(item) {
-  uni.showActionSheet({
-    itemList: ['设为精选', '取消精选', '修改价格', '上下架'],
-    success: (res) => {
-      if (res.tapIndex === 0) { item.is_featured = true; uni.showToast({ title: '已设为精选', icon: 'success' }) }
-      else if (res.tapIndex === 1) { item.is_featured = false; uni.showToast({ title: '已取消精选', icon: 'success' }) }
-      else if (res.tapIndex === 2) {
-        uni.showModal({
-          title: '修改价格',
-          editable: true,
-          placeholderText: '输入新价格（元）',
-          success: (r) => {
-            if (r.confirm && r.content) {
-              item.price = Math.round(parseFloat(r.content) * 100)
-              uni.showToast({ title: '价格已更新', icon: 'success' })
-            }
-          }
-        })
-      }
-      else if (res.tapIndex === 3) {
-        item.status = item.status === 'on_sale' ? 'off_sale' : 'on_sale'
-        uni.showToast({ title: item.status === 'on_sale' ? '已上架' : '已下架', icon: 'success' })
-      }
-    }
-  })
+  uni.navigateTo({ url: `/pages/admin/product-edit?id=${item._id}` })
 }
 
 function deleteProduct(item) {
   uni.showModal({
-    title: '确认删除', content: `确定要删除「${item.title}」吗？`,
-    success: (res) => {
+    title: t('admin.confirmDelete'), content: t('admin.deleteContent').replace('{title}', item.title),
+    success: async (res) => {
       if (res.confirm) {
+        try {
+          await bridge.admin.products.delete(item._id)
+        } catch (error) {
+          uni.showToast({ title: error?.message || t('common.loadFailed'), icon: 'none' })
+          return
+        }
         const idx = productList.value.findIndex(p => p._id === item._id)
         if (idx > -1) productList.value.splice(idx, 1)
-        uni.showToast({ title: '已删除', icon: 'success' })
+        uni.showToast({ title: t('admin.deleted'), icon: 'success' })
       }
     }
   })
@@ -145,6 +124,22 @@ function deleteProduct(item) {
 .action-btn { font-size: 24rpx; color: rgba(0,0,0,0.6); padding: 6rpx 16rpx; background: #F5F6FA; border-radius: 12rpx; }
 .action-btn.danger { color: #EF4444; background: rgba(239,68,68,0.1); }
 .empty { text-align: center; padding: 64rpx; font-size: 28rpx; color: rgba(0,0,0,0.5); }
+.loading { text-align: center; padding: 32rpx; font-size: 24rpx; color: rgba(0,0,0,0.5); }
 
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(20rpx); } to { opacity: 1; transform: translateY(0); } }
+/* 后台列表统一采用“固定页面 + 剩余空间滚动”，商品信息和操作列可收缩。 */
+.page { display: flex; flex-direction: column; width: 100%; height: 100vh; min-height: 0; overflow-x: hidden; box-sizing: border-box; }
+/* #ifdef H5 */
+.page { height: calc(100vh - 44px); }
+/* #endif */
+.header, .list-scroll, .product-item, .product-main, .product-info, .product-bottom, .product-stats { min-width: 0; }
+.header { flex: 0 0 auto; gap: 14rpx; }
+.header-title, .product-title, .product-type { max-width: 100%; overflow-wrap: anywhere; word-break: break-word; }
+.header-title, .product-title, .product-type { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.add-btn, .action-btn, .product-status { flex: 0 0 auto; white-space: nowrap; }
+.list-scroll { flex: 1; min-height: 0; height: auto; max-width: 100%; box-sizing: border-box; }
+.product-info { overflow: hidden; }
+.product-main, .product-bottom { gap: 12rpx; }
+.product-price-row { flex-wrap: wrap; gap: 6rpx; }
+.product-actions { flex-wrap: wrap; justify-content: flex-end; gap: 8rpx; }
 </style>
