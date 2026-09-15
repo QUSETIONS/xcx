@@ -4,7 +4,7 @@ import {
   isAgentCategoryId as isSharedAgentCategoryId,
   normalizeAgentRegion as normalizeSharedAgentRegion,
   parseAgentBudget as parseSharedAgentBudget
-} from '../../../Main/MediaMatchWeb/Src/Boot/main.js'
+} from '@/api/agent-contract'
 
 /**
  * 把 Agent 输出映射为平台现有的需求分类。

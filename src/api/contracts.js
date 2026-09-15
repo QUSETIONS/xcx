@@ -1,5 +1,4 @@
-// 前端 API 边界只保留页面适配需要的扩展；运行时通过 Web Main 的 Boot
-// 进入共享契约，避免 legacy 页面直接穿透到 Package。
+// 前端 API 边界只保留页面适配需要的扩展；共享契约必须能在独立前端仓库内解析。
 import {
   AGENT_SCHEMA_VERSION,
   normalizeAgentDemands,
@@ -9,7 +8,7 @@ import {
   normalizeAgentTeams,
   parseAgentBudget,
   scoreAgentQuality
-} from '../../../Main/MediaMatchWeb/Src/Boot/main.js'
+} from '@/api/agent-contract'
 
 export {
   AGENT_SCHEMA_VERSION,
