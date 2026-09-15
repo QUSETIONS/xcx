@@ -27,6 +27,9 @@ jobs:
       - name: 类型检查
         run: npm run typecheck
 
+      - name: H5 构建
+        run: npm run build:h5
+
       - name: 运行测试（含覆盖率门禁）
         run: npm run test:coverage
 

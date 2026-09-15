@@ -1,6 +1,11 @@
 <template>
   <view class="page">
-    <skeleton type="card" :rows="4" v-if="loading" />
+    <skeleton type="card" :rows="4" v-if="loadState === 'loading'" />
+    <view v-else-if="loadState === 'error'" class="page-state error-state" @tap="reload">
+      <image class="page-state-icon" src="/static/icons/alert.svg" mode="aspectFit" />
+      <text>{{ t('common.loadFailed') }}</text>
+      <text class="page-state-action">{{ t('common.retry') }}</text>
+    </view>
     <block v-else>
     <!-- 概览卡片 -->
     <view class="overview-card">
@@ -33,8 +38,8 @@
       <view class="chart-header">
         <text class="chart-title">{{ t('dashboard.trendTitle') }}</text>
         <view class="chart-tabs">
-          <text class="chart-tab" :class="{ active: period === 7 }" @tap="period = 7; loadTrend()">{{ t('dashboard.days7') }}</text>
-          <text class="chart-tab" :class="{ active: period === 30 }" @tap="period = 30; loadTrend()">{{ t('dashboard.days30') }}</text>
+          <text class="chart-tab" :class="{ active: period === 7 }" @tap="changePeriod(7)">{{ t('dashboard.days7') }}</text>
+          <text class="chart-tab" :class="{ active: period === 30 }" @tap="changePeriod(30)">{{ t('dashboard.days30') }}</text>
         </view>
       </view>
       <!-- CSS柱状图 -->
@@ -90,21 +95,21 @@
     <view class="metrics-card">
       <text class="chart-title">{{ t('dashboard.todoTitle') }}</text>
       <view class="todo-item" @tap="goOrder">
-        <text class="todo-icon">📦</text>
+        <view class="todo-icon todo-icon-order"><image src="/static/icons/package.svg" mode="aspectFit" /></view>
         <text class="todo-text">{{ t('dashboard.todoOrder') }}</text>
-        <text class="todo-badge">3</text>
+        <text class="todo-badge" v-if="overview.todo_orders">{{ overview.todo_orders }}</text>
         <text class="todo-arrow">›</text>
       </view>
       <view class="todo-item" @tap="goDeals">
-        <text class="todo-icon">🤝</text>
+        <view class="todo-icon todo-icon-lead"><image src="/static/icons/handshake.svg" mode="aspectFit" /></view>
         <text class="todo-text">{{ t('dashboard.todoLead') }}</text>
-        <text class="todo-badge">5</text>
+        <text class="todo-badge" v-if="overview.todo_leads">{{ overview.todo_leads }}</text>
         <text class="todo-arrow">›</text>
       </view>
       <view class="todo-item" @tap="goMessage">
-        <text class="todo-icon">💬</text>
+        <view class="todo-icon todo-icon-message"><image src="/static/icons/chat.svg" mode="aspectFit" /></view>
         <text class="todo-text">{{ t('dashboard.todoMessage') }}</text>
-        <text class="todo-badge">2</text>
+        <text class="todo-badge" v-if="overview.todo_messages">{{ overview.todo_messages }}</text>
         <text class="todo-arrow">›</text>
       </view>
     </view>
@@ -116,33 +121,64 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { dashboardService, reviewService } from '@/mock/service'
+import { bridge } from '@/api/bridge'
+import { useRequest } from '@/hooks/useRequest'
 import { useNavTitle } from '@/hooks/useNavTitle'
 import { t } from '@/i18n'
+import { toastError } from '@/utils/feedback'
+import { useUserStore } from '@/stores/user'
+import { requirePageLogin } from '@/utils/require-login'
 useNavTitle('titles.dashboard')
 
-const overview = ref({})
+const userStore = useUserStore()
+
+const overview = ref({ total_views: 0, total_leads: 0, total_deals: 0, conversion_rate: 0, avg_response_time: '-', total_revenue: 0, todo_orders: 0, todo_leads: 0, todo_messages: 0 })
 const trendData = ref([])
 const categoryStats = ref([])
-const trend = ref({})
-const credit = ref({})
+const trend = ref({ views: '0%', leads: '0%', deals: '0%' })
+const credit = ref({ score: 0 })
 const period = ref(7)
 const maxViews = ref(1)
-const loading = ref(true)
 
-onMounted(() => {
-  overview.value = dashboardService.overview()
-  categoryStats.value = dashboardService.categoryStats()
-  credit.value = reviewService.userCreditScore()
-  loadTrend()
-  // 模拟加载延迟展示骨架屏
-  setTimeout(() => { loading.value = false }, 600)
+const { state: loadState, run: loadRequest } = useRequest(async (days) => {
+  if (!(await requirePageLogin(userStore, '登录后才能查看数据看板'))) return null
+  const [nextOverview, nextCategoryStats, nextCredit, nextTrendData, nextTrend] = await Promise.all([
+    bridge.dashboard.overview(),
+    bridge.dashboard.categoryStats(),
+    bridge.review.userCreditScore(),
+    bridge.dashboard.trend(days),
+    bridge.dashboard.trendChange(days)
+  ])
+  return {
+    overview: nextOverview,
+    categoryStats: nextCategoryStats,
+    credit: nextCredit,
+    trendData: nextTrendData,
+    trend: nextTrend
+  }
 })
 
-function loadTrend() {
-  trendData.value = dashboardService.trend(period.value)
-  maxViews.value = Math.max(...trendData.value.map(d => d.views))
-  trend.value = dashboardService.trendChange(period.value)
+async function reload() {
+  try {
+    const data = await loadRequest(period.value)
+    if (!data) return
+    overview.value = data.overview || overview.value
+    categoryStats.value = data.categoryStats || []
+    credit.value = data.credit || { score: 0 }
+    trendData.value = data.trendData || []
+    trend.value = data.trend || { views: '0%', leads: '0%', deals: '0%' }
+    maxViews.value = Math.max(1, ...trendData.value.map(d => d.views || 0))
+  } catch {
+    toastError(t('common.loadFailed'))
+  }
+}
+
+onMounted(reload)
+
+async function changePeriod(days) {
+  if (period.value === days || loadState.value === 'loading') return
+  period.value = days
+  await reload()
 }
 
 function getBarHeight(views) {
@@ -150,8 +186,8 @@ function getBarHeight(views) {
 }
 
 function getCatWidth(count) {
-  const max = Math.max(...categoryStats.value.map(c => c.count))
-  return Math.round(count / max * 100)
+  const max = Math.max(1, ...categoryStats.value.map(c => c.count || 0))
+  return Math.round((count || 0) / max * 100)
 }
 
 function goOrder() { uni.navigateTo({ url: '/pages/order/index' }) }
@@ -161,6 +197,10 @@ function goMessage() { uni.navigateTo({ url: '/pages/message/index' }) }
 
 <style scoped>
 .page { background: #F5F6FA; padding: 24rpx; padding-bottom: 120rpx; min-height: 100vh; }
+.page-state { min-height: 70vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16rpx; color: rgba(0,0,0,0.5); }
+.page-state-icon { width: 72rpx; height: 72rpx; }
+.error-state { color: #FF6B35; }
+.page-state-action { font-size: 24rpx; color: rgba(0,0,0,0.45); }
 
 .overview-card { background: #FFFFFF; border-radius: 20rpx; padding: 24rpx; margin-bottom: 16rpx; }
 .overview-title { font-size: 30rpx; font-weight: bold; color: rgba(0,0,0,0.85); display: block; margin-bottom: 20rpx; }
@@ -210,8 +250,36 @@ function goMessage() { uni.navigateTo({ url: '/pages/message/index' }) }
 
 .todo-item { display: flex; align-items: center; padding: 20rpx 0; border-bottom: 1rpx solid #F5F6FA; }
 .todo-item:last-child { border-bottom: none; }
-.todo-icon { font-size: 36rpx; margin-right: 16rpx; }
+.todo-icon { display: flex; align-items: center; justify-content: center; width: 48rpx; height: 48rpx; flex: 0 0 48rpx; margin-right: 16rpx; border-radius: 14rpx; font-size: 26rpx; line-height: 1; }
+.todo-icon image { display: block; width: 28rpx; height: 28rpx; }
+.todo-icon-order { background: #FFF5DF; }
+.todo-icon-lead { background: #EEF0FF; }
+.todo-icon-message { background: #E7F8F0; }
 .todo-text { flex: 1; font-size: 28rpx; color: rgba(0,0,0,0.85); }
 .todo-badge { font-size: 24rpx; color: #FFFFFF; background: #FF6B35; border-radius: 20rpx; padding: 2rpx 16rpx; min-width: 36rpx; text-align: center; }
 .todo-arrow { font-size: 32rpx; color: rgba(0,0,0,0.2); margin-left: 12rpx; }
+
+/* 看板的指标、筛选和待办行在窄屏保持可收缩，图表只在卡片内部压缩。 */
+.page { width: 100%; max-width: 100%; overflow-x: hidden; box-sizing: border-box; }
+.overview-card, .chart-card, .metrics-card, .chart-header, .chart-tabs, .metric-item, .todo-item, .todo-text { min-width: 0; }
+.chart-header { gap: 12rpx; }
+.chart-title, .metric-label, .todo-text { max-width: 100%; overflow-wrap: anywhere; word-break: break-word; }
+.chart-title, .metric-label, .todo-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chart-title { min-width: 0; }
+.chart-tabs, .chart-tab, .todo-icon, .todo-badge, .todo-arrow { flex: 0 0 auto; }
+.metric-label, .todo-text { min-width: 0; }
+.metric-value { flex: 0 0 auto; white-space: nowrap; }
+.bar-chart, .bar-col, .bar-wrap { min-width: 0; }
+
+@media (max-width: 420px) {
+  .page { padding-right: 16rpx; padding-left: 16rpx; }
+  .overview-card, .chart-card, .metrics-card { padding: 18rpx; }
+  .chart-header { align-items: flex-start; flex-wrap: wrap; }
+  .chart-tabs { margin-left: auto; }
+  .chart-tab { padding-right: 14rpx; padding-left: 14rpx; font-size: 22rpx; }
+  .ov-num { font-size: 34rpx; }
+  .todo-item { gap: 8rpx; }
+  .todo-icon { margin-right: 4rpx; }
+  .todo-arrow { margin-left: 4rpx; }
+}
 </style>

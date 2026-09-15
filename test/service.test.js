@@ -142,4 +142,17 @@ describe('searchService - 搜索', () => {
     expect(r).toHaveProperty('total')
     expect(r.total).toBe(r.demands.length + r.products.length + r.posts.length)
   })
+
+  it('保存筛选后可以检查新需求并删除', () => {
+    const saved = searchService.save({ name: '短视频机会', keyword: '短视频', sort: 'latest' })
+    expect(saved._id).toBeTruthy()
+    expect(searchService.saved()).toHaveLength(1)
+    expect(searchService.saved()[0].new_count).toBeGreaterThan(0)
+    const checked = searchService.checkSaved(saved._id)
+    expect(checked.total).toBeGreaterThan(0)
+    expect(checked.new_count).toBeGreaterThan(0)
+    expect(searchService.saved()[0].last_checked_at).toBeTruthy()
+    expect(searchService.removeSaved(saved._id).deleted).toBe(true)
+    expect(searchService.saved()).toHaveLength(0)
+  })
 })

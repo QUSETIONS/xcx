@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta name="theme-color" content="#FF6B35" />
-    <meta name="description" content="企业库 - 企业资源对接平台" />
+    <meta name="theme-color" content="#F6F2EA" />
+    <meta name="description" content="媒合智联 MediaMatch - 企业需求、人脉与资源对接平台" />
     <meta name="keywords" content="企业资源,需求对接,企业服务" />
-    <meta name="author" content="企业库" />
-    <link rel="icon" href="<%= BASE_URL %>static/favicon.ico" />
-    <title>企业库</title>
+    <meta name="author" content="媒合智联 MediaMatch" />
+    <link rel="icon" href="<%= BASE_URL %>static/favicon.svg" type="image/svg+xml" />
+    <title>媒合智联 MediaMatch</title>
     <!--preload-links-->
     <!--app-context-->
     <style>
@@ -32,7 +32,7 @@
         width: 100%;
         height: 100%;
       }
-      /* 加载动画 */
+      /* Vue 接管前的品牌化启动兜底，主动画由首页 OpeningRitual 接管。 */
       .loading-container {
         position: fixed;
         top: 0;
@@ -43,21 +43,20 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        background-color: #ffffff;
+        background-color: #F6F2EA;
         z-index: 9999;
       }
-      .loading-spinner {
-        width: 40px;
-        height: 40px;
-        border: 3px solid #f0f0f0;
-        border-top-color: #FF6B35;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
+      .loading-seal {
+        width: 76px;
+        height: 76px;
+        object-fit: contain;
+        animation: spin 1.8s linear infinite;
       }
       .loading-text {
-        margin-top: 16px;
-        color: #666;
+        margin-top: 18px;
+        color: #5A2530;
         font-size: 14px;
+        letter-spacing: .16em;
       }
       @keyframes spin {
         to {
@@ -68,12 +67,12 @@
   </head>
   <body>
     <noscript>
-      <strong>企业库需要启用 JavaScript 才能正常运行。请启用 JavaScript 后刷新页面。</strong>
+      <strong>媒合智联 MediaMatch 需要启用 JavaScript 才能正常运行。请启用 JavaScript 后刷新页面。</strong>
     </noscript>
     <div id="app">
       <div class="loading-container">
-        <div class="loading-spinner"></div>
-        <div class="loading-text">加载中...</div>
+        <img class="loading-seal" src="<%= BASE_URL %>static/images/opening-seal.png" alt="" />
+        <div class="loading-text">正在进入你的合作网络</div>
       </div>
     </div>
     <!-- built files will be auto injected -->

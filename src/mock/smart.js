@@ -2,7 +2,7 @@
  * 智能引擎 - 浏览历史、个性化推荐、价格建议、需求质量评分
  */
 
-import { demandService, productService } from './service'
+import { bridge } from '@/api/bridge'
 import { STORAGE_KEYS } from '@/config/constants'
 
 const HISTORY_KEY = STORAGE_KEYS.BROWSE_HISTORY
@@ -72,7 +72,7 @@ function historyHash() {
   return h.slice(0, 10).map(x => x.id).join(',') + ':' + h.length
 }
 
-export function getRecommendedDemands(limit = 6) {
+export async function getRecommendedDemands(limit = 6) {
   // 命中缓存：历史指纹 + limit 均未变，直接返回缓存数组（同一引用）
   const hash = historyHash()
   if (_recoCache.hash === hash && _recoCache.limit === limit) {
@@ -80,7 +80,7 @@ export function getRecommendedDemands(limit = 6) {
   }
 
   const pref = getPreference()
-  const allDemands = demandService.list({ pageSize: 100, sort: 'hot' }).list
+  const allDemands = (await bridge.demand.list({ pageSize: 100, sort: 'hot' })).list
   const history = getHistory()
   const browsedIds = new Set(history.map(h => h.id))
 
@@ -118,9 +118,9 @@ export function getRecommendedDemands(limit = 6) {
   return result
 }
 
-export function getRecommendedProducts(limit = 4) {
+export async function getRecommendedProducts(limit = 4) {
   const pref = getPreference()
-  const allProducts = productService.list({ pageSize: 100 }).list
+  const allProducts = (await bridge.product.list({ pageSize: 100 })).list
 
   const scored = allProducts.map(p => {
     let score = p.sale_count
@@ -142,10 +142,10 @@ export function getRecommendedProducts(limit = 4) {
 
 // ========== 价格建议 ==========
 
-export function getPriceSuggestion(category_id, quote_type) {
+export async function getPriceSuggestion(category_id, quote_type) {
   if (quote_type !== 'self') return null
 
-  const allDemands = demandService.list({ pageSize: 100 }).list
+  const allDemands = (await bridge.demand.list({ pageSize: 100 })).list
   const sameCategory = allDemands.filter(d => d.category_id === category_id && d.budget_min && d.budget_max)
 
   if (sameCategory.length === 0) {
@@ -206,7 +206,7 @@ export function scoreDemandQuality(form) {
     tips.push('请填写需求详情')
   } else if (form.description.length < 50) {
     scores.description = 10
-    tips.push('描述较简单，详细描述能获得更多对接')
+    tips.push('把预算和交付时间写清楚，别人更容易判断')
   } else if (form.description.length < 200) {
     scores.description = 22
     tips.push('描述较好，加入时间节点和交付物会更吸引人')

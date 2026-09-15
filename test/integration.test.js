@@ -144,14 +144,14 @@ describe('集成：下单流程', () => {
 
 // ============ 浏览→推荐联动 ============
 describe('集成：浏览行为影响推荐', () => {
-  it('浏览历史会改变推荐排序', () => {
+  it('浏览历史会改变推荐排序', async () => {
     // 推荐结果带 _score
-    const recs1 = getRecommendedDemands(10)
+    const recs1 = await getRecommendedDemands(10)
     expect(recs1.every(r => typeof r._score === 'number')).toBe(true)
 
     // 浏览一个需求后，该需求在推荐中分数应被降权
     trackBrowse('demand', 'demand_1', { category_id: 'cat_01', title: 'A', region: '北京' })
-    const recs2 = getRecommendedDemands(10)
+    const recs2 = await getRecommendedDemands(10)
     const viewed = recs2.find(r => r._id === 'demand_1')
     if (viewed) {
       const before = recs1.find(r => r._id === 'demand_1')

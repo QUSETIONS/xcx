@@ -2,18 +2,19 @@
  * 渲染冒烟测试 —— 守住"页面整页不可见/空列表"这一已证实会发生的 bug 类
  *
  * 背景：接线守卫（vue-wiring-guard）能抓"生命周期/淡入开关/未定义调用"，
- * 但抓不到"渲染出来是空的"。本套件把关键列表页真正挂起来（带 uni 组件 stub），
+ * 但抓不到"渲染出来是空的"。本套件把关键列表页真正挂起来（按 uni 自定义元素编译），
  * 断言它们渲染出非空内容。这是对 12 页不可见事故的第二道网。
  *
  * 约束：
- * - 用 @vue/test-utils 挂载，uni 内置组件（view/text/image/scroll-view…）stub 为占位元素
+ * - 用 @vue/test-utils 挂载，uni 内置组件（view/text/image/scroll-view…）按自定义元素处理
  * - mock @dcloudio/uni-app 的页面生命周期（onLoad 等），解耦 uni 运行时
  * - mock 数据同步（未迁移页）/ 经 bridge 带 200ms 延迟（迁移页）；用 fake timers + flushLoads 让异步加载在断言前就绪
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { mount } from '@vue/test-utils'
-import { h, nextTick } from 'vue'
+import { nextTick } from 'vue'
 import { createPinia } from 'pinia'
+import { useUserStore } from '@/stores/user'
 
 // 解耦 uni-app 运行时；onLoad 回调被捕获，可用 fireOnLoad(params) 模拟带路由参数的页面加载
 const _onLoadCbs = []
@@ -24,22 +25,39 @@ vi.mock('@dcloudio/uni-app', () => ({
   onUnload: () => {},
   onReady: () => {},
   onPullDownRefresh: () => {},
-  onReachBottom: () => {}
+  onReachBottom: () => {},
+  onShareAppMessage: () => {},
+  onShareTimeline: () => {}
 }))
 const fireOnLoad = (params = {}) => { _onLoadCbs.forEach(cb => cb(params)); _onLoadCbs.length = 0 }
 
-// uni 内置组件 → 渲染为 div，透传 class 并渲染子节点。
-// 用安全组件名 'UniStub' 避免 Vue「保留 HTML 元素名」告警（image/switch 等是 SVG 保留名）。
-const uniStub = { name: 'UniStub', inheritAttrs: false, render() { return h('div', this.$attrs, this.$slots.default?.()) } }
-const STUB_TAGS = ['view', 'text', 'image', 'scroll-view', 'swiper', 'swiper-item', 'switch', 'picker', 'picker-view', 'picker-view-column', 'movable-area', 'movable-view', 'cover-view', 'cover-image', 'web-view', 'rich-text', 'navigator', 'slider', 'progress', 'icon', 'map', 'canvas']
-const stubs = STUB_TAGS.reduce((m, tag) => (m[tag] = uniStub, m), {})
+// uni 内置组件在 H5/小程序编译器里是自定义元素；在 happy-dom 中也按自定义元素处理，
+// 避免把 view/text/image 等误判为 Vue 组件后产生保留标签告警。block 同样是 uni 运行时标签。
+const UNI_CUSTOM_ELEMENTS = new Set([
+  'view', 'text', 'image', 'scroll-view', 'swiper', 'swiper-item', 'switch', 'picker',
+  'picker-view', 'picker-view-column', 'movable-area', 'movable-view', 'cover-view',
+  'cover-image', 'web-view', 'rich-text', 'navigator', 'slider', 'progress', 'icon',
+  'map', 'canvas', 'block'
+])
+const mountPage = (comp, user = {}) => {
+  const pinia = createPinia()
+  const userStore = useUserStore(pinia)
+  userStore.applySession({
+    token: 'render-test-token',
+    user: { id: 'demo_user_001', nickname: '演示用户', role: 'user', ...user }
+  })
+  return mount(comp, {
+    global: {
+      plugins: [pinia],
+      config: { compilerOptions: { isCustomElement: (tag) => UNI_CUSTOM_ELEMENTS.has(tag) } }
+    }
+  })
+}
 
-const mountPage = (comp) => mount(comp, { global: { stubs, plugins: [createPinia()] } })
-
-// 迁移页经 bridge 加载有 ~200ms 延迟（setTimeout + Promise 链）；
+// 迁移页经 bridge 加载有 ~200ms 延迟（setTimeout + Promise 链），部分页面有两段串行加载；
 // 用异步版 advanceTimersByTimeAsync 推进计时器并 flush 其间所有微任务（对同步页无害）
 const flushLoads = async () => {
-  await vi.advanceTimersByTimeAsync(300)
+  await vi.advanceTimersByTimeAsync(700)
   await nextTick()
 }
 
@@ -100,15 +118,26 @@ describe('渲染冒烟：关键列表页', () => {
     expect(wrapper.findAll('.fav-item').length, '我的收藏应非空').toBeGreaterThan(0)
   })
 
-  it('demand/detail 带路由参数渲染出详情与 AI 匹配服务商', async () => {
+  it('demand/detail 带路由参数渲染出详情与匹配服务商', async () => {
     // 详情页靠 onLoad 的 query.id 加载数据；fireOnLoad 模拟进入 ?id=demand_1
     const DemandDetail = (await import('@/pages/demand/detail.vue')).default
     const wrapper = mountPage(DemandDetail)
     fireOnLoad({ id: 'demand_1' })
     await flushLoads()
     expect(wrapper.find('.hero-title').text().length, '详情头部标题应非空').toBeGreaterThan(0)
-    expect(wrapper.findAll('.provider-item').length, 'AI 匹配服务商应渲染').toBeGreaterThan(0)
+    expect(wrapper.findAll('.provider-item').length, '匹配服务商应渲染').toBeGreaterThan(0)
     expect(wrapper.findAll('.review-item').length + wrapper.find('.review-empty').exists(), '评价区应渲染（列表或空态）').toBeGreaterThan(0)
+  })
+
+  it('乙方进入需求详情时只看项目与需求 Agent，不展示其他服务商目录', async () => {
+    const DemandDetail = (await import('@/pages/demand/detail.vue')).default
+    const wrapper = mountPage(DemandDetail, { workflow_role: 'service_provider' })
+    fireOnLoad({ id: 'demand_1' })
+    await flushLoads()
+    expect(wrapper.find('.demand-agent-card').exists()).toBe(true)
+    expect(wrapper.findAll('.provider-item')).toHaveLength(0)
+    expect(wrapper.text()).toContain('询问 Agent')
+    expect(wrapper.text()).not.toContain('可进一步了解的合作方')
   })
 
   it('切换语言后页面文本随之更新（i18n 渲染响应式）', async () => {
@@ -127,9 +156,8 @@ describe('渲染冒烟：关键列表页', () => {
   })
 })
 
-// 挂载脚手架把 uni 内置组件 stub 为 div 并透传 $attrs（含 onTap），
-// 故 @tap 经 inheritAttrs 落到 div 上，可用 .trigger('tap') 触发页面处理器。
-// input/textarea 未 stub（原生），v-model 经 setValue 正常更新。
+// 自定义元素原样透传 class / attrs（含 onTap），可用 .trigger('tap') 触发页面处理器。
+// input/textarea 使用 happy-dom 原生实现，v-model 经 setValue 正常更新。
 describe('交互：筛选 / 搜索路径', () => {
   it('mall/list 搜索无匹配关键词后过滤为空并显示空状态', async () => {
     const MallList = (await import('@/pages/mall/list.vue')).default
@@ -157,6 +185,73 @@ describe('交互：筛选 / 搜索路径', () => {
     if (types.length) {
       expect(types.every(t => t === types[0]), '筛选后商品服务类型应一致').toBe(true)
     }
+  })
+
+  it('intake 自动保存期间继续输入会保留新内容并续存下一版本', async () => {
+    const { bridge } = await import('@/api/bridge')
+    const mineSpy = vi.spyOn(bridge.intake, 'mine').mockResolvedValue({ profile: null, invite: null })
+    let resolveFirstSave
+    const saveSpy = vi.spyOn(bridge.intake, 'save')
+      .mockImplementationOnce(() => new Promise((resolve) => { resolveFirstSave = resolve }))
+      .mockResolvedValue({ profile: { id: 'draft-2', role: 'project', status: 'draft' }, invite: null })
+
+    try {
+      const IntakePage = (await import('@/pages/intake/index.vue')).default
+      const wrapper = mountPage(IntakePage)
+      await flushLoads()
+      await wrapper.findAll('.role-card').at(1).trigger('tap')
+      const inputs = wrapper.findAll('input.field-input')
+      await inputs.at(0).setValue('第一版企业名')
+      await inputs.at(1).setValue('测试联系人')
+      await inputs.at(2).setValue('负责人')
+
+      await vi.advanceTimersByTimeAsync(1200)
+      expect(saveSpy).toHaveBeenCalledTimes(1)
+      await inputs.at(0).setValue('请求期间的新企业名')
+      resolveFirstSave({
+        profile: { id: 'draft-1', role: 'project', status: 'draft', company_name: '第一版企业名' },
+        invite: null
+      })
+      await nextTick()
+      expect(wrapper.findAll('input.field-input').at(0).element.value).toBe('请求期间的新企业名')
+
+      await vi.advanceTimersByTimeAsync(1200)
+      expect(saveSpy).toHaveBeenCalledTimes(2)
+      expect(saveSpy.mock.calls[1][0].company_name).toBe('请求期间的新企业名')
+      wrapper.unmount()
+    } finally {
+      mineSpy.mockRestore()
+      saveSpy.mockRestore()
+    }
+  })
+})
+
+describe('渲染冒烟：开屏动效', () => {
+  it('OpeningRitual 按完整时序保持可见，结束后才淡出并通知页面', async () => {
+    const OpeningRitual = (await import('@/components/OpeningRitual.vue')).default
+    const wrapper = mount(OpeningRitual)
+    await nextTick()
+
+    expect(wrapper.find('.opening-ritual').exists(), '开屏应在首次渲染时存在').toBe(true)
+    expect(wrapper.find('.opening-ritual').classes()).toContain('opening-ritual--calibrating')
+    expect(document.documentElement.style.overflow).toBe('hidden')
+    expect(document.body.style.overflow).toBe('hidden')
+
+    await vi.advanceTimersByTimeAsync(140)
+    expect(wrapper.find('.opening-ritual').classes()).toContain('opening-ritual--drawing')
+
+    await vi.advanceTimersByTimeAsync(380)
+    expect(wrapper.find('.opening-ritual').classes()).toContain('opening-ritual--locked')
+
+    await vi.advanceTimersByTimeAsync(460)
+    expect(wrapper.find('.opening-ritual').classes()).toContain('opening-ritual--closing')
+    expect(wrapper.emitted('complete')).toBeUndefined()
+
+    await vi.advanceTimersByTimeAsync(220)
+    expect(wrapper.emitted('complete')).toHaveLength(1)
+    wrapper.unmount()
+    expect(document.documentElement.style.overflow).toBe('')
+    expect(document.body.style.overflow).toBe('')
   })
 })
 

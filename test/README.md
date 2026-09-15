@@ -19,7 +19,7 @@ npm run test:coverage
 
 ```
 app/
-├── vitest.config.js              # 测试配置（@ 别名 + happy-dom 环境）
+├── vitest.config.mjs             # 测试配置（@ 别名 + happy-dom + uni 自定义元素）
 ├── test/
 │   ├── setup.js                  # 全局 setup：mock uni 小程序全局对象
 │   ├── smart.test.js             # 智能引擎（质量评分/价格建议/推荐）
@@ -42,22 +42,22 @@ app/
 
 ## 设计要点
 
-1. **不加载 uni-app 插件**：`vitest.config.js` 故意不引入 `@dcloudio/vite-plugin-uni`，因为它依赖 vuex 等编译期模块，与单元测试无关。测试只针对纯 JS 逻辑。
+1. **不加载 uni-app 插件**：`vitest.config.mjs` 故意不引入 `@dcloudio/vite-plugin-uni`，因为它依赖 vuex 等编译期模块，与单元测试无关；uni 内置标签通过 `isCustomElement` 处理。
 2. **mock `uni` 全局**：小程序 API（`uni.getStorageSync` 等）在 Node 环境不存在，由 `test/setup.js` 用内存实现注入。
 3. **每个用例前重置存储**：`beforeEach(() => globalThis.__resetStore())` 保证用例间隔离（注意：仅重置 storage，模块级内存状态如 points/follow 由 vitest 按测试文件隔离）。
 4. **页面级接线用静态守卫补偿**：`vue-wiring-guard.test.js` 直接扫描每个 `<script setup>`，固化三类不变量：(A) 从 vue 导入的生命周期钩子必须被调用；(B) `const animated = ref(...)` 淡入开关必须有效；(C) 不允许调用未定义的裸函数。把曾经溜过 20+ 次提交的"列表整页不可见"类缺陷钉死在接线层。
-5. **页面渲染 + 交互冒烟（@vue/test-utils）**：静态守卫只查接线、查不到"渲染/行为是否正确"。`render-smoke.test.js` 用 `@vitejs/plugin-vue`（接入 vitest）+ 一层 uni 内置组件 stub（view/text/image/scroll-view…→ div 透传 `$attrs`，故 `@tap` 经 inheritAttrs 落到 div、可 `.trigger('tap')` 触发）+ mock `@dcloudio/uni-app` 生命周期（onLoad 回调可由 `fireOnLoad(params)` 触发以模拟路由参数），挂起 11 个场景：7 列表页非空渲染、demand/detail 带路由参数渲染详情与 AI 匹配、i18n 切语言响应式重渲染、以及 mall 关键词搜索/服务类型筛选交互（`.trigger('tap')` + `setValue` 驱动 v-model）。接线守卫之上的第二、第三道网；挂载顺带把 mock/util/i18n 覆盖率抬升（见下）。
+5. **页面渲染 + 交互冒烟（@vue/test-utils）**：静态守卫只查接线、查不到"渲染/行为是否正确"。`render-smoke.test.js` 用 `@vitejs/plugin-vue`（接入 vitest）+ `isCustomElement` 处理 uni 内置标签 + mock `@dcloudio/uni-app` 生命周期（onLoad 回调可由 `fireOnLoad(params)` 触发以模拟路由参数），覆盖列表页非空渲染、详情页路由参数、i18n 切换、商城关键词/服务类型筛选等交互。接线守卫之上的第二、第三道网；挂载顺带把 mock/util/i18n 覆盖率抬升（见下）。
 6. **service 写路径覆盖**：`service-write.test.js` 专门覆盖 create/update/状态变更（成交）、发帖/评论/点赞、趋势 7·30 天分支等变更方法与边界（不存在 id 返回 null/false），把 service.js 的 functions 覆盖从 ~74% 抬到 87%、statements 到 100%。
-7. **全页面挂载守卫**：`render-smoke.test.js` 用 `import.meta.glob('/src/pages/**/*.vue')` 自动发现全部 ~39 页，逐个挂载 + 喂路由参数（`fireOnLoad`）+ 装 Pinia，断言无一在 onMounted/onLoad 数据路径抛错。把"进页崩溃"类缺陷覆盖从采样 8 页扩到**全部页面**——正是它发现了 #10/#11 两个渲染崩溃 bug。
-8. **真实后端桥接（Stage 1）**：`bridge.js` 补全到全量服务面（mock/real 异步切换，`realFn` = 后端 REST 契约）；`demand/mall/community` 3 个列表 tab 已迁到 `useList + bridge`（同步→异步）。`bridge.test.js` 验证 `USE_MOCK` 切换与端点调用；渲染冒烟用 `vi.useFakeTimers()` + `advanceTimersByTimeAsync` flush 200ms 异步加载。迁移模式与剩余 35 页清单见 `docs/real-backend-migration.md`。
+7. **全页面挂载守卫**：`render-smoke.test.js` 用 `import.meta.glob('/src/pages/**/*.vue')` 自动发现全部 49 页，逐个挂载 + 喂路由参数（`fireOnLoad`）+ 装 Pinia，断言无一在 onMounted/onLoad 数据路径抛错。把"进页崩溃"类缺陷覆盖从采样 8 页扩到**全部页面**。
+8. **真实后端桥接（Stage 1）**：`bridge.js` 补全到全量服务面（mock/real 异步切换，`realFn` = 后端 REST 契约）；需求、商城、社区、资料库等列表页已迁到 `useList + bridge`（同步→异步）。`bridge.test.js` 验证 `USE_MOCK` 切换与端点调用；渲染冒烟用 `vi.useFakeTimers()` + `advanceTimersByTimeAsync` flush 200ms 异步加载。迁移模式与页面覆盖状态见 `docs/real-backend-migration.md`。
 
 ## 测试结果
 
 ```
-Test Files  15 passed (15)
-     Tests  325 passed (325)
+Test Files  21 passed (21)
+     Tests  418 passed (418)
 
-Coverage（含门禁，见 vitest.config.js thresholds: stmts≥96 / branch≥82 / funcs≥86 / lines≥96）
+Coverage（含门禁，见 vitest.config.mjs thresholds: stmts≥96 / branch≥82 / funcs≥86 / lines≥96）
   All files   99%+ statements | 86%+ branch | 94%+ functions
   i18n        100% statements | locales 100%
   utils       97%+ statements（util/i18n-maps 100%）

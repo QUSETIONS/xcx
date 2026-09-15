@@ -9,17 +9,22 @@
  *   <error-state v-else-if="state === 'error'" @retry="run" />
  *   <content v-else />
  */
-import { ref, readonly } from 'vue'
+import { computed, ref, readonly } from 'vue'
 
 export function useRequest(fetcher, options = {}) {
-  const { initialData = null, immediate = false, delay = 0 } = options
+  const { initialData = null, immediate = false, delay = 0, dedupe = true } = options
 
   const data = ref(initialData)
   const error = ref(null)
   // 'idle' | 'loading' | 'success' | 'error'
   const state = ref('idle')
+  const loading = computed(() => state.value === 'loading')
+  let activeRun = null
 
   async function run(...args) {
+    if (dedupe && activeRun) return activeRun
+
+    const task = (async () => {
     state.value = 'loading'
     error.value = null
     try {
@@ -35,6 +40,14 @@ export function useRequest(fetcher, options = {}) {
       state.value = 'error'
       throw e
     }
+    })()
+
+    activeRun = task
+    try {
+      return await task
+    } finally {
+      if (activeRun === task) activeRun = null
+    }
   }
 
   function reset() {
@@ -49,7 +62,7 @@ export function useRequest(fetcher, options = {}) {
     data,
     error,
     state: readonly(state),
-    loading: readonly(ref(false)), // 兼容字段，实际用 state
+    loading: readonly(loading),
     run,
     reset,
     // 便捷布尔

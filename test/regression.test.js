@@ -36,16 +36,16 @@ describe('回归：bridge.user.info', () => {
 
 // 回归：getPriceSuggestion 的 avg 必须落在 [min, max] 区间内
 describe('回归：价格建议 avg 一致性', () => {
-  it('avg 在 min 与 max 之间', () => {
-    const r = getPriceSuggestion('cat_01', 'self')
+  it('avg 在 min 与 max 之间', async () => {
+    const r = await getPriceSuggestion('cat_01', 'self')
     expect(r).not.toBeNull()
     expect(r.avg).toBeGreaterThanOrEqual(r.min)
     expect(r.avg).toBeLessThanOrEqual(r.max)
   })
 
-  it('默认参考价 avg 也在区间内', () => {
+  it('默认参考价 avg 也在区间内', async () => {
     // 用一个不存在的分类触发默认值分支
-    const r = getPriceSuggestion('cat_not_exist', 'self')
+    const r = await getPriceSuggestion('cat_not_exist', 'self')
     expect(r.avg).toBeGreaterThanOrEqual(r.min)
     expect(r.avg).toBeLessThanOrEqual(r.max)
   })
@@ -79,5 +79,14 @@ describe('回归：demandService.list includeAll', () => {
     expect(all.length).toBeGreaterThan(pub.length) // 后台看到更多
     expect(all.some(d => d.status !== 'published')).toBe(true)
     expect(all.some(d => d.status === 'pending')).toBe(true) // seed 确有 pending
+  })
+})
+
+// 回归：需求大厅报价方式筛选必须由数据层真正过滤，而不是只改变按钮文案
+describe('回归：demandService.list quote_type', () => {
+  it('只返回选中的报价方式', () => {
+    const res = demandService.list({ pageSize: 100, quote_type: 'self' })
+    expect(res.list.length).toBeGreaterThan(0)
+    expect(res.list.every(d => d.quote_type === 'self')).toBe(true)
   })
 })

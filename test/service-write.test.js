@@ -57,6 +57,15 @@ describe('写路径：dealService', () => {
     expect(after, '评价应入库').toBe(before + 1)
     expect(dealService.addReview('deal_not_exist', {})).toEqual({ success: false })
   })
+
+  it('项目讨论使用同一幂等键重试时只保留一条消息', () => {
+    const deal = dealService.myDeals().list.find((item) => item.status === 'in_progress')
+    const first = dealService.sendMessage(deal._id, { content: '项目讨论重试', client_message_id: 'workspace_retry_1' })
+    const replay = dealService.sendMessage(deal._id, { content: '项目讨论重试', client_message_id: 'workspace_retry_1' })
+    expect(first.message.id).toBe(replay.message.id)
+    expect(replay.idempotent).toBe(true)
+    expect(dealService.messages(deal._id).list.filter((item) => item.client_message_id === 'workspace_retry_1')).toHaveLength(1)
+  })
 })
 
 describe('写路径：communityService', () => {

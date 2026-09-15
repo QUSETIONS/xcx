@@ -1,9 +1,17 @@
 <template>
-  <view class="page">
+  <view v-if="loadState === 'loading'" class="page-state">
+    <text>{{ t('common.loading') }}</text>
+  </view>
+  <view v-else-if="loadState === 'error'" class="page-state error-state" @tap="reload">
+    <image class="page-state-icon" src="/static/icons/alert.svg" mode="aspectFit" />
+    <text>{{ t('common.loadFailed') }}</text>
+    <text class="page-state-action">{{ t('common.retry') }}</text>
+  </view>
+  <view v-else class="page">
     <view v-if="cartItems.length" class="cart-list">
       <view class="cart-item" v-for="item in cartItems" :key="item._id">
         <view class="item-icon" :class="'type-' + (item.service_type || 'resource_pack')">
-          <text class="icon-text">{{ getIcon(item.service_type) }}</text>
+          <image class="icon-text" :src="getIcon(item.service_type)" mode="aspectFit" />
         </view>
         <view class="item-info">
           <text class="item-title">{{ item.title }}</text>
@@ -19,7 +27,7 @@
     </view>
 
     <view v-else class="empty">
-      <text class="empty-icon">🛒</text>
+      <image class="empty-icon" src="/static/icons/tab/mall.svg" mode="aspectFit" />
       <text class="empty-text">{{ t('cartPage.empty') }}</text>
       <view class="empty-btn" @tap="goMall"><text>{{ t('cartPage.goShop') }}</text></view>
     </view>
@@ -35,7 +43,7 @@
           <text class="total-label">{{ t('cartPage.total') }}</text>
           <text class="total-amount">¥{{ (totalPrice / 100).toFixed(0) }}</text>
         </view>
-        <view class="settle-btn" :class="{ disabled: !selectedItems.length }" @tap="checkout"><text>{{ t('cartPage.checkout') }} ({{ selectedItems.length }})</text></view>
+        <view class="settle-btn" :class="{ disabled: !selectedItems.length || mutating }" @tap="checkout"><text>{{ mutating ? t('common.loading') : `${t('cartPage.checkout')} (${selectedItems.length})` }}</text></view>
       </view>
     </view>
   </view>
@@ -44,42 +52,80 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
-import { cartService } from '@/mock/service'
+import { bridge } from '@/api/bridge'
 import { useNavTitle } from '@/hooks/useNavTitle'
 import { t } from '@/i18n'
+import { useRequest } from '@/hooks/useRequest'
+import { toastError } from '@/utils/feedback'
+import { useUserStore } from '@/stores/user'
+import { requirePageLogin } from '@/utils/require-login'
 useNavTitle('titles.cart')
 
 const cartItems = ref([])
 const selectedIds = ref([])
+const userStore = useUserStore()
 
 const allSelected = computed(() => cartItems.value.length > 0 && selectedIds.value.length === cartItems.value.length)
 const selectedItems = computed(() => cartItems.value.filter(i => selectedIds.value.includes(i._id)))
 const totalPrice = computed(() => selectedItems.value.reduce((s, i) => s + i.price * i.quantity, 0))
+const { state: loadState, run: loadRequest } = useRequest(() => bridge.cart.list())
+const { state: quantityState, run: quantityRequest } = useRequest(async (id, quantity) => {
+  await bridge.cart.updateQty(id, quantity)
+  return bridge.cart.list()
+})
+const { state: removeState, run: removeRequest } = useRequest(async (id) => {
+  await bridge.cart.remove(id)
+  return bridge.cart.list()
+})
+const { state: checkoutState, run: checkoutRequest } = useRequest(async () => {
+  await bridge.cart.clear()
+  return true
+})
+const mutating = computed(() => quantityState.value === 'loading' || removeState.value === 'loading' || checkoutState.value === 'loading')
 
-onShow(() => { reload() })
+onShow(reload)
 
-function reload() {
-  cartItems.value = cartService.list()
+async function reload() {
+  if (!(await requirePageLogin(userStore, '登录后才能查看购物车'))) return
+  try {
+    applyCartItems(await loadRequest())
+  } catch {
+    toastError(t('common.loadFailed'))
+  }
+}
+
+function applyCartItems(items) {
+  cartItems.value = items || []
   // 默认全选
   selectedIds.value = cartItems.value.map(i => i._id)
 }
 
 function getIcon(type) {
-  const map = { member: '👑', linker: '🔗', survey: '📊', resource_pack: '📦', certification: '✅' }
-  return map[type] || '📦'
+  const map = { member: 'member', linker: 'linker', survey: 'survey', resource_pack: 'resource_pack', certification: 'certification' }
+  return `/static/icons/service/${map[type] || 'resource_pack'}.svg`
 }
 
-function changeQty(item, delta) {
+async function changeQty(item, delta) {
+  if (mutating.value) return
   const newQty = item.quantity + delta
-  cartService.updateQty(item._id, newQty)
-  reload()
+  try {
+    applyCartItems(await quantityRequest(item._id, newQty))
+  } catch {
+    toastError(t('common.loadFailed'))
+  }
 }
 
-function removeItem(id) {
+async function removeItem(id) {
   uni.showModal({
     title: t('cartPage.deleteTitle'), content: t('cartPage.deleteContent'),
-    success: (r) => {
-      if (r.confirm) { cartService.remove(id); reload() }
+    success: async (r) => {
+      if (r.confirm && !mutating.value) {
+        try {
+          applyCartItems(await removeRequest(id))
+        } catch {
+          toastError(t('common.loadFailed'))
+        }
+      }
     }
   })
 }
@@ -89,19 +135,27 @@ function toggleAll() {
   else selectedIds.value = cartItems.value.map(i => i._id)
 }
 
-function checkout() {
-  if (!selectedItems.value.length) return
+async function checkout() {
+  if (!selectedItems.value.length || mutating.value) return
   // 购物车结算：简化为取第一个商品下单（Demo）
   const first = selectedItems.value[0]
-  cartService.clear()
-  uni.navigateTo({ url: `/pages/mall/order-confirm?id=${first._id}` })
+  try {
+    await checkoutRequest()
+    uni.navigateTo({ url: `/pages/mall/order-confirm?id=${first._id}` })
+  } catch {
+    toastError(t('common.loadFailed'))
+  }
 }
 
-function goMall() { uni.switchTab({ url: '/pages/mall/list' }) }
+function goMall() { uni.navigateTo({ url: '/pages/member/index' }) }
 </script>
 
 <style scoped>
 .page { min-height: 100vh; background: #F5F6FA; padding: 24rpx; padding-bottom: 140rpx; }
+.page-state { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16rpx; color: rgba(0,0,0,0.5); }
+.page-state-icon { width: 72rpx; height: 72rpx; }
+.error-state { color: #FF6B35; }
+.page-state-action { font-size: 24rpx; color: rgba(0,0,0,0.45); }
 
 .cart-list { display: flex; flex-direction: column; }
 .cart-item { display: flex; align-items: center; background: #FFFFFF; border-radius: 16rpx; padding: 20rpx; margin-bottom: 12rpx; }
@@ -111,7 +165,7 @@ function goMall() { uni.switchTab({ url: '/pages/mall/list' }) }
 .type-survey { background: rgba(16,185,129,0.1); }
 .type-resource_pack { background: rgba(245,158,11,0.1); }
 .type-certification { background: rgba(236,72,153,0.1); }
-.icon-text { font-size: 36rpx; }
+.icon-text { display: block; width: 38rpx; height: 38rpx; }
 .item-info { flex: 1; }
 .item-title { font-size: 28rpx; font-weight: bold; color: rgba(0,0,0,0.85); display: block; margin-bottom: 8rpx; }
 .item-price { font-size: 32rpx; font-weight: bold; color: #FF6B35; }
@@ -125,7 +179,7 @@ function goMall() { uni.switchTab({ url: '/pages/mall/list' }) }
 .item-remove text { font-size: 24rpx; color: rgba(0,0,0,0.3); }
 
 .empty { display: flex; flex-direction: column; align-items: center; padding-top: 200rpx; }
-.empty-icon { font-size: 96rpx; margin-bottom: 24rpx; }
+.empty-icon { display: block; width: 72rpx; height: 72rpx; margin-bottom: 24rpx; }
 .empty-text { font-size: 28rpx; color: rgba(0,0,0,0.4); margin-bottom: 32rpx; }
 .empty-btn { background: linear-gradient(135deg, #FF6B35, #FF9A5C); border-radius: 32rpx; padding: 20rpx 56rpx; }
 .empty-btn text { font-size: 28rpx; color: #FFFFFF; font-weight: bold; }
@@ -142,4 +196,30 @@ function goMall() { uni.switchTab({ url: '/pages/mall/list' }) }
 .settle-btn { background: linear-gradient(135deg, #FF6B35, #FF9A5C); border-radius: 32rpx; padding: 22rpx 40rpx; }
 .settle-btn text { font-size: 28rpx; color: #FFFFFF; font-weight: bold; }
 .settle-btn.disabled { opacity: 0.4; }
+
+/* 购物车行和底部结算栏使用可收缩的内容列，数量/删除/结算动作不会被长标题挤出画布。 */
+.page { width: 100%; max-width: 100%; overflow-x: hidden; box-sizing: border-box; }
+.cart-item, .item-info, .qty-control, .settle-bar, .settle-left, .settle-right, .settle-total { min-width: 0; }
+.item-info { flex: 1; overflow: hidden; }
+.item-title { max-width: 100%; overflow: hidden; overflow-wrap: anywhere; word-break: break-word; text-overflow: ellipsis; white-space: nowrap; }
+.item-price, .qty-control, .item-remove, .settle-check, .settle-btn { flex: 0 0 auto; }
+.settle-bar { box-sizing: border-box; gap: 12rpx; }
+.settle-left { flex: 0 0 auto; }
+.settle-right { flex: 1; justify-content: flex-end; overflow: hidden; }
+.settle-total { overflow: hidden; }
+.total-label, .total-amount { white-space: nowrap; }
+.settle-btn { max-width: 100%; white-space: nowrap; }
+
+@media (max-width: 420px) {
+  .page { padding-right: 16rpx; padding-left: 16rpx; }
+  .cart-item { padding: 16rpx; }
+  .item-icon { width: 64rpx; height: 64rpx; margin-right: 12rpx; }
+  .qty-control { margin-right: 8rpx; }
+  .qty-num { min-width: 42rpx; }
+  .settle-bar { padding-right: 16rpx; padding-left: 16rpx; }
+  .settle-all-text { font-size: 23rpx; }
+  .settle-total { margin-right: 8rpx; }
+  .settle-btn { padding-right: 24rpx; padding-left: 24rpx; }
+  .settle-btn text { font-size: 25rpx; }
+}
 </style>

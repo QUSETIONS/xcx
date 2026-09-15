@@ -137,3 +137,35 @@
 .tag-green { color: #10B981; background: rgba(16,185,129,0.1); }
 .tag-orange { color: #F59E0B; background: rgba(245,158,11,0.1); }
 .tag-pink { color: #EC4899; background: rgba(236,72,153,0.1); }
+
+/* ------------------------------------------
+   图标统一规范
+   图片图标只负责保持比例，尺寸交给外层容器控制。
+   这样可以避免不同页面因原图画布、padding 或默认行高造成忽大忽小。
+   ------------------------------------------ */
+.icon-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  overflow: hidden;
+}
+
+.icon-frame image,
+.icon-image {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.icon-frame--xs { width: 32rpx; height: 32rpx; }
+.icon-frame--sm { width: 40rpx; height: 40rpx; }
+.icon-frame--md { width: 52rpx; height: 52rpx; }
+.icon-frame--lg { width: 68rpx; height: 68rpx; }
+
+.icon-image--xs { width: 27rpx; height: 27rpx; }
+.icon-image--sm { width: 32rpx; height: 32rpx; }
+.icon-image--md { width: 37rpx; height: 37rpx; }
+.icon-image--lg { width: 46rpx; height: 46rpx; }

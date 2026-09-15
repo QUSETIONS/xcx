@@ -28,6 +28,23 @@ function walkVue(dir) {
 
 const VUE_FILES = ROOTS.flatMap(walkVue)
 
+// 微信小程序对 view/button 的动态直接文本节点在部分编译路径上表现不一致：
+// 操作控件可能保留背景和点击区域，但文字不渲染。关键入口统一要求动态文案包在 text 内。
+const INTERACTIVE_TEXT_GUARDS = {
+  'src/pages/agent/index.vue': ['team-contact', 'invite-button'],
+  'src/pages/demand/detail.vue': ['proposal-invite'],
+  'src/pages/user/login.vue': ['primary-btn'],
+  'src/pages/user/profile.vue': ['verify-button', 'save-button'],
+  'src/pages/resource/list.vue': ['filter-pill'],
+  'src/pages/provider/onboard.vue': ['submit-button'],
+  'src/pages/proposal/inbox.vue': ['primary-action', 'submit'],
+  'src/pages/network/create.vue': ['submit'],
+  'src/pages/network/detail.vue': ['event-action', 'composer-send', 'member-connect', 'sheet-confirm'],
+  'src/pages/network/manage.vue': ['chat-link', 'save'],
+  'src/pages/admin/provider-manage.vue': ['state'],
+  'src/pages/admin/user-manage.vue': ['filter']
+}
+
 function extractScript(src) {
   const m = src.match(/<script[^>]*>([\s\S]*?)<\/script>/)
   return m ? m[1] : ''
@@ -143,6 +160,22 @@ describe('vue 接线守卫', () => {
         }
         expect([...missing].sort(), `${rel}: 调用了未定义的函数 → ${[...missing].sort().join(', ')}`).toEqual([])
       })
+
+      // D) 关键操作控件：动态文案必须落在 <text> 中，防止小程序出现无字按钮。
+      const guardedClasses = INTERACTIVE_TEXT_GUARDS[rel] || []
+      if (guardedClasses.length) {
+        it('关键操作控件的动态文案使用 text 节点', () => {
+          const directTextControls = []
+          for (const className of guardedClasses) {
+            const nodePattern = new RegExp(`<(?:view|button)[^>]*class=["'][^"']*\\b${className}\\b[^"']*["'][^>]*>([\\s\\S]*?)</(?:view|button)>`, 'g')
+            for (const match of fileSrc.matchAll(nodePattern)) {
+              const body = match[1]
+              if (/\{\{/.test(body) && !/<text\b/.test(body)) directTextControls.push(className)
+            }
+          }
+          expect(directTextControls, `${rel}: ${directTextControls.join(', ')} 仍把动态文案直接放在操作节点上`).toEqual([])
+        })
+      }
     })
   }
 })

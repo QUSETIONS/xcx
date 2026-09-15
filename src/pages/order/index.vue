@@ -9,7 +9,8 @@
     </view>
 
     <!-- 订单列表 -->
-    <scroll-view class="list-scroll" scroll-y>
+    <scroll-view class="list-scroll" scroll-y :refresher-enabled="true" :refresher-triggered="refreshing" @refresherrefresh="onRefresh">
+      <view v-if="loading && !orderList.length" class="loading"><text>{{ t('common.loading') }}</text></view>
       <view class="order-list" v-if="orderList.length">
         <view class="order-card" v-for="order in orderList" :key="order._id">
           <!-- 订单头部 -->
@@ -21,7 +22,7 @@
           <!-- 商品信息 -->
           <view class="order-goods" v-for="item in (order.items || [])" :key="item._id">
             <view class="goods-icon" :class="'type-' + (item.service_type || 'resource_pack')">
-              <text class="gi-text">{{ getIcon(item.service_type) }}</text>
+              <image class="gi-icon" :src="getIcon(item.service_type)" mode="aspectFit" />
             </view>
             <view class="goods-info">
               <text class="goods-title">{{ item.title }}</text>
@@ -31,8 +32,8 @@
 
           <!-- 优惠信息 -->
           <view class="order-discount" v-if="order.coupon_id || order.points_used">
-            <text class="discount-item" v-if="order.coupon_id">🎫 {{ t('orderPage.couponDiscounted') }}</text>
-            <text class="discount-item" v-if="order.points_used">🎁 {{ t('orderPage.pointsDiscountPrefix') }}{{ order.points_used }}{{ t('orderPage.pointsDiscountSuffix') }}</text>
+            <text class="discount-item" v-if="order.coupon_id">{{ t('orderPage.couponDiscounted') }}</text>
+            <text class="discount-item" v-if="order.points_used">{{ t('orderPage.pointsDiscountPrefix') }}{{ order.points_used }}{{ t('orderPage.pointsDiscountSuffix') }}</text>
           </view>
 
           <!-- 订单金额 -->
@@ -60,9 +61,11 @@
         </view>
       </view>
 
+      <view v-if="loading && orderList.length" class="loading"><text>{{ t('common.loading') }}</text></view>
+
       <!-- 空状态 -->
-      <view v-else class="empty">
-        <text class="empty-icon">📋</text>
+      <view v-if="!orderList.length && !loading" class="empty">
+        <image class="empty-icon" src="/static/icons/package.svg" mode="aspectFit" />
         <text class="empty-text">{{ t('orderPage.empty') }}</text>
         <view class="empty-btn" @tap="goMall"><text>{{ t('orderPage.goOrder') }}</text></view>
       </view>
@@ -74,55 +77,79 @@
 import { ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { orderStatusMap } from '@/utils/i18n-maps'
-import { orderService } from '@/mock/service'
+import { bridge } from '@/api/bridge'
+import { useList } from '@/hooks/useList'
 import { formatDateTime as formatTime } from "@/utils/util"
 import { useNavTitle } from '@/hooks/useNavTitle'
 import { t } from '@/i18n'
+import { useUserStore } from '@/stores/user'
+import { requirePageLogin } from '@/utils/require-login'
 useNavTitle('titles.myOrders')
 
 const tab = ref('all')
-const orderList = ref([])
+const userStore = useUserStore()
+const { list: orderList, loading, refreshing, load: loadList, refresh } = useList(
+  (params) => bridge.order.myOrders({ ...params, page: 1, pageSize: 100, status: tab.value }),
+  100
+)
 
-onShow(() => { loadOrders() })
+onShow(async () => {
+  if (!(await requirePageLogin(userStore, '登录后才能查看订单'))) return
+  await loadList(true)
+})
 
-function loadOrders() {
-  const res = orderService.myOrders({ status: tab.value })
-  // 按时间倒序
-  orderList.value = res.list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-}
-
-function switchTab(t) { tab.value = t; loadOrders() }
+function onRefresh() { refresh() }
+function switchTab(nextTab) { tab.value = nextTab; loadList(true) }
 
 function getStatusText(s) { return orderStatusMap.value[s] || s }
 function getIcon(type) {
-  const map = { member: '👑', linker: '🔗', survey: '📊', resource_pack: '📦', certification: '✅' }
-  return map[type] || '📦'
+  const map = { member: '/static/icons/service/member.svg', linker: '/static/icons/service/linker.svg', survey: '/static/icons/service/survey.svg', resource_pack: '/static/icons/service/resource_pack.svg', certification: '/static/icons/service/certification.svg' }
+  return map[type] || '/static/icons/package.svg'
 }
 
 // 状态流转
-function payOrder(id) {
-  orderService.updateStatus(id, 'paid')
-  uni.showToast({ title: t('orderPage.paidSuccess'), icon: 'success' })
-  loadOrders()
+async function payOrder(id) {
+  try {
+    const result = await bridge.order.pay(id)
+    if (result?.mode === 'wechat') {
+      if (typeof uni.requestPayment !== 'function') throw new Error('当前运行环境不支持微信支付，请在微信小程序中完成支付')
+      uni.requestPayment({
+        ...result.payment,
+        success: () => {
+          uni.showToast({ title: '支付已提交，到账后会自动更新', icon: 'none' })
+          loadList(true)
+        },
+        fail: (error) => {
+          uni.showToast({ title: error?.errMsg || '微信支付未完成', icon: 'none' })
+        }
+      })
+      return
+    } else {
+      uni.showToast({ title: t('orderPage.paidSuccess'), icon: 'success' })
+    }
+    loadList(true)
+  } catch (error) {
+    uni.showToast({ title: error?.message || '支付未完成', icon: 'none' })
+  }
 }
-function confirmOrder(id) {
-  orderService.updateStatus(id, 'confirmed')
+async function confirmOrder(id) {
+  await bridge.order.updateStatus(id, 'confirmed')
   uni.showToast({ title: t('orderPage.confirmed'), icon: 'success' })
-  loadOrders()
+  loadList(true)
 }
-function startServe(id) {
-  orderService.updateStatus(id, 'serving')
+async function startServe(id) {
+  await bridge.order.updateStatus(id, 'serving')
   uni.showToast({ title: t('orderPage.serviceStarted'), icon: 'success' })
-  loadOrders()
+  loadList(true)
 }
 function completeOrder(id) {
   uni.showModal({
     title: t('orderPage.completeTitle'), content: t('orderPage.completeContent'),
-    success: (r) => {
+    success: async (r) => {
       if (r.confirm) {
-        orderService.updateStatus(id, 'completed')
+        await bridge.order.updateStatus(id, 'completed')
         uni.showToast({ title: t('orderPage.completed'), icon: 'success' })
-        loadOrders()
+        loadList(true)
       }
     }
   })
@@ -130,30 +157,33 @@ function completeOrder(id) {
 function cancelOrder(id) {
   uni.showModal({
     title: t('orderPage.cancelTitle'), content: t('orderPage.cancelContent'),
-    success: (r) => {
+    success: async (r) => {
       if (r.confirm) {
-        orderService.updateStatus(id, 'cancelled')
+        await bridge.order.updateStatus(id, 'cancelled')
         uni.showToast({ title: t('orderPage.cancelled'), icon: 'none' })
-        loadOrders()
+        loadList(true)
       }
     }
   })
 }
 function contactService() { uni.navigateTo({ url: '/pages/chat/index' }) }
 function review() { uni.navigateTo({ url: '/pages/deals/index' }) }
-function buyAgain() { uni.switchTab({ url: '/pages/mall/list' }) }
-function goMall() { uni.switchTab({ url: '/pages/mall/list' }) }
+function buyAgain() { uni.navigateTo({ url: '/pages/member/index' }) }
+function goMall() { uni.navigateTo({ url: '/pages/member/index' }) }
 </script>
 
 <style scoped>
-.page { min-height: 100vh; background: #F5F6FA; }
+.page { display: flex; flex-direction: column; width: 100%; height: 100vh; min-height: 0; overflow-x: hidden; background: #F5F6FA; box-sizing: border-box; }
+/* #ifdef H5 */
+.page { height: calc(100vh - 44px); }
+/* #endif */
 
 .tab-bar { display: flex; background: #FFFFFF; padding: 0 16rpx; position: sticky; top: 0; z-index: 10; }
 .tab-item { font-size: 28rpx; color: rgba(0,0,0,0.4); padding: 24rpx 24rpx; position: relative; }
 .tab-item.active { color: #FF6B35; font-weight: bold; }
 .tab-item.active::after { content: ''; position: absolute; bottom: 0; left: 24rpx; right: 24rpx; height: 4rpx; background: #FF6B35; border-radius: 2rpx; }
 
-.list-scroll { padding: 16rpx 24rpx; height: calc(100vh - 90rpx); }
+.list-scroll { flex: 1; min-height: 0; height: auto; padding: 16rpx 24rpx; }
 .order-list { display: flex; flex-direction: column; }
 .order-card { background: #FFFFFF; border-radius: 16rpx; padding: 24rpx; margin-bottom: 16rpx; }
 
@@ -174,7 +204,7 @@ function goMall() { uni.switchTab({ url: '/pages/mall/list' }) }
 .type-survey { background: rgba(16,185,129,0.1); }
 .type-resource_pack { background: rgba(245,158,11,0.1); }
 .type-certification { background: rgba(236,72,153,0.1); }
-.gi-text { font-size: 28rpx; }
+.gi-icon { display: block; width: 32rpx; height: 32rpx; }
 .goods-info { flex: 1; }
 .goods-title { font-size: 28rpx; color: rgba(0,0,0,0.85); display: block; margin-bottom: 4rpx; }
 .goods-price { font-size: 24rpx; color: rgba(0,0,0,0.5); }
@@ -196,8 +226,31 @@ function goMall() { uni.switchTab({ url: '/pages/mall/list' }) }
 .action-btn-fill text { font-size: 24rpx; color: #FFFFFF; font-weight: bold; }
 
 .empty { display: flex; flex-direction: column; align-items: center; padding-top: 160rpx; }
-.empty-icon { font-size: 96rpx; margin-bottom: 24rpx; }
+.empty-icon { display: inline-flex; align-items: center; justify-content: center; width: 76rpx; height: 76rpx; margin-bottom: 24rpx; font-size: 44rpx; line-height: 1; }
 .empty-text { font-size: 28rpx; color: rgba(0,0,0,0.4); margin-bottom: 32rpx; }
 .empty-btn { background: linear-gradient(135deg, #FF6B35, #FF9A5C); border-radius: 32rpx; padding: 20rpx 56rpx; }
 .empty-btn text { font-size: 28rpx; color: #FFFFFF; font-weight: bold; }
+.loading { text-align: center; padding: 32rpx; font-size: 24rpx; color: rgba(0,0,0,0.5); }
+
+/* 订单列表固定保留筛选栏，卡片内标题和状态列按可用宽度收缩。 */
+.tab-bar,
+.order-card,
+.order-header,
+.order-goods,
+.goods-info,
+.order-amount { min-width: 0; }
+.tab-bar { flex: 0 0 auto; overflow-x: auto; }
+.tab-item { flex: 0 0 auto; white-space: nowrap; }
+.goods-info { overflow: hidden; }
+.goods-title,
+.goods-price,
+.order-no { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.order-status,
+.amount-value { flex: 0 0 auto; white-space: nowrap; }
+
+@media (max-width: 360px) {
+  .tab-item { padding-right: 16rpx; padding-left: 16rpx; }
+  .list-scroll { padding-right: 18rpx; padding-left: 18rpx; }
+  .order-card { padding-right: 16rpx; padding-left: 16rpx; }
+}
 </style>

@@ -5,17 +5,23 @@ export default {
   // Page titles (dynamic navigation bar)
   titles: {
     home: 'QiYeKu',
+    information: 'Information',
     demandHall: 'Demands',
     demandDetail: 'Demand Detail',
+    demandAgent: 'Demand Agent',
     demandPublish: 'Publish Demand',
     community: 'Community',
     communityPost: 'New Post',
     communityDetail: 'Post Detail',
+    network: 'Network',
+    cooperation: 'Partnerships',
+    networkDetail: 'Community Detail',
     mall: 'Mall',
     mallDetail: 'Product Detail',
     orderConfirm: 'Confirm Order',
     resource: 'Library',
     resourceDetail: 'Resource Detail',
+    myResources: 'My Resources',
     me: 'Me',
     login: 'Login',
     myDemands: 'My Demands',
@@ -29,18 +35,29 @@ export default {
     follow: 'Following',
     deals: 'Deals',
     userProfile: 'Profile',
+    profileSettings: 'Personal profile',
+    intake: 'Funding Profiles',
+    intakeManage: 'Funding Profile Review',
     cart: 'Cart',
     verify: 'Verification',
     search: 'Search',
     member: 'Membership',
     campaign: 'Campaigns',
     chat: 'Service',
+    agent: 'Demand Chat',
+    proposalInbox: 'Project Proposals',
     settings: 'Settings',
     admin: 'Admin',
     demandManage: 'Demand Mgmt',
     leadManage: 'Lead Mgmt',
     orderManage: 'Order Mgmt',
     productManage: 'Product Mgmt',
+    resourceManage: 'Resource Mgmt',
+    categoryManage: 'Category Mgmt',
+    bannerManage: 'Banner Mgmt',
+    userManage: 'User Mgmt',
+    systemConfig: 'System Config',
+    productEdit: 'Product Editor',
     screen: 'Data Center'
   },
 
@@ -145,6 +162,14 @@ export default {
     publishing: 'Publishing...',
     publishSuccess: 'Published successfully'
   },
+  network: {
+    title: 'Network',
+    people: 'People',
+    groups: 'Communities',
+    join: 'Join community',
+    joined: 'Joined',
+    following: 'Following'
+  },
   mall: {
     title: 'Mall',
     buyNow: 'Buy Now',
@@ -152,7 +177,13 @@ export default {
     cart: 'Cart',
     orderConfirm: 'Confirm Order',
     checkout: 'Checkout',
-    searchPlaceholder: 'Search products'
+    searchPlaceholder: 'Search products',
+    sortBy: 'Sort',
+    sortLatest: 'Recommended',
+    sortSales: 'Best Sellers',
+    sortNewest: 'Newest',
+    sortPriceAsc: 'Price: Low to High',
+    sortPriceDesc: 'Price: High to Low'
   },
   cartPage: {
     empty: 'Your cart is empty',
@@ -280,7 +311,7 @@ export default {
   },
   demandPublish: {
     noticeEdit: 'Re-review required after editing',
-    noticePublish: 'Your demand will show in the hall after review',
+    noticePublish: 'Your demand enters review first and will open for matching once approved',
     guide: 'Guide',
     titleLabel: 'Title *',
     titlePlaceholder: 'Briefly describe your need',
@@ -318,6 +349,7 @@ export default {
     fillComplete: 'Please complete all fields',
     invalidPhone: 'Invalid phone number',
     updateSuccess: 'Updated',
+    pendingSuccess: 'Submitted for review; it will appear in the hall after approval',
     publishSuccess: 'Published'
   },
   orderConfirm: {
@@ -385,6 +417,7 @@ export default {
     pointsSign: 'Check-in',
     message: 'Messages',
     resource: 'Resources',
+    myResources: 'My Resources',
     emptyDemand: 'No demands yet',
     emptyLead: 'No leads yet',
     emptyFavorite: 'No favorites yet',
@@ -394,10 +427,12 @@ export default {
     typeDemand: 'Demand',
     typeProduct: 'Product',
     typePost: 'Post',
+    typeResource: 'Resource',
     typeOther: 'Other'
   },
   login: {
     oneTap: 'One-tap Login',
+    provider: 'Provider Login',
     admin: 'Admin Login',
     demoTip: 'Demo mode — tap to try'
   },
@@ -577,6 +612,8 @@ export default {
   },
   resource: {
     title: 'Library',
+    searchPlaceholder: 'Search resources',
+    allCategories: 'All categories',
     free: 'Free',
     empty: 'No resources',
     downloads: 'Downloads',
@@ -588,14 +625,18 @@ export default {
     tip3: 'Contact support for issues',
     collected: 'Saved',
     freeDownload: 'Free Download',
+    downloadNow: 'Download now',
     getPrice: ' Get',
     downloadConfirm: 'Download',
     downloadContent: 'Download "{title}"?',
     downloadSuccess: 'Downloaded',
     downloadSaved: 'Saved to your device. Check "My Downloads".',
+    downloading: 'Preparing download…',
+    purchaseSuccess: 'Unlocked. Preparing download',
+    downloadFailed: 'Download failed. Try again later.',
     payTitle: 'Purchase',
     payContent: 'This resource costs ¥{price}. Purchase?',
-    payWip: 'Demo: payment coming soon'
+    payWip: 'Payment processing'
   },
   campaign: {
     heroDesc: 'Deals · Limited time',
@@ -671,8 +712,8 @@ export default {
     live: 'LIVE',
     trendTitle: 'Trends (7d)',
     categoryTitle: 'Demand Category Share',
-    feedTitle: '⚡ Live Feed',
-    regionTitle: '🌏 Top Regions',
+    feedTitle: 'Live Feed',
+    regionTitle: 'Top Regions',
     legendDeal: 'Deals',
     legendLead: 'Leads',
     kpiRevenue: 'Revenue',
@@ -692,7 +733,14 @@ export default {
     cat_07: 'Creator Seeding',
     cat_08: 'Video Production',
     cat_09: 'Event Planning',
-    cat_10: 'Channel Resources'
+    cat_10: 'Channel Resources',
+    cat_11: 'Investment & Capital',
+    cat_12: 'Semiconductors & Chips',
+    cat_13: '5G/6G & Communications',
+    cat_14: 'Healthcare & Biotech',
+    cat_15: 'Advanced Manufacturing',
+    cat_16: 'Quantum Technology',
+    cat_17: 'Commercial Space'
   },
   status: {
     demand: { draft: 'Draft', pending: 'Pending', published: 'Published', offline: 'Offline' },
@@ -727,7 +775,7 @@ export default {
     feedback: 'Feedback',
     about: 'About',
     logout: 'Log Out',
-    appVersion: 'QiYeKu v1.0.0 · Demo only',
+    appVersion: 'MediaMatch v1.0.0',
     verifyNone: 'Unverified',
     verifyPending: 'Under Review',
     verifyVerified: 'Verified',

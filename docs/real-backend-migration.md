@@ -6,11 +6,13 @@
 
 - `src/api/bridge.js`：补全到**全量服务面**（22 服务 + 5 方法缺口）。每条 `adapt(mockFn, realFn)` 的 `realFn` 即**真实后端需实现的 REST 契约**。
 - `src/hooks/index.js`：`useRequest` 已入 barrel（与 `useList` 并列）。
-- **3 个前台列表 tab 已迁移**到 `useList + bridge`（异步）：`pages/demand/list.vue`、`pages/mall/list.vue`、`pages/community/index.vue`。
+- **48 个业务页面已迁移**到统一异步数据流：需求、商城、社区、资料库、人脉圈、账户、订单、后台管理等页面均通过 `useList/useRequest + bridge` 访问数据（登录页仍由 Pinia 直接完成登录）。
 - `test/bridge.test.js`：验证 `USE_MOCK=true` 返回 mock 数据、`USE_MOCK=false`（mock `@/utils/request`）调对端点。
-- `USE_MOCK=true` 下全量 325 测试 + 全页面挂载守卫 + 渲染冒烟 + 覆盖率门禁全绿，mp-weixin 构建干净。
+- `USE_MOCK=true` 下全量 **380 个测试（18 个测试文件）** + 全页面挂载守卫 + 渲染冒烟 + 覆盖率门禁全绿，H5 与 mp-weixin 构建通过。
 
-**切换真实后端**（后端就绪时）：`src/utils/env.js` 设 `USE_MOCK=false` + 真实 `BASE_URL`，按 `bridge.js` 的端点契约实现服务端即可。这 3 页立即走真实 HTTP。
+**切换真实后端**（后端就绪时）：`src/utils/env.js` 设 `USE_MOCK=false` + 真实 `BASE_URL`，按 `bridge.js` 的端点契约实现服务端即可。已迁移页面会立即走真实 HTTP。
+
+**本地真实联调结果（2026-07-18）**：配套 `server/` 使用 `3101` 端口启动后，健康检查、用户/管理员登录、首页与各业务模块读取、后台读取、匹配 POST，以及需求创建→更新→详情→删除写链路均已通过；Agent 在服务端临时注入 Kimi 配置后返回 `source=kimi` 的结构化结果。H5 开发环境通过同源 `/api` 代理到 `3101`，小程序/原生开发环境直连 `http://localhost:3101/api`。Kimi 密钥只放 `server/.env`，不要进入前端包或仓库。
 
 ## 迁移模式（同步 ref → useList/useRequest + bridge）
 
@@ -34,23 +36,31 @@ const { list: demandList, loading, refreshing, noMore, load: loadList, loadMore,
 
 > 详情页（`detail`）用 `useRequest`：`const { data, state, run } = useRequest(() => bridge.demand.detail(id))`，在 `onLoad` 拿到 id 后 `run()`，模板按 `state` 三态切骨架/错误/内容。
 
-## 剩余页面清单（Stage 2，按本模式机械化迁移）
+## 页面覆盖清单（Stage 2，按本模式机械化迁移）
 
-Explore 产出的分类（共 39 页，已迁 3）：
+Explore 产出的分类（原始清单，当前已迁 48 页）：
 
-- **真·列表（useList，3）**：✅ demand/list、mall/list、community/index。
-- **列表型-仅刷新无 loadMore（useList 大 pageSize 或 useRequest，10）**：resource/list、user/{my-demands,my-leads,my-orders,my-favorites}、admin/{demand,lead,order,product}-manage、order/index。
-- **详情（useRequest，4）**：demand/detail、mall/detail、resource/detail、community/detail。
-- **表单/变更（useRequest + bridge 写，3）**：demand/publish、community/post、mall/order-confirm。
-- **聚合/静态（useRequest，19）**：index、user/index、admin/{index,screen}、dashboard、profile、message、deals、search、points、coupon、follow、member、verify、settings、campaign、cart、chat。
+- **真·列表（useList，4）**：✅ demand/list、mall/list、community/index、resource/list。
+- **列表型-仅刷新无 loadMore（useList 大 pageSize 或 useRequest，0）**：✅ 已完成。
+- **详情（useRequest，4）**：✅ demand/detail、mall/detail、community/detail、resource/detail。
+- **表单/变更（useRequest + bridge 写，3）**：✅ demand/publish、community/post、mall/order-confirm。
+- **账户/权益/搜索（useRequest，5）**：✅ search/index、points/index、coupon/index、follow/index、member/index。
+- **看板/消息/成交/客服（useRequest，4）**：✅ dashboard/index、message/index、deals/index、chat/index。
+- **聚合/静态（useRequest，9）**：✅ index、user/index、admin/{index,screen}、profile、verify、settings、campaign、cart。
 - **无数据（1）**：user/login（经 Pinia store 用 userService.demoLogin）。
 
-## 已知 leak（待决策）
+## Smart 路径（Stage 2 已接入）
 
-`@/mock/smart`（推荐 / 浏览追踪 / 质量&价格评分）是**另一条平行 mock 路径**，被 4 页直引：`index/index`、`demand/detail`、`demand/publish`、`mall/detail`。bridge 当前**不覆盖**它。若要"所有 mock 都可切换"，需单独决定是否把 smart 也纳入 bridge。
+原先 `@/mock/smart` 被 4 页直引，造成推荐、浏览追踪和价格建议无法随 `USE_MOCK` 切换。现在页面统一使用 `bridge.smart`：
+
+- `recommendedDemands` / `recommendedProducts`：Mock 使用本地智能引擎，真实模式调用 `/api/smart/recommended-demands` 和 `/api/smart/recommended-products`。
+- `priceSuggestion`：Mock 使用本地需求数据，真实模式调用 `/api/smart/price-suggestion`。
+- `trackBrowse` / `getBrowseHistory` / `clearBrowseHistory` / `scoreDemandQuality`：保留在前端 bridge 的本地能力，不再由页面直接依赖 Mock 文件。
+
+真实推荐接口只返回公开字段，需求联系方式在推荐结果中会被剥离。
 
 ## 注意
 
 - **迁移页多出 ~200ms 加载**（bridge mock 分支模拟延迟）——更贴近真实，骨架屏会被真实触发。
 - **测试**：渲染冒烟用 `vi.useFakeTimers()` + `vi.advanceTimersByTimeAsync(300)` flush 异步加载（见 `test/render-smoke.test.js` 的 `flushLoads`）。
-- **bridge 契约是占位**：realFn 的 URL/方法在无真实后端时仅靠 mock request 断言，端到端要等后端就绪。
+- **真实端到端仍按模块补齐**：bridge 的 URL/方法已有真实后端路由；每完成一个模块需继续补充真实接口联调，避免只停留在契约测试。

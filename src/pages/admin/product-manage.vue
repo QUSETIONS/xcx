@@ -6,6 +6,7 @@
     </view>
 
     <scroll-view class="list-scroll" scroll-y :refresher-enabled="true" :refresher-triggered="refreshing" @refresherrefresh="onRefresh">
+      <view v-if="loading && !productList.length" class="loading"><text>{{ t('common.loading') }}</text></view>
       <view class="product-list" :class="{ 'animate-in': animated }">
         <view class="product-item card-press" v-for="(item, idx) in productList" :key="item._id"
           :class="{ 'fade-in': animated }" :style="{ animationDelay: (idx * 0.08) + 's' }">
@@ -34,7 +35,8 @@
           </view>
         </view>
       </view>
-      <view v-if="!productList.length" class="empty"><text>{{ t('admin.emptyProduct') }}</text></view>
+      <view v-if="loading && productList.length" class="loading"><text>{{ t('common.loading') }}</text></view>
+      <view v-if="!productList.length && !loading" class="empty"><text>{{ t('admin.emptyProduct') }}</text></view>
     </scroll-view>
   </view>
 </template>
@@ -42,63 +44,39 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { serviceTypes } from '@/utils/i18n-maps'
-import { productService } from '@/mock/service'
+import { bridge } from '@/api/bridge'
+import { useList } from '@/hooks/useList'
 import { useNavTitle } from '@/hooks/useNavTitle'
 import { t } from '@/i18n'
 useNavTitle('titles.productManage')
 
-const productList = ref([])
-const refreshing = ref(false)
 const animated = ref(true)
 
+const { list: productList, loading, refreshing, load: loadList, refresh } = useList(
+  (params) => bridge.admin.products.list({ ...params, page: 1, pageSize: 100 }),
+  100
+)
 
-function loadList() {
-  const res = productService.list({ pageSize: 100 })
-  productList.value = res.list
-}
-
-function onRefresh() { refreshing.value = true; loadList(); refreshing.value = false }
-onMounted(loadList)
+function onRefresh() { refresh() }
+onMounted(() => loadList(true))
 function goAdd() {
-  uni.showModal({
-    title: t('admin.addTitle'),
-    content: t('admin.addContent'),
-    showCancel: false,
-    confirmText: t('admin.gotIt')
-  })
+  uni.navigateTo({ url: '/pages/admin/product-edit' })
 }
 function editProduct(item) {
-  uni.showActionSheet({
-    itemList: [t('admin.setFeatured'), t('admin.unsetFeatured'), t('admin.editPrice'), t('admin.toggleSale')],
-    success: (res) => {
-      if (res.tapIndex === 0) { item.is_featured = true; uni.showToast({ title: t('admin.featuredSet'), icon: 'success' }) }
-      else if (res.tapIndex === 1) { item.is_featured = false; uni.showToast({ title: t('admin.featuredUnset'), icon: 'success' }) }
-      else if (res.tapIndex === 2) {
-        uni.showModal({
-          title: t('admin.editPrice'),
-          editable: true,
-          placeholderText: t('admin.editPricePlaceholder'),
-          success: (r) => {
-            if (r.confirm && r.content) {
-              item.price = Math.round(parseFloat(r.content) * 100)
-              uni.showToast({ title: t('admin.priceUpdated'), icon: 'success' })
-            }
-          }
-        })
-      }
-      else if (res.tapIndex === 3) {
-        item.status = item.status === 'on_sale' ? 'off_sale' : 'on_sale'
-        uni.showToast({ title: item.status === 'on_sale' ? t('admin.onSale') : t('admin.offSale'), icon: 'success' })
-      }
-    }
-  })
+  uni.navigateTo({ url: `/pages/admin/product-edit?id=${item._id}` })
 }
 
 function deleteProduct(item) {
   uni.showModal({
     title: t('admin.confirmDelete'), content: t('admin.deleteContent').replace('{title}', item.title),
-    success: (res) => {
+    success: async (res) => {
       if (res.confirm) {
+        try {
+          await bridge.admin.products.delete(item._id)
+        } catch (error) {
+          uni.showToast({ title: error?.message || t('common.loadFailed'), icon: 'none' })
+          return
+        }
         const idx = productList.value.findIndex(p => p._id === item._id)
         if (idx > -1) productList.value.splice(idx, 1)
         uni.showToast({ title: t('admin.deleted'), icon: 'success' })
@@ -146,6 +124,22 @@ function deleteProduct(item) {
 .action-btn { font-size: 24rpx; color: rgba(0,0,0,0.6); padding: 6rpx 16rpx; background: #F5F6FA; border-radius: 12rpx; }
 .action-btn.danger { color: #EF4444; background: rgba(239,68,68,0.1); }
 .empty { text-align: center; padding: 64rpx; font-size: 28rpx; color: rgba(0,0,0,0.5); }
+.loading { text-align: center; padding: 32rpx; font-size: 24rpx; color: rgba(0,0,0,0.5); }
 
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(20rpx); } to { opacity: 1; transform: translateY(0); } }
+/* 后台列表统一采用“固定页面 + 剩余空间滚动”，商品信息和操作列可收缩。 */
+.page { display: flex; flex-direction: column; width: 100%; height: 100vh; min-height: 0; overflow-x: hidden; box-sizing: border-box; }
+/* #ifdef H5 */
+.page { height: calc(100vh - 44px); }
+/* #endif */
+.header, .list-scroll, .product-item, .product-main, .product-info, .product-bottom, .product-stats { min-width: 0; }
+.header { flex: 0 0 auto; gap: 14rpx; }
+.header-title, .product-title, .product-type { max-width: 100%; overflow-wrap: anywhere; word-break: break-word; }
+.header-title, .product-title, .product-type { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.add-btn, .action-btn, .product-status { flex: 0 0 auto; white-space: nowrap; }
+.list-scroll { flex: 1; min-height: 0; height: auto; max-width: 100%; box-sizing: border-box; }
+.product-info { overflow: hidden; }
+.product-main, .product-bottom { gap: 12rpx; }
+.product-price-row { flex-wrap: wrap; gap: 6rpx; }
+.product-actions { flex-wrap: wrap; justify-content: flex-end; gap: 8rpx; }
 </style>
