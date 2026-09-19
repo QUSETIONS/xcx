@@ -82,10 +82,9 @@
 
     <view class="home-hint">
       <text class="home-hint-mark">◎</text>
-      <text>需求方可以让 AI 帮你定清楚并发布；服务方可以让 AI 帮你找公开需求。</text>
+      <text>甲方用 AI 理清并发布需求，乙方用 AI 找项目、聊合作。</text>
     </view>
 
-     <view style="height: 128rpx" />
      <!-- 旧版合作生态深链仍可被历史分享链接调用；首页不再渲染该入口。
           保留 class 标识仅用于兼容已有静态检查和深链，不恢复旧首页卡片。 -->
      <!-- class="quick-entry-card quick-entry-cooperation" -->
@@ -266,13 +265,17 @@ function goPrimaryTask() {
  </script>
 
 <style scoped lang="scss">
-.home { box-sizing: border-box; min-height: 100vh; padding: 18rpx 34rpx 0; overflow: hidden; color: #25231f; background: #f7f6f2; }
+.home { display: flex; flex-direction: column; box-sizing: border-box; min-height: 100vh; padding: 18rpx 34rpx 24rpx; overflow-x: hidden; color: #25231f; background: #f7f6f2; }
+/* H5 标题栏和底部导航由框架占位，页面不再重复撑出一整屏高度。 */
+/* #ifdef H5 */
+.home { min-height: calc(100vh - 44px - 50px - env(safe-area-inset-bottom)); }
+/* #endif */
 .home-header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 24rpx; border-bottom: 1rpx solid rgba(30, 27, 22, .1); }
 .brand-lockup { display: flex; flex-direction: column; gap: 5rpx; }
 .brand-name { color: #25231f; font: 500 20rpx/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .18em; }
 .brand-caption { color: #8a847b; font-size: 17rpx; letter-spacing: .16em; }
 .home-header-action { display: flex; align-items: center; justify-content: center; width: 54rpx; height: 54rpx; border: 1rpx solid rgba(92, 40, 40, .18); border-radius: 50%; color: #5c2828; background: #f0e5df; font: 500 21rpx/1 Georgia, serif; }
-.ai-home-stage { position: relative; max-width: 680rpx; margin: 0 auto; padding: 76rpx 0 0; }
+.ai-home-stage { position: relative; width: 100%; max-width: 680rpx; margin: auto; padding: 40rpx 0 0; }
 .stage-index, .brief-launcher-kicker, .brief-examples-label { display: block; color: #8a847b; font: 500 15rpx/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .12em; }
 .stage-title { display: block; margin-top: 22rpx; color: #191816; font: 400 56rpx/1.13 'Songti SC', 'Noto Serif CJK SC', serif; letter-spacing: -.06em; }
 .stage-title-accent { color: #5c2828; }
@@ -293,7 +296,7 @@ function goPrimaryTask() {
 .service-alert, .service-note { display: flex; align-items: center; justify-content: space-between; gap: 18rpx; margin-top: 28rpx; padding: 15rpx 16rpx; border: 1rpx solid #e5cfc3; color: #8a5146; background: #fff8f4; font-size: 18rpx; }
 .service-note { border-color: #ded5c3; color: #806744; background: #fffaf0; }
 .service-alert-action, .service-note-action { flex: 0 0 auto; color: #5c2828; font-weight: 600; }
-.home-hint { display: flex; gap: 12rpx; margin-top: 44rpx; padding-top: 20rpx; border-top: 1rpx solid rgba(30, 27, 22, .09); color: #8a847b; font-size: 18rpx; line-height: 1.6; }
+.home-hint { display: flex; width: 100%; max-width: 680rpx; gap: 12rpx; margin: 28rpx auto 0; padding-top: 20rpx; border-top: 1rpx solid rgba(30, 27, 22, .09); color: #8a847b; font-size: 18rpx; line-height: 1.6; }
 .home-hint-mark { flex: 0 0 auto; color: #b49460; font-size: 21rpx; }
 .home-loading-screen { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #6f6b63; background: #f7f6f2; touch-action: none; overscroll-behavior: none; }
 .home-loading-orbit { position: relative; width: 128rpx; height: 128rpx; }
@@ -310,8 +313,29 @@ function goPrimaryTask() {
 }
 @media (max-width: 420px) {
   .home { padding-right: 28rpx; padding-left: 28rpx; }
-  .ai-home-stage { padding-top: 64rpx; }
+  .ai-home-stage { padding-top: 40rpx; }
   .stage-title { font-size: 50rpx; }
   .stage-seal { top: 42rpx; right: -8rpx; width: 90rpx; height: 90rpx; }
+}
+/* 宽屏不沿用375px画布的rpx字号，主入口与辅助说明统一对齐。 */
+@media (min-width: 561px) {
+  .home { padding: 16px 32px 20px; }
+  .home-header { padding-bottom: 16px; }
+  .brand-name { font-size: 12px; }
+  .brand-caption { font-size: 11px; }
+  .home-header-action { width: 36px; height: 36px; font-size: 16px; }
+  .ai-home-stage { max-width: 680px; padding-top: 28px; padding-bottom: 12px; }
+  .stage-index, .brief-launcher-kicker, .brief-examples-label { font-size: 11px; }
+  .stage-title { margin-top: 14px; font-size: clamp(30px, 3.4vw, 38px); }
+  .stage-desc { max-width: 600px; margin-top: 16px; font-size: 15px; line-height: 1.65; }
+  .stage-seal { top: 30px; right: 12px; width: 88px; height: 88px; }
+  .brief-launcher { margin-top: 20px; padding: 20px; }
+  .brief-launcher-title { font-size: 23px; }
+  .brief-launcher-input { min-height: 56px; margin-top: 18px; font-size: 16px; }
+  .brief-launcher-foot { font-size: 12px; }
+  .brief-launcher-send { padding: 10px 16px; font-size: 14px; }
+  .brief-examples { margin-top: 20px; }
+  .brief-example { padding: 10px 0; font-size: 14px; }
+  .home-hint { max-width: 680px; margin-top: 16px; padding-top: 12px; font-size: 12px; }
 }
 </style>

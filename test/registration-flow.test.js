@@ -6,7 +6,7 @@ const read = (...parts) => fs.readFileSync(path.join(process.cwd(), ...parts), '
 
 describe('注册验证码流程', () => {
   it('注册页展示验证码入口并在提交前校验六位验证码', () => {
-    const login = read('src', 'pages', 'user', 'login.vue')
+    const login = read('src', 'components', 'AccountAuth.vue')
     expect(login).toContain('v-if="mode === \'register\'" class="field"')
     expect(login).toContain('@tap="requestRegisterCode"')
     expect(login).toContain("if (!/^\\d{6}$/.test(String(data.code).trim())) return '请输入6位短信验证码'")
@@ -19,7 +19,7 @@ describe('注册验证码流程', () => {
   })
 
   it('邀请码注册会先预览权益并要求选择一项', () => {
-    const login = read('src', 'pages', 'user', 'login.vue')
+    const login = read('src', 'components', 'AccountAuth.vue')
     const bridge = read('src', 'api', 'bridge.js')
     expect(login).toContain('form.invite_code')
     expect(login).toContain('form.reward_type')
@@ -29,11 +29,17 @@ describe('注册验证码流程', () => {
     expect(bridge).toContain("/intake/invites/${encodeURIComponent(String(code || '').trim().toUpperCase())}")
   })
 
-  it('注册先区分融资甲乙方，工作方式保持独立，成功后进入档案页', () => {
-    const login = read('src', 'pages', 'user', 'login.vue')
-    expect(login).toContain('甲方 / 资金方')
-    expect(login).toContain('乙方 / 项目企业')
-    expect(login).toContain('平台使用方式')
+  it('甲乙方使用独立路由，复用验证码组件，不再显示第二套身份选择', () => {
+    const login = read('src', 'components', 'AccountAuth.vue')
+    const pages = JSON.parse(read('src', 'pages.json')).pages.map(page => page.path)
+    expect(pages).toContain('pages/user/register-a')
+    expect(pages).toContain('pages/user/register-b')
+    expect(read('src', 'pages', 'user', 'register-a.vue')).toContain('fixed-party="capital"')
+    expect(read('src', 'pages', 'user', 'register-b.vue')).toContain('fixed-party="project"')
+    expect(login).not.toContain('平台使用方式')
+    expect(login).not.toContain('需求方')
+    expect(login).not.toContain('服务方')
+    expect(login).toContain('registration_party: props.fixedParty')
     expect(login).toContain("uni.reLaunch({ url: '/pages/intake/index' })")
   })
 })

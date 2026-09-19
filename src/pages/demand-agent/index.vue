@@ -14,6 +14,7 @@
         <view class="context-meta"><text>{{ demand.company_name || '需求方' }}</text><text v-if="context.quote_type">{{ quoteLabel(context.quote_type) }}</text></view>
       </view>
 
+      <AgentMemoryPanel v-if="userStore.userInfo?.workflow_role === 'service_provider'" />
       <scroll-view class="message-scroll" scroll-y :scroll-into-view="scrollIntoView">
         <view class="message-list">
           <view v-for="message in messages" :id="`message_${message.id}`" :key="message.id" class="message-row" :class="message.role">
@@ -46,6 +47,7 @@ import { useNavTitle } from '@/hooks/useNavTitle'
 import { useUserStore } from '@/stores/user'
 import { requirePageLogin } from '@/utils/require-login'
 import { quoteLabel } from '@/utils/i18n-maps'
+import AgentMemoryPanel from '@/components/AgentMemoryPanel.vue'
 
 useNavTitle('titles.demandAgent')
 const userStore = useUserStore()
@@ -59,14 +61,14 @@ const context = ref({})
 const messages = ref([])
 const agentSessionId = ref('')
 const scrollIntoView = ref('')
-const quickPrompts = ['这个项目最看重什么？', '预计在哪些城市推进？', '适合什么类型的合作方？']
+const quickPrompts = ['结合我的能力适合这个项目吗？', '这个项目最看重什么？', '预计在哪些城市推进？']
 
 function storageKey() {
   const owner = String(userStore.userId || 'guest').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 80) || 'guest'
   return `mediamatch:demand-agent:${owner}:${demandId.value}`
 }
 function initialMessage() {
-  return `你好，我是这条需求的 Agent。你可以先问项目背景、合作城市、预算方式和交付边界；我只会基于甲方公开的信息回答。`
+  return `你好，我是这条需求的 Agent。你可以问项目背景、合作城市、预算方式和交付边界，也可以让我结合你的能力档案判断适配性。甲方信息以公开资料为准，未公开的条件需要进一步确认。`
 }
 function restoreMessages() {
   try {
@@ -166,6 +168,9 @@ onLoad((query) => {
 
 <style scoped lang="scss">
 .page { display: flex; box-sizing: border-box; height: 100vh; min-height: 0; flex-direction: column; padding: 26rpx 30rpx calc(18rpx + env(safe-area-inset-bottom)); overflow: hidden; color: #302b26; background: #f7f6f2; }
+/* #ifdef H5 */
+.page { height: calc(100vh - 44px); }
+/* #endif */
 .topbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 18rpx; padding-bottom: 22rpx; border-bottom: 1rpx solid rgba(30,27,22,.1); }
 .eyebrow { display: block; color: #8a847b; font: 500 14rpx/1.2 ui-monospace, monospace; letter-spacing: .12em; }
 .page-title { display: block; max-width: 560rpx; margin-top: 10rpx; overflow: hidden; color: #191816; font: 400 30rpx/1.35 'Songti SC', serif; text-overflow: ellipsis; white-space: nowrap; }

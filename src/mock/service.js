@@ -7,6 +7,7 @@ import { DEMAND_CATEGORIES, REGIONS, QUOTE_TYPES, STORAGE_KEYS, THEME } from '@/
 import { scoreDemandMatch, scoreProviderMatch } from '@/utils/matching'
 import { cooperationSnapshot } from '@/data/cooperation-catalog'
 import { cloneIntake, derivePoolTags, emptyIntakeForm, INTAKE_OPTIONS, REFERRAL_REWARD_OPTIONS, REFERRAL_RULES } from '@/utils/intake'
+import { MEMBER_LEVELS, getMembership } from '../../../Package/Member/levels.mjs'
 
 // ========== 工具函数 ==========
 const delay = (ms = 200) => new Promise(r => setTimeout(r, ms))
@@ -2884,30 +2885,14 @@ export const verifyService = {
 }
 
 // ========== 会员体系 Mock ==========
-const memberTiers = [
-  {
-    id: 'free', name: '普通会员', price: 0, period: '永久',
-    color: '#69574A', icon: '/static/icons/user.svg',
-    privileges: ['每日发布3条需求', '基础搜索', '社区发帖']
-  },
-  {
-    id: 'pro', name: '专业版', price: 29900, period: '年', original: 59900,
-    color: '#5C2828', icon: '/static/icons/star.svg', hot: true,
-    privileges: ['无限发布需求', '需求优先推荐', '预算参考', '数据看板', '专属客服', '认证加速']
-  },
-  {
-    id: 'enterprise', name: '企业版', price: 99900, period: '年', original: 199900,
-    color: '#41463C', icon: '/static/icons/shield.svg',
-    privileges: ['专业版全部权益', '专属客户经理', '定制营销方案', 'API接口接入', '团队多人协作', '白皮书定制']
-  }
-]
+const memberTiers = MEMBER_LEVELS.map(tier => ({ ...tier, price: ({ free: 0, pro: 29900, enterprise: 99900 })[tier.id], period: tier.id === 'free' ? '永久' : '年' }))
 export const memberService = {
   tiers() { return memberTiers },
   current() {
     try {
       const info = JSON.parse(uni.getStorageSync(STORAGE_KEYS.MEMBER) || 'null')
-      return info || { tier: 'free', expire: null }
-    } catch { return { tier: 'free', expire: null } }
+      return { ...getMembership(info || {}), levels: MEMBER_LEVELS, upgrade_available: false }
+    } catch { return { ...getMembership(), levels: MEMBER_LEVELS, upgrade_available: false } }
   },
   subscribe(tierId) {
     const tier = memberTiers.find(t => t.id === tierId)

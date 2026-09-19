@@ -1,5 +1,5 @@
 <template>
-  <scroll-view class="page-scroll" scroll-y>
+  <scroll-view class="page-scroll" scroll-y :scroll-into-view="scrollIntoView">
     <view v-if="loading" class="page-state"><view class="state-spinner" /><text>正在读取资料…</text></view>
     <view v-else class="page">
       <view class="hero">
@@ -10,9 +10,13 @@
       </view>
 
       <view v-if="profile?.status" class="status-banner" :class="`status-${profile.status}`">
-        <view class="status-main"><text class="status-kicker">资料状态</text><text class="status-title">{{ statusLabel(profile.status) }}</text></view>
+        <view class="status-main"><view><text class="status-kicker">资料状态</text><text class="status-title">{{ statusLabel(profile.status) }}</text></view><text class="status-next">下一步</text></view>
         <text class="status-copy">{{ statusCopy(profile.status) }}</text>
         <text v-if="profile.review_note" class="status-note">审核说明：{{ profile.review_note }}</text>
+        <view class="status-actions">
+          <view class="status-action status-action-primary" @tap="enterPlatform">{{ platformEntryLabel }} <text>→</text></view>
+          <view class="status-action status-action-secondary" @tap="continueEditing">继续补充资料 <text>↓</text></view>
+        </view>
       </view>
 
       <view class="section-block">
@@ -108,7 +112,7 @@
 
         <text v-if="validationMessage" class="validation-message">{{ validationMessage }}</text>
         <text v-if="autoSaveState" class="autosave-state" :class="`autosave-${autoSaveState}`">{{ autoSaveCopy }}</text>
-        <view class="intake-action-bar"><view class="save-button" :class="{ disabled: saving || autoSaving }" @tap="saveDraft">{{ saving || autoSaving ? '保存中…' : '保存草稿' }}</view><view class="submit-button" :class="{ disabled: saving || autoSaving }" @tap="submit">{{ saving ? '提交中…' : (profile?.status === 'approved' ? '重新提交审核' : '提交资料') }}<text> →</text></view></view>
+        <view id="intake-actions" class="intake-action-bar"><view class="save-button" :class="{ disabled: saving || autoSaving }" @tap="saveDraft">{{ saving || autoSaving ? '保存中…' : '保存草稿' }}</view><view class="submit-button" :class="{ disabled: saving || autoSaving }" @tap="submit">{{ saving ? '提交中…' : (profile?.status === 'approved' ? '重新提交审核' : '提交资料') }}<text> →</text></view></view>
         <text class="bottom-hint">提交后可在这里继续补充资料和查看审核状态；审核说明会保留在本页。</text>
 
         <view v-if="invite" class="invite-card">
@@ -172,10 +176,12 @@ const validationMessage = ref('')
 const targetCityDraft = ref('')
 const referralCode = ref('')
 const supplementExpanded = ref(false)
+const scrollIntoView = ref('')
 const hydrating = ref(true)
 let autoSaveTimer = null
 let lastSavedFingerprint = ''
 const inviterRewardType = computed(() => invite.value?.inviter_reward_type || REFERRAL_REWARD_OPTIONS[0].value)
+const platformEntryLabel = computed(() => usingPrivateSession() ? '进入平台首页' : '注册 / 登录后进入平台')
 const autoSaveCopy = computed(() => ({
   pending: profile.value && profile.value.status !== 'draft' ? '内容有修改，保存后会重新进入草稿状态' : '内容有修改，等待自动保存',
   saving: '正在自动保存…',
@@ -374,6 +380,19 @@ function toggleDisplayConsent() {
 
 function toggleSupplement() { supplementExpanded.value = !supplementExpanded.value }
 
+function enterPlatform() {
+  if (usingPrivateSession()) {
+    uni.switchTab({ url: '/pages/index/index' })
+    return
+  }
+  uni.reLaunch({ url: '/pages/user/login' })
+}
+
+function continueEditing() {
+  scrollIntoView.value = ''
+  nextTick(() => { scrollIntoView.value = 'intake-actions' })
+}
+
 function selectPlanRange(value) {
   form.value.investment_plan_range = value
   if (value && !form.value.investment_plan_period) form.value.investment_plan_period = 'year'
@@ -496,7 +515,7 @@ function previewInviteQr() {
 .eyebrow, .section-index, .invite-kicker { display: block; color: #9a9286; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 14rpx; letter-spacing: .13em; }
 .title { display: block; margin-top: 22rpx; color: #1c1a17; font-family: 'Songti SC', 'Noto Serif CJK SC', 'STSong', serif; font-size: 48rpx; font-weight: 400; line-height: 1.22; letter-spacing: -.04em; }
 .desc { display: block; max-width: 660rpx; margin-top: 20rpx; color: #837c72; font-size: 22rpx; line-height: 1.65; }.hero-note { display: flex; gap: 13rpx; align-items: baseline; max-width: 660rpx; margin-top: 22rpx; padding: 13rpx 15rpx; border-left: 4rpx solid #b49460; background: #f1ece3; }.hero-note-label { flex: 0 0 auto; color: #79603f; font-size: 18rpx; }.hero-note-copy { color: #81766a; font-size: 18rpx; line-height: 1.45; }
-.status-banner { margin: 26rpx 0 4rpx; padding: 20rpx; border-left: 5rpx solid #5c2828; background: #f0e5df; }.status-banner.status-approved { border-color: #526153; background: #e9eee8; }.status-banner.status-needs_more, .status-banner.status-rejected { border-color: #a66b35; background: #f5eadb; }.status-main { display: flex; align-items: baseline; gap: 14rpx; }.status-kicker { color: #8a847b; font-size: 17rpx; }.status-title { color: #5c2828; font-size: 27rpx; font-weight: 600; }.status-approved .status-title { color: #526153; }.status-copy, .status-note { display: block; margin-top: 7rpx; color: #756d63; font-size: 19rpx; line-height: 1.5; }.status-note { color: #795f43; }
+.status-banner { margin: 26rpx 0 4rpx; padding: 20rpx; border-left: 5rpx solid #5c2828; background: #f0e5df; }.status-banner.status-approved { border-color: #526153; background: #e9eee8; }.status-banner.status-needs_more, .status-banner.status-rejected { border-color: #a66b35; background: #f5eadb; }.status-main { display: flex; align-items: baseline; justify-content: space-between; gap: 14rpx; }.status-main > view { min-width: 0; }.status-kicker { display: block; color: #8a847b; font-size: 17rpx; }.status-title { display: block; margin-top: 4rpx; color: #5c2828; font-size: 27rpx; font-weight: 600; }.status-approved .status-title { color: #526153; }.status-next { flex: 0 0 auto; color: #8a847b; font-size: 17rpx; }.status-copy, .status-note { display: block; margin-top: 7rpx; color: #756d63; font-size: 19rpx; line-height: 1.5; }.status-note { color: #795f43; }.status-actions { display: flex; gap: 10rpx; margin-top: 17rpx; }.status-action { flex: 1; min-height: 64rpx; padding: 15rpx 12rpx; border: 1rpx solid rgba(92, 40, 40, .25); border-radius: 5rpx; box-sizing: border-box; color: #5c2828; font-size: 19rpx; line-height: 34rpx; text-align: center; }.status-action-primary { border-color: #5c2828; color: #fffaf1; background: #5c2828; }.status-action-secondary { background: rgba(255, 252, 247, .46); }
 .section-block { padding-top: 44rpx; }.section-heading { display: flex; align-items: flex-start; gap: 16rpx; margin-bottom: 20rpx; }.section-index { flex: 0 0 38rpx; padding-top: 7rpx; color: #b49460; }.section-title { display: block; color: #27231e; font-family: 'Songti SC', 'STSong', serif; font-size: 31rpx; font-weight: 400; }.section-desc { display: block; margin-top: 7rpx; color: #9a9286; font-size: 19rpx; line-height: 1.45; }.supplement-entry { padding-top: 28rpx; }.supplement-toggle { display: flex; align-items: center; justify-content: space-between; gap: 18rpx; padding: 18rpx 20rpx; border: 1rpx solid #ddd4c7; background: #fcfaf5; }.supplement-toggle > view { flex: 1; min-width: 0; }.supplement-action { flex: 0 0 auto; color: #5c2828; font-size: 19rpx; }
 .role-grid { display: flex; gap: 14rpx; }.role-card { position: relative; flex: 1; min-width: 0; min-height: 204rpx; padding: 20rpx; border: 1rpx solid rgba(30, 27, 22, .13); background: #fcfaf5; box-sizing: border-box; }.role-card.active { border-color: #5c2828; box-shadow: inset 0 0 0 1rpx #5c2828; }.role-mark { display: flex; align-items: center; justify-content: center; width: 48rpx; height: 48rpx; background: #f0e5df; }.role-icon { display: block; width: 28rpx; height: 28rpx; opacity: .72; }.role-title { display: block; margin-top: 20rpx; color: #2a2722; font-size: 25rpx; font-weight: 600; }.role-desc { display: block; margin-top: 9rpx; color: #8b8378; font-size: 18rpx; line-height: 1.55; }.role-selected { position: absolute; right: 16rpx; top: 20rpx; color: #5c2828; font-size: 17rpx; }
 .form-card { padding: 22rpx 20rpx; border-top: 1rpx solid rgba(30, 27, 22, .12); border-bottom: 1rpx solid rgba(30, 27, 22, .12); background: #fcfaf5; }.field { margin-bottom: 24rpx; }.field:last-child { margin-bottom: 0; }.field-row { display: flex; gap: 14rpx; }.field-half { flex: 1; min-width: 0; }.field-label, .field-hint { display: block; color: #70685e; font-size: 19rpx; }.field-hint { color: #a59d91; font-size: 17rpx; }.required { color: #8d443e; }.field-input, .field-textarea, .target-note { display: block; width: 100%; margin-top: 8rpx; padding: 15rpx 0; border-bottom: 1rpx solid rgba(30, 27, 22, .14); box-sizing: border-box; color: #27231e; background: transparent; font-size: 23rpx; }.field-textarea { min-height: 140rpx; line-height: 1.6; }.field-input::placeholder, .field-textarea::placeholder, .target-note::placeholder { color: #b1aaa0; }.field-label-row, .target-top, .circle-detail-title { display: flex; align-items: center; justify-content: space-between; }.chip-wrap { display: flex; flex-wrap: wrap; gap: 10rpx; margin-top: 12rpx; }.choice-chip { padding: 10rpx 14rpx; border: 1rpx solid #dfd8cd; color: #80776b; background: #f7f3ec; font-size: 19rpx; }.choice-chip.active { border-color: #5c2828; color: #5c2828; background: #f0e5df; }.choice-list { margin-top: 10rpx; border-top: 1rpx solid rgba(30, 27, 22, .1); }.choice-row { display: flex; align-items: center; justify-content: space-between; padding: 17rpx 4rpx; border-bottom: 1rpx solid rgba(30, 27, 22, .08); color: #726b61; font-size: 21rpx; }.choice-row.active { color: #5c2828; }.choice-mark { color: #5c2828; font-family: Georgia, serif; font-size: 24rpx; }.inline-add-row { display: flex; align-items: center; gap: 14rpx; }.inline-input { flex: 1; min-width: 0; }.inline-add { flex: 0 0 auto; padding: 9rpx 13rpx; border-bottom: 1rpx solid #5c2828; color: #5c2828; font-size: 19rpx; }.tag-wrap { display: flex; flex-wrap: wrap; gap: 9rpx; margin-top: 11rpx; }.soft-tag { padding: 7rpx 11rpx; color: #6a6257; background: #efebe3; font-size: 18rpx; }

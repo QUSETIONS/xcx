@@ -37,7 +37,7 @@
       <view class="access-card-stats">
         <view><text>{{ credit.score || 0 }}</text><text>信用分</text></view>
         <view><text>{{ userInfo.usage_credits || 0 }}</text><text>AI 次数</text></view>
-        <view><text>{{ credit.level || '基础' }}</text><text>当前等级</text></view>
+        <view><text>{{ memberLevel.level }}</text><text>权益等级</text></view>
       </view>
     </view>
 
@@ -69,6 +69,10 @@
     </view>
 
     <view v-if="isAdmin" class="admin-entry" @tap="goAdmin"><text>运营后台</text><text>进入 ›</text></view>
+    <view class="account-actions">
+      <view class="settings-entry card-press" @tap="goSettings"><text>设置</text><text>账号、安全与偏好 ›</text></view>
+      <view class="logout-entry" @tap="logout"><text>退出登录</text></view>
+    </view>
     <view style="height: 130rpx" />
   </view>
 </template>
@@ -83,6 +87,7 @@ import { a11yStyle } from '@/utils/accessibility'
 import { useNavTitle } from '@/hooks/useNavTitle'
 import { useRequest } from '@/hooks/useRequest'
 import { toastError } from '@/utils/feedback'
+import { getMemberLevel } from '../../../../Package/Member/levels.mjs'
 
 useNavTitle('titles.me')
 
@@ -92,7 +97,8 @@ const isAdmin = computed(() => userStore.isAdmin)
 const isProvider = computed(() => userInfo.value.account_type === 'provider' || userInfo.value.role === 'provider' || Boolean(userInfo.value.provider_id))
 const workflowRoleLabel = computed(() => userInfo.value.workflow_role === 'service_provider' ? '乙方视角 / 寻找项目' : '甲方视角 / 发布需求')
 const organizationTypeLabel = computed(() => userInfo.value.organization_type === 'capital' ? '资金 / 投资机构' : '项目 / 企业方')
-const memberTierLabel = computed(() => ({ free: '基础体验', pro: '专业会员', enterprise: '企业会员' }[userInfo.value.member_tier] || '基础体验'))
+const memberLevel = computed(() => getMemberLevel(userInfo.value))
+const memberTierLabel = computed(() => `${memberLevel.value.level} · ${memberLevel.value.name}`)
 const accessCopy = computed(() => userInfo.value.workflow_role === 'service_provider' ? '可用 AI 匹配项目并管理接单权限' : '可用 AI 梳理需求并发起合作')
 const userInitial = computed(() => String(userInfo.value.nickname || '我').trim().slice(0, 1) || '我')
 const profileCompletion = computed(() => {
@@ -174,6 +180,20 @@ function goNetwork() { uni.switchTab({ url: '/pages/network/index' }) }
 function goProviderOnboard() { uni.navigateTo({ url: '/pages/provider/onboard' }) }
 function goDashboard() { uni.navigateTo({ url: '/pages/dashboard/index' }) }
 function goAdmin() { uni.navigateTo({ url: '/pages/admin/index' }) }
+function goSettings() { uni.navigateTo({ url: '/pages/settings/index' }) }
+function logout() {
+  uni.showModal({
+    title: '退出登录',
+    content: '确定退出当前账号？',
+    success: ({ confirm }) => {
+      if (!confirm) return
+      userStore.logout()
+      try { uni.clearStorageSync() } catch {}
+      uni.showToast({ title: '已退出', icon: 'none' })
+      setTimeout(() => uni.reLaunch({ url: '/pages/index/index' }), 800)
+    }
+  })
+}
 
 onShow(reload)
 
@@ -244,6 +264,10 @@ void followCount
 .invite-mark { color: #8a653c; }
 .admin-entry { justify-content: space-between; padding: 22rpx 0; color: #8a847b; font-size: 18rpx; }
 .admin-entry text:last-child { color: #5c2828; }
+.account-actions { margin-top: 24rpx; border-top: 1rpx solid rgba(30, 27, 22, .09); }
+.settings-entry { display: flex; align-items: center; justify-content: space-between; gap: 16rpx; padding: 24rpx 0; border-bottom: 1rpx solid rgba(30, 27, 22, .09); color: #3a342e; font-size: 20rpx; }
+.settings-entry text:last-child { color: #8a847b; font-size: 17rpx; }
+.logout-entry { margin-top: 18rpx; padding: 22rpx; border: 1rpx solid rgba(143, 73, 73, .18); border-radius: 5rpx; color: #8a5146; background: #f8efeb; text-align: center; font-size: 20rpx; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .state-spinner { animation: none; } }
 @media (max-width: 420px) { .page { padding-right: 28rpx; padding-left: 28rpx; }.access-card { padding: 20rpx; }.access-card-main { align-items: flex-start; flex-direction: column; gap: 6rpx; }.access-copy { width: 100%; font-size: 16rpx; text-align: left; }.access-card-stats { margin-top: 18rpx; }.page-title { font-size: 40rpx; } }

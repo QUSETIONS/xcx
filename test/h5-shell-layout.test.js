@@ -39,16 +39,16 @@ describe('H5 固定宽屏壳层回归', () => {
     expect(mallPage).not.toContain('height: calc(100vh - 500rpx)')
   })
 
-  it('会员等级页的套餐标签、权益表和固定操作栏在宽窄屏都可读', () => {
+  it('会员等级路线图宽屏三列、窄屏堆叠，现有权益保留且没有付款栏', () => {
     const member = fs.readFileSync(path.join(appRoot, 'src', 'pages', 'member', 'index.vue'), 'utf8')
     const user = fs.readFileSync(path.join(appRoot, 'src', 'pages', 'user', 'index.vue'), 'utf8')
-    expect(member).toContain(':class="`tier-${currentTier.id}`"')
-    expect(member).toContain('class="plan-badge-row"')
-    expect(member).toContain('class="compare-scroll" scroll-x')
-    expect(member).toContain('padding-bottom: calc(178rpx + env(safe-area-inset-bottom))')
-    expect(member).toContain('.plan-card.current { opacity: 1;')
-    expect(member).toContain('.bottom-btn { display: flex;')
-    expect(member).toContain('.compare-table { min-width: 720rpx; }')
+    expect(member).toContain('class="level-roadmap"')
+    expect(member).toContain('grid-template-columns: repeat(3, minmax(0, 1fr))')
+    expect(member).toContain('grid-template-columns: 1fr;')
+    expect(member).toContain('current: currentLevel === level.id')
+    expect(member).toContain('locked: level.rank > currentRank')
+    expect(member).toContain('我的现有权益')
+    expect(member).not.toContain('bridge.member.subscribe')
     expect(user).toContain('border-left: 4rpx solid #b49460')
     expect(user).toContain('.access-copy { min-width: 0;')
   })
@@ -146,7 +146,7 @@ describe('H5 固定宽屏壳层回归', () => {
       'legal/index.vue',
       'governance/index.vue',
       'demand/publish.vue',
-      'user/login.vue',
+      '../components/AccountAuth.vue',
       'resource/detail.vue',
       'profile/index.vue',
       'admin/index.vue',

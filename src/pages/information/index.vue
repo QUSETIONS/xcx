@@ -1,101 +1,148 @@
 <template>
-  <view class="page information-page" :style="a11yStyle">
-    <view class="page-header">
-      <view><text class="eyebrow">MEDIA / MATCH</text><text class="page-title">资讯</text><text class="page-desc">行业动态、平台活动和正在发生的合作机会。</text></view>
-      <text class="header-index">INFO / 01</text>
+  <view class="information-page" :style="a11yStyle">
+    <view class="news-half">
+      <view class="news-header"><view class="news-header-main"><text class="page-title">资讯</text><button class="refresh-button" :disabled="loading" @tap="load">{{ loading ? '更新中' : '刷新' }}</button></view><text class="today">{{ today }}</text><text class="news-subtitle">行业快讯 · 活动信息</text></view>
+      <view class="news-panel">
+        <view class="section-heading"><text class="section-title">行业快讯速览</text><text class="section-count">{{ news.length }} 条快讯</text></view>
+        <view v-if="loading && !news.length" class="empty-state">正在加载快讯…</view>
+        <view v-else-if="newsError" class="empty-state"><text>快讯暂时加载失败</text><button @tap="load">重新加载</button></view>
+        <scroll-view v-else-if="news.length" scroll-y class="news-feed">
+          <button v-for="item in news" :key="item.id" class="news-item" @tap="openNews(item)">
+            <view class="news-meta"><text>{{ newsTime(item.published_at) }}</text><text>{{ item.source_name || '平台编辑' }}</text></view>
+            <text class="news-title">{{ item.title }}</text><text v-if="item.summary" class="news-summary">{{ item.summary }}</text>
+          </button>
+        </scroll-view>
+        <view v-else class="empty-state"><text>暂无已发布的行业快讯</text><text class="empty-hint">新内容发布后将在这里更新。</text></view>
+      </view>
     </view>
 
-    <view v-if="loading" class="state-card"><view class="loading-dot" /><text>正在整理资讯…</text></view>
-    <view v-else>
-      <view class="section-heading"><view><text class="section-kicker">INDUSTRY NEWS</text><text class="section-title">行业动态</text></view><text class="section-count">{{ news.length }} 条</text></view>
-      <view v-if="news.length" class="news-list">
-        <view v-for="(item, index) in news" :key="item._id || item.id || index" class="news-card" @tap="openNews(item)">
-          <view class="news-index">0{{ index + 1 }}</view>
-          <view class="news-copy"><text class="news-tag">{{ newsTag(item) }}</text><text class="news-title">{{ item.title }}</text><text class="news-summary">{{ item.subtitle || item.desc || '查看这条行业内容，了解平台正在连接的项目与资源。' }}</text></view>
-          <text class="news-arrow">↗</text>
+    <view class="activities-half">
+      <view class="section-heading"><text class="section-title">活动</text><text class="section-count">{{ activities.length }} 项</text></view>
+      <view v-if="loading && !activities.length" class="empty-state">正在加载活动…</view>
+      <view v-else-if="activityError" class="empty-state"><text>活动暂时加载失败</text><button @tap="load">重新加载</button></view>
+      <view v-else-if="!activities.length" class="empty-state">暂无开放活动，敬请关注后续更新。</view>
+      <view v-else class="activity-list">
+        <view v-for="item in activities" :key="item.id || item._id" class="activity-card">
+          <view v-if="validImage(item.cover)" class="activity-cover" @tap="openActivity(item)"><image :src="item.cover" mode="aspectFill" /><text class="activity-badge">{{ item.ended ? '已结束' : item.tag || '开放中' }}</text></view>
+          <view class="activity-copy"><text class="activity-title" @tap="openActivity(item)">{{ item.title }}</text><text class="activity-desc">{{ item.desc || item.subtitle }}</text><view class="activity-bottom"><view class="activity-meta"><text class="activity-category">{{ item.category || item.tag || '平台活动' }} · {{ item.tag || '活动' }}</text><text>{{ item.end || '时间以活动说明为准' }}{{ item.city ? ' · ' + item.city : '' }}</text><text v-if="item.registration_count != null">已有 {{ item.registration_count }} 人报名</text></view><button class="join-button" @tap="openActivity(item)">{{ !item.ended && !item.started && (item.group_id || validSignup(item.signup_url)) ? '立即参与' : '查看详情' }}</button></view></view>
         </view>
       </view>
-      <view v-else class="empty-card">近期暂无行业动态，先去和 AI 聊聊你的项目。</view>
-
-      <view class="section-heading activity-heading"><view><text class="section-kicker">EVENTS &amp; PROGRAMS</text><text class="section-title">活动</text></view><text class="section-count">{{ activities.length }} 项</text></view>
-      <view v-if="activities.length" class="activity-list">
-        <view v-for="item in activities" :key="item.id || item._id" class="activity-card" @tap="openActivity(item)">
-          <view class="activity-cover" :style="{ background: item.color || '#69574A' }"><image v-if="item.cover" :src="item.cover" mode="aspectFit" /><text v-else>MM</text></view>
-          <view class="activity-copy"><view class="activity-meta"><text>{{ item.tag || '平台活动' }}</text><text>{{ item.end || '持续开放' }}</text></view><text class="activity-title">{{ item.title }}</text><text class="activity-desc">{{ item.desc || item.subtitle }}</text></view>
-          <text class="activity-arrow">→</text>
-        </view>
-      </view>
-      <view v-else class="empty-card">暂时没有可报名活动，后续会在这里更新。</view>
     </view>
-    <view style="height: 120rpx" />
+
+    <view v-if="selectedNews" class="detail-overlay" @tap="closeNews"><view class="news-detail" @tap.stop><view class="section-heading"><text class="section-title">快讯详情</text><button class="close-button" @tap="closeNews">关闭</button></view><scroll-view scroll-y class="detail-scroll"><text class="detail-title">{{ selectedNews.title }}</text><text class="news-meta">{{ selectedNews.source_name || '平台编辑' }} · {{ newsTime(selectedNews.published_at) }}</text><text class="detail-body">{{ selectedNews.content || selectedNews.summary }}</text></scroll-view><button v-if="hasSourceUrl" class="source-button" @tap="copySource">复制原文链接</button></view></view>
   </view>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { bridge } from '@/api/bridge'
 import { a11yStyle } from '@/utils/accessibility'
-import { useNavTitle } from '@/hooks/useNavTitle'
-
-useNavTitle('titles.information')
-const loading = ref(true)
+const loading = ref(false)
 const news = ref([])
 const activities = ref([])
-
+const newsError = ref(false)
+const activityError = ref(false)
+const selectedNews = ref(null)
+const today = ref('')
+const hasSourceUrl = computed(() => /^https?:\/\//i.test(selectedNews.value?.source_url || ''))
+const asList = (value) => Array.isArray(value) ? value : Array.isArray(value?.list) ? value.list : []
 async function load() {
+  if (loading.value) return
   loading.value = true
-  const [bannerResult, activityResult] = await Promise.allSettled([bridge.banner.list(), bridge.campaign.list()])
-  const newsData = bannerResult.status === 'fulfilled' ? bannerResult.value : []
-  news.value = (Array.isArray(newsData) ? newsData : newsData?.list || []).filter((item) => item.status !== 'disabled')
-  const activityData = activityResult.status === 'fulfilled' ? activityResult.value : []
-  activities.value = Array.isArray(activityData) ? activityData.filter((item) => item.status !== 'disabled') : Array.isArray(activityData?.list) ? activityData.list : []
+  const now = new Date()
+  today.value = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 ${['周日','周一','周二','周三','周四','周五','周六'][now.getDay()]}`
+  const [newsResult, activityResult] = await Promise.allSettled([bridge.information.news(), bridge.information.activities()])
+  newsError.value = newsResult.status === 'rejected'
+  activityError.value = activityResult.status === 'rejected'
+  if (!newsError.value) news.value = asList(newsResult.value)
+  if (!activityError.value) activities.value = asList(activityResult.value).filter(item => item.status !== 'disabled')
   loading.value = false
 }
-
-function newsTag(item) { return ({ demand: '需求观察', publish: '平台动态', zone: '合作专题', resource: '资料更新', product: '服务资讯' }[item?.type] || '行业动态') }
-function openNews(item) {
-  if (item?.type === 'publish') return uni.navigateTo({ url: '/pages/demand/publish' })
-  if (item?.type === 'demand') return uni.switchTab({ url: '/pages/demand/list' })
-  if (item?.type === 'zone') return uni.navigateTo({ url: '/pages/campaign/index' })
-  if (item?.type === 'resource') return uni.navigateTo({ url: '/pages/resource/list' })
-  uni.showToast({ title: '内容正在整理中', icon: 'none' })
+function newsTime(value) {
+  if (!value) return '时间待更新'
+  const normalized = String(value).trim().replace(' ', 'T')
+  const date = new Date(/(?:Z|[+-]\d{2}:?\d{2})$/i.test(normalized) ? normalized : normalized + 'Z')
+  if (Number.isNaN(date.getTime())) return '时间待更新'
+  return `${date.getMonth() + 1}/${date.getDate()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
 }
+function validImage(url) { return /^(https?:\/\/|\/(?!\/))/i.test(String(url || '')) }
+function validSignup(url) { return /^https:\/\/[^\s]+$/i.test(String(url || '')) }
+function openNews(item) { selectedNews.value = item }
+function closeNews() { selectedNews.value = null }
+function copySource() { if (hasSourceUrl.value) uni.setClipboardData({ data: selectedNews.value.source_url }) }
 function openActivity(item) {
-  if (item?.id || item?._id) uni.navigateTo({ url: `/pages/campaign/index?id=${encodeURIComponent(item.id || item._id)}` })
+  const activityId = String(item.id || item._id || '').trim()
+  if (item.group_id) return uni.navigateTo({ url: `/pages/network/detail?id=${encodeURIComponent(item.group_id)}${activityId ? `&event_id=${encodeURIComponent(activityId)}` : ''}` })
+  if (activityId) return uni.navigateTo({ url: `/pages/campaign/detail?id=${encodeURIComponent(activityId)}` })
+  const canJoin = !item.ended && validSignup(item.signup_url)
+  uni.showModal({ title: item.title, content: `${item.desc || '请查看活动说明'}\n${item.end || ''} ${item.city || ''}${item.ended ? '\n活动已结束' : !canJoin ? '\n报名方式待主办方补充' : ''}`, confirmText: canJoin ? '复制报名链接' : '知道了', showCancel: canJoin, success: ({ confirm }) => {
+    if (confirm && canJoin) uni.setClipboardData({ data: item.signup_url, success: () => uni.showToast({ title: '报名链接已复制，请在浏览器打开', icon: 'none' }) })
+  } })
 }
-
 onMounted(load)
 </script>
 
-<style scoped lang="scss">
-.page { box-sizing: border-box; min-height: 100vh; padding: 28rpx 34rpx 0; color: #25231f; background: #f7f6f2; }
-.page-header { display: flex; align-items: flex-end; justify-content: space-between; padding-bottom: 30rpx; border-bottom: 1rpx solid rgba(30,27,22,.1); }
-.eyebrow, .section-kicker { display: block; color: #8a847b; font: 500 14rpx/1.2 ui-monospace, monospace; letter-spacing: .12em; }
-.page-title { display: block; margin-top: 18rpx; color: #191816; font: 400 45rpx/1.15 'Songti SC', serif; }
-.page-desc { display: block; margin-top: 9rpx; color: #8a847b; font-size: 18rpx; }
-.header-index { color: #b49460; font: 500 14rpx/1 ui-monospace, monospace; letter-spacing: .1em; }
-.section-heading { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 38rpx; padding-bottom: 17rpx; border-bottom: 1rpx solid rgba(30,27,22,.1); }
-.section-title { display: block; margin-top: 9rpx; color: #302b26; font: 400 30rpx/1.2 'Songti SC', serif; }
-.section-count { color: #8a847b; font-size: 17rpx; }
-.news-card, .activity-card { display: flex; align-items: flex-start; gap: 16rpx; padding: 22rpx 0; border-bottom: 1rpx solid rgba(30,27,22,.09); }
-.news-index { flex: 0 0 30rpx; color: #b49460; font: 500 17rpx/1.2 Georgia, serif; }
-.news-copy, .activity-copy { min-width: 0; flex: 1; }
-.news-tag { display: block; color: #8a847b; font-size: 16rpx; }
-.news-title { display: block; margin-top: 8rpx; color: #302b26; font: 500 24rpx/1.4 'Songti SC', serif; }
-.news-summary { display: block; margin-top: 7rpx; overflow: hidden; color: #8a847b; font-size: 18rpx; line-height: 1.5; text-overflow: ellipsis; white-space: nowrap; }
-.news-arrow, .activity-arrow { flex: 0 0 auto; color: #5c2828; font-size: 26rpx; }
-.activity-heading { margin-top: 48rpx; }
-.activity-card { align-items: center; gap: 14rpx; }
-.activity-cover { display: flex; width: 76rpx; height: 76rpx; flex: 0 0 76rpx; align-items: center; justify-content: center; color: #fcfbf8; }
-.activity-cover image { width: 38rpx; height: 38rpx; filter: brightness(0) invert(1); opacity: .85; }
-.activity-cover text { font: 500 19rpx/1 Georgia, serif; letter-spacing: .12em; }
-.activity-meta { display: flex; justify-content: space-between; color: #8a847b; font-size: 16rpx; }
-.activity-title { display: block; margin-top: 8rpx; color: #302b26; font-size: 22rpx; font-weight: 600; }
-.activity-desc { display: block; margin-top: 6rpx; overflow: hidden; color: #8a847b; font-size: 17rpx; text-overflow: ellipsis; white-space: nowrap; }
-.state-card, .empty-card { display: flex; align-items: center; justify-content: center; min-height: 180rpx; gap: 12rpx; color: #8a847b; font-size: 18rpx; }
-.loading-dot { width: 16rpx; height: 16rpx; border-radius: 50%; background: #b49460; animation: pulse 1s ease-in-out infinite; }
-.empty-card { padding: 30rpx 0; border-bottom: 1rpx solid rgba(30,27,22,.09); }
-@keyframes pulse { 50% { opacity: .35; transform: scale(.72); } }
-@media (prefers-reduced-motion: reduce) { .loading-dot { animation: none; } }
-@media (max-width: 420px) { .page { padding-right: 28rpx; padding-left: 28rpx; }.page-title { font-size: 41rpx; } }
+<style scoped>
+/* 资讯页和首页、人脉页共用同一套安静的米白底、深酒红行动色和细边框。 */
+.information-page { box-sizing: border-box; min-height: 100vh; padding: 0 24px calc(76px + env(safe-area-inset-bottom)); background: var(--page-bg, #f6f2ea); color: var(--ink, #17232d); font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+.news-half, .activities-half { width: 100%; max-width: 1040px; margin-right: auto; margin-left: auto; }
+.news-half { min-height: 46vh; padding-top: 18px; }
+.news-header { padding: 0 0 20px; border-bottom: 1px solid var(--line, rgba(23, 35, 45, .13)); background: transparent; color: var(--ink, #17232d); }
+.news-header-main { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.page-title { color: var(--ink, #17232d); font-family: 'Songti SC', 'Noto Serif CJK SC', 'STSong', Georgia, serif; font-size: 30px; font-weight: 400; letter-spacing: -.04em; }
+.refresh-button { flex: 0 0 auto; margin: 0; padding: 5px 13px; border: 1px solid var(--line, rgba(23, 35, 45, .13)); border-radius: 4px; background: var(--surface, #fcfaf5); color: var(--brand, #5a2530); font-size: 13px; line-height: 1.5; }
+.refresh-button::after, .news-item::after, .join-button::after, .close-button::after, .source-button::after, .empty-state button::after { border: 0; }
+.today { display: block; margin-top: 16px; color: var(--ink-soft, #626b6d); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; letter-spacing: .03em; }
+.news-subtitle { display: block; margin-top: 5px; color: var(--ink-muted, #968f83); font-size: 13px; }
+.news-panel { box-sizing: border-box; position: relative; margin: 0; padding: 24px 0 0; border-radius: 0; background: transparent; box-shadow: none; }
+.section-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.section-title { padding-left: 11px; border-left: 2px solid var(--accent, #b49460); color: var(--ink, #17232d); font-family: 'Songti SC', 'Noto Serif CJK SC', 'STSong', Georgia, serif; font-size: 22px; font-weight: 400; letter-spacing: -.025em; line-height: 1.25; }
+.section-count { color: var(--ink-muted, #968f83); font-size: 12px; white-space: nowrap; }
+.news-feed { height: 240px; max-height: 30vh; }
+.news-item { display: block; width: 100%; margin: 0; padding: 14px 0; border-bottom: 1px solid var(--line-soft, rgba(23, 35, 45, .075)); border-radius: 0; background: transparent; text-align: left; line-height: 1.6; }
+.news-item:active { opacity: .7; }
+.news-meta { display: flex; flex-wrap: wrap; gap: 12px; color: var(--ink-muted, #968f83); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; letter-spacing: .02em; }
+.news-title { display: block; margin-top: 6px; color: var(--ink, #17232d); font-size: 16px; font-weight: 500; line-height: 1.5; }
+.news-summary { display: block; margin-top: 5px; color: var(--ink-soft, #626b6d); font-size: 13px; line-height: 1.55; }
+.activities-half { margin-top: 30px; padding-top: 24px; border-top: 1px solid var(--line, rgba(23, 35, 45, .13)); }
+.activity-list { display: flex; flex-direction: column; gap: 10px; }
+.activity-card { display: flex; gap: 18px; min-width: 0; padding: 16px; border: 1px solid var(--line-soft, rgba(23, 35, 45, .075)); border-radius: 6px; background: var(--surface, #fcfaf5); }
+.activity-card:active { opacity: .86; }
+.activity-cover { position: relative; width: 180px; height: 140px; flex-shrink: 0; overflow: hidden; border-radius: 3px; background: var(--surface-muted, #eee7da); }
+.activity-cover image { width: 100%; height: 100%; }
+.activity-cover image.activity-icon { width: 50%; height: 50%; margin: 25%; }
+.activity-badge { position: absolute; top: 0; left: 0; padding: 4px 8px; background: var(--brand, #5a2530); color: var(--surface, #fcfaf5); font-size: 11px; }
+.activity-copy { display: flex; min-width: 0; flex: 1; flex-direction: column; }
+.activity-title { color: var(--ink, #17232d); font-family: 'Songti SC', 'Noto Serif CJK SC', 'STSong', Georgia, serif; font-size: 18px; font-weight: 400; line-height: 1.45; overflow-wrap: anywhere; }
+.activity-desc { margin-top: 6px; color: var(--ink-soft, #626b6d); font-size: 13px; line-height: 1.55; }
+.activity-bottom { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 14px; }
+.activity-meta { display: flex; min-width: 0; flex-direction: column; gap: 4px; color: var(--ink-muted, #968f83); font-size: 11px; line-height: 1.45; }
+.activity-category { color: var(--brand, #5a2530); font-size: 12px; }
+.join-button, .source-button { flex-shrink: 0; margin: 0; padding: 7px 16px; border-radius: 4px; background: var(--brand, #5a2530); color: var(--surface, #fcfaf5); font-size: 13px; line-height: 1.5; }
+.join-button:active, .source-button:active { background: var(--brand-deep, #3e1922); }
+.empty-state { display: flex; min-height: 160px; align-items: center; justify-content: center; flex-direction: column; gap: 12px; color: var(--ink-muted, #968f83); font-size: 14px; text-align: center; }
+.empty-state button { padding: 5px 14px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); color: var(--brand); font-size: 13px; }
+.empty-hint { font-size: 12px; }
+.detail-overlay { position: fixed; inset: 0; z-index: 1100; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(23, 35, 45, .58); }
+.news-detail { box-sizing: border-box; width: 100%; max-width: 680px; padding: 24px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface, #fcfaf5); }
+.detail-scroll { height: 50vh; max-height: 60vh; }
+.close-button { margin: 0; padding: 4px 12px; border: 1px solid var(--line); border-radius: 4px; background: transparent; color: var(--brand); font-size: 13px; }
+.detail-title { display: block; margin: 12px 0; color: var(--ink); font-family: 'Songti SC', 'Noto Serif CJK SC', 'STSong', Georgia, serif; font-size: 22px; font-weight: 400; line-height: 1.5; }
+.detail-body { display: block; padding: 20px 0; color: var(--ink-soft); white-space: pre-wrap; overflow-wrap: anywhere; font-size: 15px; line-height: 1.8; }
+@media (max-width: 540px) {
+  .information-page { padding-right: 16px; padding-left: 16px; }
+  .news-half { padding-top: 14px; }
+  .page-title { font-size: 27px; }
+  .section-title { font-size: 20px; }
+  .news-feed { height: 220px; max-height: 30vh; }
+  .activity-card { gap: 12px; padding: 12px; }
+  .activity-cover { width: 104px; height: 132px; }
+  .activity-title { font-size: 16px; }
+  .activity-desc { font-size: 12px; }
+  .activity-bottom { align-items: stretch; flex-direction: column; gap: 9px; padding-top: 10px; }
+  .join-button { align-self: flex-start; padding: 6px 13px; font-size: 12px; }
+  .activities-half { margin-top: 24px; padding-top: 20px; }
+  .detail-overlay { padding: 12px; }
+  .news-detail { padding: 18px; }
+}
 </style>

@@ -163,6 +163,7 @@
           ><view
             v-for="event in group.events"
             :key="event.id || event._id"
+            :id="'event-' + (event.id || event._id)"
             class="event-card"
             ><view class="event-date"
               ><text>{{ eventMonth(event.starts_at) }}</text
@@ -601,8 +602,8 @@
 </template>
 
 <script setup>
-import { onLoad, onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
-import { computed, ref } from "vue";
+import { onLoad, onReady, onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
+import { computed, nextTick, ref } from "vue";
 import { bridge } from "@/api/bridge";
 import { a11yStyle } from "@/utils/accessibility";
 import { useNavTitle } from "@/hooks/useNavTitle";
@@ -613,6 +614,8 @@ import { requirePageLogin } from "@/utils/require-login";
 useNavTitle("titles.networkDetail");
 
 const groupId = ref("");
+const requestedEventId = ref("");
+const pageReady = ref(false);
 const userStore = useUserStore();
 const group = ref(null);
 const loading = ref(true);
@@ -704,12 +707,32 @@ async function loadDetail() {
     toastError("社群加载失败，请稍后重试");
   } finally {
     loading.value = false;
+    void focusRequestedEvent();
   }
 }
 onLoad((query) => {
   groupId.value = query?.id || "";
+  requestedEventId.value = /^[a-zA-Z0-9_-]+$/.test(String(query?.event_id || '')) ? query.event_id : '';
   loadDetail();
 });
+onReady(() => { pageReady.value = true; void focusRequestedEvent(); });
+async function focusRequestedEvent() {
+  if (!pageReady.value || loading.value || !requestedEventId.value || !group.value?.events?.some(event => (event.id || event._id) === requestedEventId.value)) return;
+  const eventId = requestedEventId.value;
+  requestedEventId.value = '';
+  await nextTick();
+  // #ifdef H5
+  document.getElementById('event-' + eventId)?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  // #endif
+  // #ifndef H5
+  const query = uni.createSelectorQuery();
+  query.select('#event-' + eventId).boundingClientRect();
+  query.selectViewport().scrollOffset();
+  query.exec(([rect, viewport]) => {
+    if (rect) uni.pageScrollTo({ scrollTop: Math.max(0, rect.top + (viewport?.scrollTop || 0) - 64), duration: 250 });
+  });
+  // #endif
+}
 
 onShareAppMessage(() => ({
   title: group.value?.name

@@ -145,12 +145,13 @@ export function normalizeAgentResult(value = {}, options = {}) {
     source: text(source.source, options.source || 'unknown', 24),
     fallback: source.fallback == null ? Boolean(options.fallback) : Boolean(source.fallback),
     fallback_reason: text(source.fallback_reason, '', 32),
-    reply: text(source.reply, '', 240),
+    reply: text(source.reply, '', 4000),
     interaction_intent: text(source.interaction_intent, 'other', 32),
     intent_confidence: normalizeConfidence(source.intent_confidence),
     conversation_stage: text(source.conversation_stage, 'clarifying', 32),
     recommendation_ready: source.recommendation_ready === true,
     recommendation_reason: text(source.recommendation_reason, '', 160),
+    constraints: source.constraints && typeof source.constraints === 'object' ? source.constraints : {},
     project_phase: text(source.project_phase, '待判断', 40),
     phase_reason: text(source.phase_reason, '', 160),
     recommendation_explanations: list(source.recommendation_explanations, 5),
@@ -200,7 +201,7 @@ export function normalizeAgentMatches(value) {
 
 export function normalizeAgentTeams(value) {
   if (!Array.isArray(value)) return []
-  return value.slice(0, 6).map((item = {}) => {
+  return value.slice(0, 20).map((item = {}) => {
     const score = normalizeScore(item.match_score)
     return {
       _id: text(item._id || item.id, '', 80), id: text(item.id || item._id, '', 80),
@@ -221,7 +222,7 @@ export function normalizeAgentTeams(value) {
 
 export function normalizeAgentDemands(value) {
   if (!Array.isArray(value)) return []
-  return value.slice(0, 6).map((item = {}) => {
+  return value.slice(0, 20).map((item = {}) => {
     const score = normalizeScore(item.match_score)
     return {
       _id: text(item._id || item.id, '', 80), id: text(item.id || item._id, '', 80),

@@ -1,93 +1,25 @@
 <template>
-  <view v-if="loadState === 'loading'" class="page-state">
-    <text>{{ t('common.loading') }}</text>
-  </view>
-  <view v-else-if="loadState === 'error'" class="page-state error-state" @tap="reload">
-    <image class="page-state-icon" src="/static/icons/alert.svg" mode="aspectFit" />
-    <text>{{ t('common.loadFailed') }}</text>
-    <text class="page-state-action">{{ t('common.retry') }}</text>
-  </view>
-  <view v-else class="page">
-    <!-- 当前会员状态 -->
-    <view class="status-banner" :class="`tier-${currentTier.id}`">
-      <view class="status-left">
-        <image class="status-icon" :src="getTierIcon(currentTier.id)" mode="aspectFit" />
-        <view>
-          <text class="status-name">{{ current.name || currentTier.name }}</text>
-          <text class="status-expire" v-if="current.tier !== 'free'">{{ current.expire }}{{ t('member.expireSuffix') }}</text>
-          <text class="status-expire" v-else>{{ t('member.upgradeHint') }}</text>
+  <view class="level-page" :style="a11yStyle">
+    <view class="level-heading"><text class="page-title">我的等级与权益</text><text class="page-desc">让每一次连接，都多一些合作可能。</text></view>
+    <view v-if="loadState === 'loading'" class="page-state">正在读取等级…</view>
+    <view v-else-if="loadState === 'error'" class="page-state"><text>等级信息加载失败</text><button @tap="reload">重新加载</button></view>
+    <template v-else>
+      <view class="level-roadmap">
+        <view v-for="level in levels" :key="level.id" class="level-card" :class="{ current: currentLevel === level.id, locked: level.rank > currentRank }">
+          <view class="level-card-heading"><image :src="level.icon" mode="aspectFit" /><view><text class="level-number">{{ level.level }}</text><text>{{ level.name }}</text></view><text v-if="level.rank > currentRank" class="lock-label">可升级</text></view>
+          <text class="level-tagline">{{ level.tagline }}</text>
+          <view class="level-benefits"><text v-for="benefit in level.privileges" :key="benefit">{{ benefit }}</text></view>
+          <view class="level-footer"><text>{{ currentLevel === level.id ? '当前等级' : level.rank < currentRank ? '已包含此级权益' : '升级后享有' }}</text><button v-if="level.rank > currentRank" class="upgrade-button" @tap="showUpgrade(level)">了解升级</button></view>
         </view>
       </view>
-      <view class="status-right" v-if="current.tier !== 'free'">
-        <text class="vip-badge">VIP</text>
+      <view class="level-explanation"><image src="/static/icons/shield.svg" mode="aspectFit" /><text>等级代表平台使用权益，甲乙方均适用。匹配数量是每轮上限，实际以符合条件的项目或团队为准；更高等级不保证成交，也不绕过联系授权。</text></view>
+      <view class="account-benefits">
+        <view><text class="benefits-title">我的现有权益</text><text class="benefits-desc">原会员等级、有效期、邀请奖励与优惠券继续保留。</text></view>
+        <view class="benefits-grid"><view><text class="benefits-value">{{ activeLevel.level }} · {{ activeLevel.name }}</text><text>{{ expiryText }}</text></view><view><text class="benefits-value">{{ userStore.userInfo?.usage_credits || 0 }} 次</text><text>邀请体验余额 · {{ activeLevel.included_matching ? '当前匹配不扣减' : '按原有规则使用' }}</text></view></view>
+        <text class="benefits-desc">需求发布、Agent 对话、档案、数据看板与人脉浏览均保留。等级到期后恢复基础级，已有资料与合作记录不会删除。在线付费升级暂未开放，邀请获得的等级体验仍可使用。</text>
+        <view class="benefits-actions"><button @tap="goProfile">完善我的档案</button><button @tap="goCoupons">查看优惠券</button></view>
       </view>
-    </view>
-
-    <!-- 会员套餐 -->
-    <view class="plans-section">
-      <text class="section-title">{{ t('member.choosePlan') }}</text>
-      <view class="plan-list">
-        <view class="plan-card" v-for="tier in tiers" :key="tier.id"
-          :class="{ active: selectedTier === tier.id, current: current.tier === tier.id }"
-          @tap="selectedTier = tier.id">
-          <view class="plan-badge-row" v-if="tier.hot || current.tier === tier.id">
-            <view class="plan-hot" v-if="tier.hot"><text>{{ t('member.hot') }}</text></view>
-            <view class="plan-current-tag" v-if="current.tier === tier.id"><text>{{ t('member.currentTier') }}</text></view>
-          </view>
-          <view class="plan-header">
-            <image class="plan-icon" :src="getTierIcon(tier.id)" mode="aspectFit" />
-            <text class="plan-name">{{ tier.name }}</text>
-          </view>
-          <view class="plan-price">
-            <text class="price-symbol" v-if="tier.price > 0">¥</text>
-            <text class="price-num">{{ tier.price > 0 ? (tier.price / 100).toFixed(0) : t('member.freePrice') }}</text>
-            <text class="price-period" v-if="tier.price > 0">/{{ tier.period }}</text>
-          </view>
-          <text class="price-original" v-if="tier.original">¥{{ (tier.original / 100).toFixed(0) }}</text>
-          <view class="plan-privileges">
-            <view class="pp-item" v-for="(p, i) in tier.privileges" :key="i">
-              <text class="pp-check">✓</text>
-              <text class="pp-text">{{ p }}</text>
-            </view>
-          </view>
-        </view>
-      </view>
-    </view>
-
-    <!-- 权益对比 -->
-    <view class="compare-section">
-      <text class="section-title">{{ t('member.benefitsCompare') }}</text>
-      <scroll-view class="compare-scroll" scroll-x :show-scrollbar="false">
-        <view class="compare-table">
-        <view class="compare-row compare-head">
-          <text class="compare-col cw-name">{{ t('member.compareBenefit') }}</text>
-          <text class="compare-col">{{ t('member.colFree') }}</text>
-          <text class="compare-col cw-pro">{{ t('member.colPro') }}</text>
-          <text class="compare-col">{{ t('member.colEnterprise') }}</text>
-        </view>
-        <view class="compare-row" v-for="(item, i) in compareData" :key="i">
-          <text class="compare-col cw-name">{{ item.name }}</text>
-          <text class="compare-col">{{ item.free }}</text>
-          <text class="compare-col cw-pro">{{ item.pro }}</text>
-          <text class="compare-col">{{ item.enterprise }}</text>
-        </view>
-        </view>
-      </scroll-view>
-    </view>
-
-    <view class="bottom-safe-space" aria-hidden="true"></view>
-
-    <!-- 底部开通 -->
-    <view class="bottom-bar">
-      <view class="bottom-left">
-        <text class="bottom-price-label">{{ t('member.payable') }}</text>
-        <text class="bottom-price">¥{{ (selectedPlan.price / 100).toFixed(0) }}</text>
-        <text class="bottom-original" v-if="selectedPlan.original">¥{{ (selectedPlan.original / 100).toFixed(0) }}</text>
-      </view>
-      <view class="bottom-btn" :class="{ disabled: current.tier === selectedTier || selectedTier === 'free' || submitting }" @tap="subscribe">
-        <text>{{ submitting ? t('common.loading') : (current.tier === selectedTier ? t('member.currentTier') : (selectedTier === 'free' ? t('member.basicTier') : t('member.subscribe'))) }}</text>
-      </view>
-    </view>
+    </template>
   </view>
 </template>
 
@@ -95,177 +27,69 @@
 import { ref, computed, onMounted } from 'vue'
 import { bridge } from '@/api/bridge'
 import { useRequest } from '@/hooks/useRequest'
-import { useNavTitle } from '@/hooks/useNavTitle'
-import { t } from '@/i18n'
-import { toastError } from '@/utils/feedback'
 import { useUserStore } from '@/stores/user'
 import { requirePageLogin } from '@/utils/require-login'
-useNavTitle('titles.member')
-
+import { a11yStyle } from '@/utils/accessibility'
+import { MEMBER_LEVELS, getMemberLevel } from '../../../../Package/Member/levels.mjs'
 const userStore = useUserStore()
-
-const tiers = ref([])
 const current = ref({ tier: 'free' })
-const selectedTier = ref('pro')
-
-const fallbackTier = {
-  id: 'free', name: '普通会员', price: 0, period: '永久',
-  color: '#69574A', icon: 'user', privileges: []
-}
-
-function getTierIcon(id) {
-  if (id === 'enterprise') return '/static/icons/shield.svg'
-  if (id === 'pro') return '/static/icons/star.svg'
-  return '/static/icons/user.svg'
-}
-
-const compareData = computed(() => t('member.compareData'))
-
-const currentTier = computed(() => tiers.value.find(t => t.id === current.value.tier) || tiers.value[0] || fallbackTier)
-const selectedPlan = computed(() => tiers.value.find(t => t.id === selectedTier.value) || tiers.value[0] || fallbackTier)
-
+const levels = computed(() => current.value.levels || MEMBER_LEVELS)
+const activeLevel = computed(() => getMemberLevel(current.value))
+const currentLevel = computed(() => activeLevel.value.id)
+const currentRank = computed(() => activeLevel.value.rank)
+const expiryText = computed(() => current.value.expired || (current.value.tier !== 'free' && currentLevel.value === 'free')
+  ? '原等级已到期，基础功能继续可用'
+  : currentLevel.value === 'free' ? '长期有效' : '有效期至 ' + String(current.value.expire).slice(0, 10))
 const { state: loadState, run: loadRequest } = useRequest(async () => {
   if (!(await requirePageLogin(userStore, '登录后才能查看会员权益'))) return null
-  const [nextTiers, nextCurrent] = await Promise.all([
-    bridge.member.tiers(),
-    bridge.member.current()
-  ])
-  return { tiers: nextTiers, current: nextCurrent }
-})
-const { state: subscribeState, run: subscribeRequest } = useRequest(async (tierId) => {
-  await bridge.member.subscribe(tierId)
   return bridge.member.current()
 })
-const submitting = computed(() => subscribeState.value === 'loading')
-
 async function reload() {
   try {
     const data = await loadRequest()
     if (!data) return
-    tiers.value = data.tiers || []
-    current.value = data.current || { tier: 'free' }
-    selectedTier.value = current.value.tier === 'free' ? 'pro' : current.value.tier
-  } catch {
-    toastError(t('common.loadFailed'))
-  }
+    current.value = data
+  } catch { /* 重试入口保持可见 */ }
 }
-
+function goProfile() { uni.navigateTo({ url: '/pages/intake/index' }) }
+function goCoupons() { uni.navigateTo({ url: '/pages/coupon/index' }) }
+function showUpgrade(level) {
+  uni.showModal({ title: `了解${level.name}`, content: `${level.name}每轮最多匹配 ${level.match_limit} 个候选，有效期内不扣邀请体验次数。在线付费升级暂未开放；已有等级及邀请体验正常生效。`, showCancel: false, confirmText: '知道了' })
+}
 onMounted(reload)
-
-function subscribe() {
-  if (submitting.value || current.value.tier === selectedTier.value || selectedTier.value === 'free') return
-  uni.showModal({
-    title: t('member.confirmSubscribe'),
-    content: t('member.subscribePrompt').replace('{price}', (selectedPlan.value.price / 100).toFixed(0)).replace('{name}', selectedPlan.value.name),
-    success: async (r) => {
-      if (r.confirm) {
-        try {
-          current.value = await subscribeRequest(selectedTier.value)
-          uni.showToast({ title: t('member.subscribeSuccess'), icon: 'success' })
-        } catch (error) {
-          toastError(error?.message || t('common.loadFailed'))
-        }
-      }
-    }
-  })
-}
 </script>
 
 <style scoped>
-.page { min-height: 100vh; background: var(--page-bg, #F6F2EA); padding-bottom: calc(178rpx + env(safe-area-inset-bottom)); color: var(--ink, #17232D); }
-.page-state { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16rpx; color: rgba(0,0,0,0.5); }
-.page-state-icon { width: 72rpx; height: 72rpx; }
-.error-state { color: #FF6B35; }
-.page-state-action { font-size: 24rpx; color: rgba(0,0,0,0.45); }
-
-.status-banner { display: flex; justify-content: space-between; align-items: center; padding: 34rpx 32rpx; color: #FCFAF5; }
-.status-banner.tier-free { background: #69574A; }
-.status-banner.tier-pro { background: #5C2828; }
-.status-banner.tier-enterprise { background: #172A38; }
-.status-left { display: flex; align-items: center; }
-.status-icon { width: 56rpx; height: 56rpx; margin-right: 20rpx; }
-.status-name { font-size: 34rpx; font-weight: 600; color: #FFFFFF; display: block; }
-.status-expire { font-size: 24rpx; color: rgba(255,255,255,0.85); }
-.status-right { background: rgba(255,255,255,0.25); padding: 8rpx 24rpx; border-radius: 20rpx; }
-.vip-badge { font-size: 26rpx; color: #FFFFFF; font-weight: bold; letter-spacing: 2rpx; }
-
-.plans-section { width: 100%; max-width: 880px; margin: 0 auto; padding: 28rpx 24rpx 0; }
-.section-title { font-size: 30rpx; font-weight: 500; color: var(--ink, #17232D); display: block; margin-bottom: 18rpx; }
-.plan-list { display: flex; flex-direction: column; }
-.plan-card { background: var(--surface, #FCFAF5); border: 1rpx solid var(--line-soft, rgba(23,35,45,.075)); border-radius: 6rpx; padding: 26rpx 28rpx; margin-bottom: 14rpx; position: relative; }
-.plan-card.active { border-color: var(--brand, #5A2530); box-shadow: 0 8rpx 22rpx rgba(90,37,48,.10); }
-.plan-card.current { opacity: 1; background: #F2EADF; border-color: rgba(180,148,96,.62); }
-.plan-card.current.active { border-color: var(--brand, #5A2530); }
-.plan-badge-row { display: flex; align-items: center; justify-content: flex-end; gap: 8rpx; min-height: 28rpx; margin-bottom: 12rpx; }
-.plan-hot, .plan-current-tag { position: static; flex: 0 0 auto; padding: 5rpx 12rpx; border-radius: 3rpx; }
-.plan-hot { background: var(--brand, #5A2530); }
-.plan-hot text, .plan-current-tag text { font-size: 19rpx; line-height: 1.2; }
-.plan-hot text { color: #FCFAF5; }
-.plan-current-tag { background: var(--accent-soft, #E9DEC9); }
-.plan-current-tag text { color: var(--brand, #5A2530); }
-.plan-header { display: flex; align-items: center; margin-bottom: 14rpx; }
-.plan-icon { width: 40rpx; height: 40rpx; margin-right: 12rpx; }
-.plan-name { font-size: 30rpx; font-weight: 600; color: var(--ink, #17232D); }
-.plan-price { display: flex; align-items: baseline; }
-.price-symbol { font-size: 26rpx; color: var(--brand, #5A2530); font-weight: 600; }
-.price-num { font-size: 48rpx; font-weight: 600; color: var(--brand, #5A2530); }
-.price-period { font-size: 24rpx; color: var(--ink-muted, #968F83); margin-left: 4rpx; }
-.price-original { font-size: 24rpx; color: rgba(0,0,0,0.3); text-decoration: line-through; margin-top: 4rpx; }
-.plan-privileges { margin-top: 20rpx; }
-.pp-item { display: flex; align-items: center; padding: 6rpx 0; }
-.pp-check { font-size: 24rpx; color: var(--olive, #526153); margin-right: 12rpx; }
-.pp-text { font-size: 25rpx; color: var(--ink-soft, #626B6D); }
-
-.compare-section { width: 100%; max-width: 880px; margin: 0 auto; padding: 8rpx 24rpx 0; }
-.compare-scroll { width: 100%; max-width: 100%; overflow-x: auto; }
-.compare-table { min-width: 100%; background: var(--surface, #FCFAF5); border: 1rpx solid var(--line-soft, rgba(23,35,45,.075)); border-radius: 6rpx; overflow: hidden; }
-.compare-row { display: flex; border-bottom: 1rpx solid #F5F6FA; }
-.compare-row:last-child { border-bottom: none; }
-.compare-head { background: #F2EEE6; }
-.compare-col { flex: 1; text-align: center; font-size: 23rpx; color: var(--ink-soft, #626B6D); padding: 18rpx 8rpx; }
-.cw-name { flex: 1.4; text-align: left; padding-left: 24rpx; }
-.cw-pro { color: var(--brand, #5A2530); font-weight: 600; }
-
-.bottom-safe-space { height: 0; }
-.bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; display: flex; align-items: center; min-height: 92rpx; padding: 12rpx 24rpx; padding-bottom: calc(12rpx + env(safe-area-inset-bottom)); background: var(--surface, #FCFAF5); border-top: 1rpx solid var(--line, rgba(23,35,45,.13)); }
-.bottom-left { flex: 1; display: flex; align-items: baseline; }
-.bottom-price-label { font-size: 23rpx; color: var(--ink-muted, #968F83); }
-.bottom-price { font-size: 38rpx; font-weight: 600; color: var(--brand, #5A2530); margin: 0 8rpx; }
-.bottom-original { font-size: 23rpx; color: var(--ink-muted, #968F83); text-decoration: line-through; }
-.bottom-btn { display: flex; align-items: center; justify-content: center; min-width: 184rpx; min-height: 68rpx; padding: 0 30rpx; border: 1rpx solid var(--brand, #5A2530); border-radius: 4rpx; background: var(--brand, #5A2530); }
-.bottom-btn.disabled { border-color: #D9D1C6; background: #E9E4DB; }
-.bottom-btn text { font-size: 27rpx; color: #FCFAF5; font-weight: 600; white-space: nowrap; }
-.bottom-btn.disabled text { color: #81786D; }
-
-/* 会员页的权益表和固定结算栏按剩余空间收缩，长权益文案不会把列宽撑出卡片。 */
-.page { width: 100%; max-width: 100%; overflow-x: hidden; box-sizing: border-box; }
-.status-banner, .status-left, .status-left > view, .plans-section, .plan-card, .plan-header,
-.plan-badge-row, .plan-privileges, .pp-item, .compare-scroll, .compare-table, .compare-row, .bottom-bar, .bottom-left { min-width: 0; }
-.status-left { flex: 1; overflow: hidden; }
-.status-left > view { flex: 1; overflow: hidden; }
-.status-name, .status-expire, .plan-name, .pp-text, .bottom-price-label { max-width: 100%; overflow-wrap: anywhere; word-break: break-word; }
-.status-name, .status-expire, .plan-name, .pp-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.status-right, .plan-hot, .plan-current-tag, .bottom-btn { flex: 0 0 auto; white-space: nowrap; }
-.plan-header { gap: 12rpx; }
-.plan-name { min-width: 0; }
-.pp-item { align-items: flex-start; }
-.pp-text { flex: 1; }
-.compare-col { min-width: 0; overflow-wrap: anywhere; word-break: break-word; white-space: normal; }
-.bottom-bar { box-sizing: border-box; gap: 12rpx; }
-.bottom-left { flex: 1; overflow: hidden; flex-wrap: wrap; }
-.bottom-price-label, .bottom-price, .bottom-original { flex: 0 0 auto; }
-
-@media (max-width: 420px) {
-  .page { padding-bottom: calc(166rpx + env(safe-area-inset-bottom)); }
-  .status-banner { padding: 28rpx 20rpx; }
-  .status-right { padding-right: 16rpx; padding-left: 16rpx; }
-  .plans-section { padding-right: 16rpx; padding-left: 16rpx; }
-  .plan-card { padding: 24rpx; }
-  .compare-section { padding-right: 16rpx; padding-left: 16rpx; }
-  .compare-table { min-width: 720rpx; }
-  .compare-col { padding-right: 5rpx; padding-left: 5rpx; font-size: 21rpx; }
-  .cw-name { padding-left: 12rpx; }
-  .bottom-bar { padding-right: 16rpx; padding-left: 16rpx; }
-  .bottom-btn { min-width: 156rpx; padding-right: 20rpx; padding-left: 20rpx; }
-}
+.level-page { box-sizing: border-box; min-height: 100vh; padding: 32px 28px 80px; background: #f7f9fb; color: #17334f; font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+.level-heading, .level-roadmap, .level-explanation, .account-benefits { width: 100%; max-width: 1440px; margin: 0 auto; box-sizing: border-box; }
+.page-title { display: block; color: #073e72; font-size: 28px; font-weight: 700; line-height: 1.4; }
+.page-desc { display: block; margin-top: 8px; color: #61748a; font-size: 15px; }
+.level-roadmap { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: 32px; }
+.level-card { display: flex; flex-direction: column; min-width: 0; min-height: 292px; padding: 28px; border: 2px solid #e5e9ee; border-radius: 24px; box-sizing: border-box; background: #fff; }
+.level-card.current { border-color: #104d83; box-shadow: 0 8px 24px #17334f10; }
+.level-card.locked { background: #fff; color: #38485b; }
+.level-card-heading { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 700; }
+.level-card-heading image { width: 36px; height: 36px; flex-shrink: 0; }
+.level-number { display: block; font-size: 12px; letter-spacing: 1px; color: #61748a; margin-bottom: 4px; }
+.level-tagline { display: block; margin-top: 16px; color: #61748a; font-size: 14px; line-height: 1.6; }
+.upgrade-button { margin: 0; padding: 6px 12px; border-radius: 6px; background: #e5effa; color: #104d83; font-size: 13px; line-height: 1.5; }
+.upgrade-button::after { border: 0; }
+.locked .level-card-heading image { opacity: .5; filter: grayscale(1); }
+.lock-label { margin-left: auto; font-size: 12px; font-weight: 400; white-space: nowrap; }
+.level-benefits { display: flex; flex-direction: column; gap: 16px; padding: 32px 0; font-size: 15px; line-height: 1.6; overflow-wrap: anywhere; }
+.level-footer { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; margin-top: auto; padding-top: 20px; border-top: 1px solid #dce2e9; font-size: 14px; font-weight: 600; }
+.level-note { font-size: 12px; font-weight: 400; }
+.level-explanation { display: flex; align-items: flex-start; gap: 10px; padding: 22px 0; color: #61748a; font-size: 13px; line-height: 1.7; }
+.level-explanation image { width: 20px; height: 20px; flex-shrink: 0; }
+.account-benefits { padding: 24px; border: 1px solid #e5e9ee; border-radius: 20px; background: #fff; }
+.benefits-title, .benefits-desc, .benefits-value { display: block; }
+.benefits-title { font-size: 19px; font-weight: 700; }
+.benefits-desc { margin-top: 8px; font-size: 14px; color: #61748a; }
+.benefits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 24px 0; font-size: 13px; color: #61748a; }
+.benefits-value { color: #17334f; font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+.benefits-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+.benefits-actions button, .page-state button { margin: 0; padding: 10px 20px; background: #087cdb; color: #fff; border-radius: 8px; font-size: 14px; line-height: 1.5; }
+.benefits-actions button::after { border: 0; }
+.page-state { padding: 80px 0; display: flex; align-items: center; flex-direction: column; gap: 20px; color: #61748a; }
+@media (max-width: 760px) { .level-page { padding: 24px 16px 60px; }.page-title { font-size: 23px; }.level-roadmap { grid-template-columns: 1fr; gap: 16px; margin-top: 24px; }.level-card { padding: 24px; min-height: 250px; }.level-benefits { padding: 24px 0; }.level-card-heading { font-size: 21px; } }
 </style>

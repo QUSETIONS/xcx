@@ -5,6 +5,13 @@ import { describe, expect, it } from 'vitest'
 describe('首页真实数据接入', () => {
   const source = readFileSync(resolve(process.cwd(), 'src/pages/index/index.vue'), 'utf8')
 
+  it('首页不重复计算标题栏导航高度，宽屏入口不局限于手机画布', () => {
+    expect(source).not.toContain('style="height: 128rpx"')
+    expect(source).toContain('calc(100vh - 44px - 50px - env(safe-area-inset-bottom))')
+    expect(source).toContain('.ai-home-stage { max-width: 680px;')
+    expect(source).toContain('.home-hint { max-width: 680px;')
+  })
+
   it('不再保留固定问候、统计和待办文案', () => {
     expect(source).not.toContain('早上好，林先生')
     expect(source).not.toContain('ref(128)')

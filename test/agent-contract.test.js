@@ -2,6 +2,10 @@ import { describe, it, expect } from 'vitest'
 import { normalizeAgentResult, normalizeProviderMatches, scoreAgentQuality } from '@/api/contracts'
 
 describe('Agent 前后端契约归一化', () => {
+  it('保留完整适配分析，不能在160或240字截断结尾风险说明', () => {
+    const reply = '适配性分析。'.repeat(60) + '预算与联系人尚未公开。'
+    expect(normalizeAgentResult({ reply }).reply).toBe(reply)
+  })
   it('把不完整的 Agent 返回收敛到 schema_version=1', () => {
     const result = normalizeAgentResult({
       summary: '测试需求',
@@ -117,7 +121,7 @@ describe('Agent 前后端契约归一化', () => {
     expect(result.matches.meta.strategy).toBe('weighted-signal-v2')
   })
 
-  it('保留六个可对接团队和六条相关项目，避免前端再次截断候选池', () => {
+  it('保留服务端按等级返回的候选，安全上限为20个', () => {
     const result = normalizeAgentResult({
       matches: {
         teams: Array.from({ length: 8 }, (_, index) => ({
@@ -133,10 +137,13 @@ describe('Agent 前后端契约归一化', () => {
       }
     })
 
-    expect(result.matches.teams).toHaveLength(6)
-    expect(result.matches.demands).toHaveLength(6)
-    expect(result.matches.teams.at(-1)).toMatchObject({ _id: 'provider_6' })
-    expect(result.matches.demands.at(-1)).toMatchObject({ _id: 'demand_6' })
+    expect(result.matches.teams).toHaveLength(8)
+    expect(result.matches.demands).toHaveLength(8)
+    expect(result.matches.teams.at(-1)).toMatchObject({ _id: 'provider_8' })
+    expect(result.matches.demands.at(-1)).toMatchObject({ _id: 'demand_8' })
+    const large = normalizeAgentResult({ matches: { teams: Array.from({ length: 25 }, (_, i) => ({ _id: `team_${i}` })), demands: Array.from({ length: 25 }, (_, i) => ({ _id: `demand_${i}` })) } })
+    expect(large.matches.teams).toHaveLength(20)
+    expect(large.matches.demands).toHaveLength(20)
   })
 
   it('把 Mock/真实服务商结果收敛为同一分数契约', () => {

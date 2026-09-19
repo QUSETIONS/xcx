@@ -293,7 +293,7 @@ describe('内页真实使用回归', () => {
   })
 
   it('登录模式切换会清理找回密码的残留字段', () => {
-    const login = read('src', 'pages', 'user', 'login.vue')
+    const login = read('src', 'components', 'AccountAuth.vue')
     expect(login).toContain("const previous = mode.value")
     expect(login).toContain("if (previous === 'reset') form.value.phone = ''")
     expect(login).toContain("form.value.confirmPassword = ''")

@@ -10,6 +10,7 @@
       <view class="agent-header-actions"><view class="agent-session-state"><text class="agent-session-dot">•</text><text>SESSION OPEN</text></view><view class="clear-button" @tap="clearConversation">清空记录</view></view>
     </view>
 
+    <AgentMemoryPanel v-if="isServiceProvider" ref="memoryPanel" />
     <scroll-view class="message-scroll" scroll-y :scroll-top="scrollTop" :scroll-with-animation="false">
       <view class="conversation">
         <view
@@ -88,7 +89,7 @@
               <view v-if="!isServiceProvider && message.result.recommendation_ready && message.result.matches?.teams?.length" class="match-section">
                 <view class="match-section-heading"><view><text class="match-section-kicker">符合条件的团队</text><text class="match-section-title">可以先看这几支团队</text></view><text class="match-section-count">{{ message.result.matches.teams.length }} 个结果</text></view>
                 <text v-if="message.result.matches.meta?.strategy" class="match-strategy">按服务类型、地区、预算和近期响应排列</text>
-                  <view v-for="team in message.result.matches.teams.slice(0, 6)" :key="team._id" class="team-match-card" @tap="viewTeam(team)">
+                  <view v-for="team in message.result.matches.teams" :key="team._id" class="team-match-card" @tap="viewTeam(team)">
                   <view class="team-avatar"><text>{{ initial(team.name) }}</text></view>
                   <view class="team-main"><view class="team-name-line"><view class="team-name-wrap"><text class="team-name">{{ team.name }}</text><text v-if="team.is_ai_team" class="ai-team-badge">自动回执</text></view><text class="team-score">{{ team.match_percent }}</text></view><text class="team-meta">{{ team.category_name }} · {{ team.region }} · {{ Number(team.rating || 0).toFixed(1) }} 分</text><view v-if="team.is_ai_team" class="ai-team-hint">用于验证联系流程，发送后会立即回复</view><view v-if="team.match_reasons?.length" class="match-reasons"><text v-for="reason in team.match_reasons.slice(0, 2)" :key="reason">{{ reason }}</text></view><view class="match-feedback"><text class="feedback-label">这条结果</text><text class="feedback-action" :class="{ selected: team.feedback_action === 'shortlisted' }" @tap="handleMatchFeedbackTap($event, message, 'team', team, 'shortlisted')">有用</text><text class="feedback-action" :class="{ selected: team.feedback_action === 'not_relevant' }" @tap="handleMatchFeedbackTap($event, message, 'team', team, 'not_relevant')">不合适</text></view></view>
                   <view class="team-contact" :class="{ pending: teamContactBusy(team) }" @tap.stop="handleContactTap($event, team)"><text class="team-contact-label">{{ teamContactBusy(team) ? '发送中…' : (teamContactLabel(team) || '申请联系') }}</text></view>
@@ -96,8 +97,8 @@
               </view>
               <view v-if="!isServiceProvider && message.result.recommendation_ready && message.result.outreach_brief?.opening" class="outreach-note"><text class="outreach-label">FIRST OUTREACH</text><text class="outreach-title">首次沟通可以这样开始</text><text class="outreach-opening">{{ message.result.outreach_brief.opening }}</text><text v-if="message.result.outreach_brief.context" class="outreach-context">{{ message.result.outreach_brief.context }}</text><view v-if="message.result.outreach_brief.questions?.length" class="outreach-questions"><text v-for="question in message.result.outreach_brief.questions" :key="question">{{ question }}</text></view></view>
               <view v-if="isServiceProvider && message.result.recommendation_ready && message.result.matches?.demands?.length" class="match-section demand-match-section">
-                <view class="match-section-heading"><view><text class="match-section-kicker">匹配项目</text><text class="match-section-title">这些项目正在寻找相关服务</text></view><text class="match-section-count">{{ Math.min(6, message.result.matches.demands.length) }} 条</text></view>
-                <view v-for="demand in message.result.matches.demands.slice(0, 6)" :key="demand._id" class="demand-match-card" @tap="goMatchedDemand(demand)"><view class="demand-match-copy"><text class="demand-match-title">{{ demand.title }}</text><text class="demand-match-meta">{{ demand.company_name || '项目方' }} · {{ demand.region }} · {{ demand.match_percent }} 相近</text><view class="match-feedback"><text class="feedback-label">这条结果</text><text class="feedback-action" :class="{ selected: demand.feedback_action === 'shortlisted' }" @tap.stop="recordMatchFeedback(message, 'demand', demand, 'shortlisted')">有用</text><text class="feedback-action" :class="{ selected: demand.feedback_action === 'not_relevant' }" @tap.stop="recordMatchFeedback(message, 'demand', demand, 'not_relevant')">不合适</text></view></view><text class="demand-match-arrow">→</text></view>
+                <view class="match-section-heading"><view><text class="match-section-kicker">匹配项目</text><text class="match-section-title">这些项目正在寻找相关服务</text></view><text class="match-section-count">{{ message.result.matches.demands.length }} 条</text></view>
+                <view v-for="demand in message.result.matches.demands" :key="demand._id" class="demand-match-card" @tap="goMatchedDemand(demand)"><view class="demand-match-copy"><text class="demand-match-title">{{ demand.title }}</text><text class="demand-match-meta">{{ demand.company_name || '项目方' }} · {{ demand.region }} · {{ demand.match_percent }} 相近</text><view class="match-feedback"><text class="feedback-label">这条结果</text><text class="feedback-action" :class="{ selected: demand.feedback_action === 'shortlisted' }" @tap.stop="recordMatchFeedback(message, 'demand', demand, 'shortlisted')">有用</text><text class="feedback-action" :class="{ selected: demand.feedback_action === 'not_relevant' }" @tap.stop="recordMatchFeedback(message, 'demand', demand, 'not_relevant')">不合适</text></view></view><text class="demand-match-arrow">→</text></view>
               </view>
               <view class="result-actions">
                 <view v-if="!isServiceProvider && message.result.recommendation_ready" class="apply-button" @tap="applyResult(message.result)">发布这条需求 <text>→</text></view>
@@ -186,9 +187,11 @@ import { useUserStore } from '@/stores/user'
 import { hasStoredAccessToken, scopedStorageKey } from '@/utils/session'
 import { createStreamBuffer } from '@/utils/stream-buffer'
 import { collapseRetriedFailures, getRetryPayload } from '@/utils/agent-conversation'
+import AgentMemoryPanel from '@/components/AgentMemoryPanel.vue'
 
 useNavTitle('titles.agent')
 const userStore = useUserStore()
+const memoryPanel = ref(null)
 
 const messages = ref([])
 const agentSessionId = ref('')
@@ -515,6 +518,7 @@ async function send({ retryAssistantId = '' } = {}) {
   } finally {
     deltaBuffer?.stop()
     sending.value = false
+    memoryPanel.value?.refresh()
     scrollToBottom()
   }
 }
@@ -568,7 +572,7 @@ function resultActionDescription(result = {}) {
 
 function resultMatchCount(result = {}) {
   const values = isServiceProvider.value ? result?.matches?.demands : result?.matches?.teams
-  return Array.isArray(values) ? Math.min(6, values.length) : 0
+  return Array.isArray(values) ? values.length : 0
 }
 
 function resultPrimaryLabel(message) {

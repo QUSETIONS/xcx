@@ -522,6 +522,10 @@ export const bridge = {
   banner: {
     list: adapt(() => mock.bannerService.list(), () => http.get('/banner/list'))
   },
+  information: {
+    news: adapt(() => [], () => http.get('/information/news'), { skipEnsureLogin: true }),
+    activities: adapt(() => [], () => http.get('/information/activities'), { skipEnsureLogin: true })
+  },
   category: {
     list: adapt((p) => mock.categoryService.list(p), (p) => http.get('/category/list', p))
   },
@@ -659,6 +663,8 @@ export const bridge = {
 
   // Agent 需求整理
   agent: {
+    providerProfile: adapt(() => ({ profile_text: '', preferences_text: '', auto_remember: false, version: 0 }), () => http.get('/agent/provider-profile')),
+    saveProviderProfile: adapt(() => { throw new Error('能力记忆需连接真实服务使用') }, (payload) => http.put('/agent/provider-profile', payload)),
     organize: (payload) => runAgentRequest({
       useMock: useMock(),
       delay,
