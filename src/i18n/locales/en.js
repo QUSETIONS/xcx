@@ -55,6 +55,8 @@ export default {
     resourceManage: 'Resource Mgmt',
     categoryManage: 'Category Mgmt',
     bannerManage: 'Banner Mgmt',
+    campaignManage: 'Campaign Mgmt',
+    newsManage: 'News Mgmt',
     userManage: 'User Mgmt',
     systemConfig: 'System Config',
     productEdit: 'Product Editor',

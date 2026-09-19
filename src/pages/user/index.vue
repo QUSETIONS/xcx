@@ -96,7 +96,8 @@ const userInfo = computed(() => userStore.userInfo || {})
 const isAdmin = computed(() => userStore.isAdmin)
 const isProvider = computed(() => userInfo.value.account_type === 'provider' || userInfo.value.role === 'provider' || Boolean(userInfo.value.provider_id))
 const workflowRoleLabel = computed(() => userInfo.value.workflow_role === 'service_provider' ? '乙方视角 / 寻找项目' : '甲方视角 / 发布需求')
-const organizationTypeLabel = computed(() => userInfo.value.organization_type === 'capital' ? '资金 / 投资机构' : '项目 / 企业方')
+const organizationTypeLabels = { project: '项目企业', capital: '资金 / 投资机构', brand: '品牌方', agency: '服务机构', other: '其他机构' }
+const organizationTypeLabel = computed(() => organizationTypeLabels[userInfo.value.organization_type] || '项目企业')
 const memberLevel = computed(() => getMemberLevel(userInfo.value))
 const memberTierLabel = computed(() => `${memberLevel.value.level} · ${memberLevel.value.name}`)
 const accessCopy = computed(() => userInfo.value.workflow_role === 'service_provider' ? '可用 AI 匹配项目并管理接单权限' : '可用 AI 梳理需求并发起合作')
@@ -127,7 +128,7 @@ const intakeStatusText = computed(() => ({
   needs_more: '需要补充资料，打开查看审核说明',
   approved: '已通过审核，可按授权范围参与匹配',
   rejected: '资料需要重新整理，打开查看说明'
-}[intakeProfile.value?.status] || '按身份填写甲方资金方 / 乙方项目企业档案'))
+}[intakeProfile.value?.status] || '填写机构与合作档案'))
 
 async function fetchOverview() {
   if (!userStore.token) {

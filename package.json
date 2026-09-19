@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "eval:agent": "node scripts/evaluate-agent.mjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check:budgets": "node scripts/check-budgets.mjs"
   },
   "dependencies": {
     "dayjs": "^1.11.11",

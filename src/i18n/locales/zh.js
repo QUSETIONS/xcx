@@ -55,6 +55,8 @@ export default {
     resourceManage: '资料管理',
     categoryManage: '分类管理',
     bannerManage: 'Banner 管理',
+    campaignManage: '活动管理',
+    newsManage: '资讯管理',
     userManage: '用户管理',
     systemConfig: '系统配置',
     productEdit: '商品编辑',

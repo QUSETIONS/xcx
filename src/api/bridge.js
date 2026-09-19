@@ -1016,6 +1016,18 @@ export const bridge = {
       update: adapt((id, d) => mock.adminService.banners.update(id, d), (id, d) => http.put(`/admin/banners/${id}`, d)),
       delete: adapt((id) => mock.adminService.banners.delete(id), (id) => http.delete(`/admin/banners/${id}`))
     },
+    campaigns: {
+      list: adapt(() => mock.adminService.campaigns.list(), () => http.get('/admin/campaigns')),
+      create: adapt((d) => mock.adminService.campaigns.create(d), (d) => http.post('/admin/campaigns', d)),
+      update: adapt((id, d) => mock.adminService.campaigns.update(id, d), (id, d) => http.put(`/admin/campaigns/${id}`, d)),
+      delete: adapt((id) => mock.adminService.campaigns.delete(id), (id) => http.delete(`/admin/campaigns/${id}`))
+    },
+    news: {
+      list: adapt(() => mock.adminService.news.list(), () => http.get('/admin/news')),
+      create: adapt((d) => mock.adminService.news.create(d), (d) => http.post('/admin/news', d)),
+      update: adapt((id, d) => mock.adminService.news.update(id, d), (id, d) => http.put(`/admin/news/${id}`, d)),
+      delete: adapt((id) => mock.adminService.news.delete(id), (id) => http.delete(`/admin/news/${id}`))
+    },
     system: {
       get: adapt(() => mock.adminService.system.get(), () => http.get('/admin/system-config')),
       update: adapt((d) => mock.adminService.system.update(d), (d) => http.put('/admin/system-config', d))

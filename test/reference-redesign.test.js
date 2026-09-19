@@ -41,7 +41,7 @@ describe('参考图改版实际交互', () => {
     expect(uni.navigateTo).toHaveBeenCalledWith({ url: '/pages/user/register-b?invite_code=ABC123' })
   })
 
-  it.each([['capital', '甲方注册', '投资机构名称', 'demand_owner'], ['project', '乙方注册', '企业名称', 'service_provider']])('%s 注册页面固定身份，验证码和同意门禁有效', async (party, title, companyPlaceholder, workflow) => {
+  it.each([['capital', '甲方注册', 'demand_owner'], ['project', '乙方注册', 'service_provider']])('%s 注册页面固定身份，验证码和同意门禁有效', async (party, title, workflow) => {
     vi.useFakeTimers()
     mocks.register.mockResolvedValue({})
     const wrapper = render(AccountAuth, { fixedParty: party })
@@ -52,9 +52,14 @@ describe('参考图改版实际交互', () => {
     await wrapper.find('input[placeholder="请输入11位手机号"]').setValue('13900000001')
     await wrapper.find('input[placeholder="至少8位，包含字母和数字"]').setValue('TestPass123')
     await wrapper.find('input[placeholder="再输入一次密码"]').setValue('TestPass123')
-    await wrapper.find(`input[placeholder="${companyPlaceholder}"]`).setValue('测试机构')
+    await wrapper.find('input[placeholder="所在公司或机构"]').setValue('测试机构')
     await wrapper.find('input[placeholder="例如：市场负责人"]').setValue('负责人')
     await wrapper.find('input[placeholder="例如：上海"]').setValue('上海')
+    await wrapper.find('.primary-btn').trigger('tap')
+    expect(mocks.register).not.toHaveBeenCalled()
+    expect(wrapper.text()).toContain('请选择你的机构类型')
+    // 机构类型与甲乙方身份解耦：乙方也可以选择资金机构。
+    await wrapper.findAll('.org-option')[1].trigger('tap')
     await wrapper.find('.primary-btn').trigger('tap')
     expect(mocks.register).not.toHaveBeenCalled()
     expect(wrapper.text()).toContain('请输入6位短信验证码')
@@ -65,7 +70,7 @@ describe('参考图改版实际交互', () => {
     await wrapper.find('.consent-row').trigger('tap')
     await wrapper.find('.primary-btn').trigger('tap')
     await flushPromises()
-    expect(mocks.register).toHaveBeenCalledWith(expect.objectContaining({ registration_party: party, organization_type: party, workflow_role: workflow, code: '012345', agreement_consent: true }))
+    expect(mocks.register).toHaveBeenCalledWith(expect.objectContaining({ registration_party: workflow, organization_type: 'capital', workflow_role: workflow, code: '012345', agreement_consent: true }))
     await vi.advanceTimersByTimeAsync(300)
     expect(uni.reLaunch).toHaveBeenCalledWith({ url: '/pages/intake/index' })
   })

@@ -46,6 +46,13 @@ function validateResult(result, expected = {}) {
     const keywordText = [...(result?.tags || []), ...(result?.keywords || []), result?.summary].join(' ')
     checks.push({ name: 'keywords', pass: containsAny(keywordText, expected.keywords_any) })
   }
+  if (expected.missing_any) {
+    const missingText = [...(result?.missing || []), ...(result?.questions || [])].join(' ')
+    checks.push({ name: 'missing', pass: containsAny(missingText, expected.missing_any) })
+  }
+  if (Number.isFinite(expected.confidence_max)) {
+    checks.push({ name: 'confidence_max', pass: Number.isFinite(result?.confidence) && result.confidence <= expected.confidence_max })
+  }
 
   return checks
 }

@@ -54,6 +54,8 @@ const menuItems = ref([
   { label: t('titles.resourceManage'), path: '/pages/admin/resource-manage', icon: '/static/icons/file.svg', count: 0, permission: 'admin.catalog.read' },
   { label: t('titles.categoryManage'), path: '/pages/admin/category-manage', icon: '/static/icons/tab/list.svg', count: 0, permission: 'admin.catalog.read' },
   { label: t('titles.bannerManage'), path: '/pages/admin/banner-manage', icon: '/static/icons/star.svg', count: 0, permission: 'admin.catalog.read' },
+  { label: t('titles.campaignManage'), path: '/pages/admin/campaign-manage', icon: '/static/icons/dashboard.svg', count: 0, permission: 'admin.catalog.read' },
+  { label: t('titles.newsManage'), path: '/pages/admin/news-manage', icon: '/static/icons/file.svg', count: 0, permission: 'admin.catalog.read' },
   { label: t('titles.userManage'), path: '/pages/admin/user-manage', icon: '/static/icons/user.svg', count: 0, permission: 'admin.users.read' },
   { label: '服务方审核', path: '/pages/admin/provider-manage', icon: '/static/icons/handshake.svg', count: 0, permission: 'admin.providers.read' },
   { label: '内测资料审核', path: '/pages/admin/intake-manage', icon: '/static/icons/file.svg', count: 0, permission: 'admin.intakes.read' },
@@ -67,7 +69,7 @@ const { state: loadState, run: loadRequest } = useRequest(async () => {
   const access = await bridge.admin.access()
   const permissions = access?.permissions || ['*']
   const can = (permission) => permissions.includes('*') || permissions.includes(permission)
-  const [demands, leads, orders, products, resources, categories, banners, users, providers, intakes] = await Promise.all([
+  const [demands, leads, orders, products, resources, categories, banners, campaigns, news, users, providers, intakes] = await Promise.all([
     // 首页只展示各模块数量，不需要把整页业务记录一起拉下来。
     can('admin.demands.read') ? bridge.admin.demands.list({ page: 1, pageSize: 1 }) : Promise.resolve({ total: 0 }),
     can('admin.leads.read') ? bridge.admin.leads.list({ page: 1, pageSize: 1 }) : Promise.resolve({ total: 0 }),
@@ -76,11 +78,13 @@ const { state: loadState, run: loadRequest } = useRequest(async () => {
     can('admin.catalog.read') ? bridge.admin.resources.list({ page: 1, pageSize: 1 }) : Promise.resolve({ total: 0 }),
     can('admin.catalog.read') ? bridge.admin.categories.list({}) : Promise.resolve([]),
     can('admin.catalog.read') ? bridge.admin.banners.list() : Promise.resolve([]),
+    can('admin.catalog.read') ? bridge.admin.campaigns.list() : Promise.resolve([]),
+    can('admin.catalog.read') ? bridge.admin.news.list() : Promise.resolve([]),
     can('admin.users.read') ? bridge.admin.users.list({ page: 1, pageSize: 1 }) : Promise.resolve({ total: 0 }),
     can('admin.providers.read') ? bridge.admin.providers.list({ status: 'pending', page: 1, pageSize: 1 }) : Promise.resolve({ total: 0 }),
     can('admin.intakes.read') ? bridge.admin.intakes.list({ status: 'submitted', page: 1, pageSize: 1 }) : Promise.resolve({ total: 0 })
   ])
-  return { demands, leads, orders, products, resources, categories, banners, users, providers, intakes, permissions }
+  return { demands, leads, orders, products, resources, categories, banners, campaigns, news, users, providers, intakes, permissions }
 })
 
 async function reload() {
@@ -94,6 +98,8 @@ async function reload() {
       '/pages/admin/resource-manage': data.resources?.total || 0,
       '/pages/admin/category-manage': data.categories?.length || 0,
       '/pages/admin/banner-manage': data.banners?.length || 0,
+      '/pages/admin/campaign-manage': data.campaigns?.length || 0,
+      '/pages/admin/news-manage': data.news?.length || 0,
       '/pages/admin/user-manage': data.users?.total || 0,
       '/pages/admin/provider-manage': data.providers?.total || 0,
       '/pages/admin/intake-manage': data.intakes?.total || 0

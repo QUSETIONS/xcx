@@ -24,12 +24,12 @@
 
         <view class="form-intro">
           <text class="form-title">{{ mode === 'login' ? '继续使用媒合智联' : mode === 'register' ? (fixedParty === 'capital' ? '甲方注册' : fixedParty === 'project' ? '乙方注册' : '请选择注册身份') : '重置登录密码' }}</text>
-          <text class="form-subtitle">{{ mode === 'login' ? '登录后可以继续查看需求和对接进展' : mode === 'register' ? (fixedParty === 'capital' ? '资金方 / 投资机构 · 创建账号后完善甲方档案' : fixedParty === 'project' ? '项目企业 · 创建账号后完善乙方档案' : '甲方、乙方使用各自独立的注册页面') : `用绑定的${resetChannel === 'email' ? '邮箱' : '手机号'}验证身份，再设置新密码` }}</text>
+          <text class="form-subtitle">{{ mode === 'login' ? '登录后可以继续查看需求和对接进展' : mode === 'register' ? (fixedParty === 'capital' ? '有需求、要发布 · 创建账号后发布需求并与乙方对接' : fixedParty === 'project' ? '提供服务 / 找项目 · 创建账号后完善乙方能力档案' : '甲方、乙方使用各自独立的注册页面') : `用绑定的${resetChannel === 'email' ? '邮箱' : '手机号'}验证身份，再设置新密码` }}</text>
         </view>
 
         <view v-if="mode === 'register' && !fixedParty" class="party-choices">
-          <button class="party-choice" @tap="chooseParty('capital')"><text class="party-title">甲方注册</text><text class="party-desc">资金方 / 投资机构</text><text class="party-action">进入甲方注册页</text></button>
-          <button class="party-choice" @tap="chooseParty('project')"><text class="party-title">乙方注册</text><text class="party-desc">项目企业</text><text class="party-action">进入乙方注册页</text></button>
+          <button class="party-choice" @tap="chooseParty('capital')"><text class="party-title">甲方注册</text><text class="party-desc">有需求、要发布</text><text class="party-action">进入甲方注册页</text></button>
+          <button class="party-choice" @tap="chooseParty('project')"><text class="party-title">乙方注册</text><text class="party-desc">提供服务、找项目</text><text class="party-action">进入乙方注册页</text></button>
         </view>
 
         <template v-if="mode !== 'register' || fixedParty">
@@ -103,8 +103,8 @@
 
           <view class="profile-grid">
             <view class="field compact-field">
-              <text class="field-label">{{ fixedParty === 'capital' ? '对接机构' : '企业名称' }}</text>
-              <input v-model="form.company" class="field-input" type="text" maxlength="40" :placeholder="fixedParty === 'capital' ? '投资机构名称' : '企业名称'" />
+              <text class="field-label">公司 / 机构名称</text>
+              <input v-model="form.company" class="field-input" type="text" maxlength="40" placeholder="所在公司或机构" />
             </view>
             <view class="field compact-field">
               <text class="field-label">你的职位</text>
@@ -114,6 +114,12 @@
           <view class="field">
             <text class="field-label">所在城市</text>
             <input v-model="form.city" class="field-input" type="text" maxlength="20" placeholder="例如：上海" confirm-type="done" />
+          </view>
+          <view class="field">
+            <view class="field-label-row"><text class="field-label">机构类型</text><text class="field-hint">描述你的机构，与甲乙方身份无关</text></view>
+            <view class="org-options">
+              <view v-for="item in ORGANIZATION_TYPE_OPTIONS" :key="item.value" class="org-option" :class="{ active: form.organization_type === item.value }" @tap="form.organization_type = item.value">{{ item.label }}</view>
+            </view>
           </view>
           <view class="field invite-field">
             <view class="field-label-row"><text class="field-label">邀请码</text><text class="field-hint">可选，受邀人可单独选择权益</text></view>
@@ -199,6 +205,18 @@ import { LEGAL_DOCUMENT_VERSION } from '@/config/legal'
 const props = defineProps({ fixedParty: { type: String, default: '' }, inviteCode: { type: String, default: '' } })
 if (!props.fixedParty) useNavTitle('titles.login')
 
+// 注册页只决定业务角色（甲方=发布需求，乙方=提供服务/找项目）；
+// 机构类型由用户在表单里单独选择，与甲乙方身份解耦。
+const registrationRole = computed(() => props.fixedParty === 'capital' ? 'demand_owner' : 'service_provider')
+const ORGANIZATION_TYPE_OPTIONS = [
+  { value: 'project', label: '项目企业' },
+  { value: 'capital', label: '资金 / 投资机构' },
+  { value: 'brand', label: '品牌方' },
+  { value: 'agency', label: '服务机构' },
+  { value: 'other', label: '其他机构' }
+]
+const ORGANIZATION_TYPE_VALUES = new Set(ORGANIZATION_TYPE_OPTIONS.map((item) => item.value))
+
 const userStore = useUserStore()
 const mode = ref(props.fixedParty ? 'register' : 'login')
 const resetChannel = ref('phone')
@@ -225,7 +243,7 @@ const form = ref({
   company: '',
   title: '',
   city: '',
-  organization_type: props.fixedParty,
+  organization_type: '',
   invite_code: '',
   reward_type: ''
 })
@@ -335,7 +353,7 @@ function validate() {
   if (!data.password) return '请输入登录密码'
   if (mode.value === 'register') {
     if (String(data.nickname).trim().length < 2) return '请填写至少2个字的姓名或称呼'
-    if (!['project', 'capital'].includes(data.organization_type)) return '请选择你的档案类型'
+    if (!ORGANIZATION_TYPE_VALUES.has(data.organization_type)) return '请选择你的机构类型'
     if (!/^\d{6}$/.test(String(data.code).trim())) return '请输入6位短信验证码'
     if (!/^(?=.*[A-Za-z])(?=.*\d).{8,72}$/.test(data.password)) return '密码至少8位，且必须包含字母和数字'
     if (data.password !== data.confirmPassword) return '两次输入的密码不一致'
@@ -355,8 +373,8 @@ async function submit() {
   submitting.value = true
   try {
     const payload = { ...form.value, phone: String(form.value.phone || '').trim(), code: String(form.value.code || '').trim(), ...consentPayload.value,
-      ...(mode.value === 'register' ? { registration_party: props.fixedParty, organization_type: props.fixedParty,
-        workflow_role: props.fixedParty === 'capital' ? 'demand_owner' : 'service_provider' } : {}) }
+      ...(mode.value === 'register' ? { registration_party: registrationRole.value,
+        organization_type: form.value.organization_type, workflow_role: registrationRole.value } : {}) }
     if (mode.value === 'register') {
       const registration = await userStore.register(payload)
       const hasReferralReward = String(payload.invite_code || '').trim() && registration?.referral_rewards?.length
@@ -732,6 +750,9 @@ function doWechatLogin() {
 
 .field-label-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12rpx; }
 .field-hint { color: #9a9286; font-size: 16rpx; font-weight: 400; }
+.org-options { display: flex; flex-wrap: wrap; gap: 12rpx; margin-top: 8rpx; }
+.org-option { padding: 12rpx 24rpx; border: 1rpx solid #d8d2c8; border-radius: 999rpx; background: #fff; color: #5a5348; font-size: 24rpx; line-height: 1.5; }
+.org-option.active { border-color: #5c2828; color: #5c2828; box-shadow: inset 0 0 0 1rpx #5c2828; }
 .invite-status { display: block; margin-top: 8rpx; color: #8a4c46; font-size: 17rpx; line-height: 1.45; }
 .invite-status.success { color: #56624c; }
 .reward-options { margin-top: 15rpx; padding-top: 13rpx; border-top: 1rpx solid rgba(30, 27, 22, .09); }

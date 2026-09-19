@@ -60,36 +60,37 @@ onMounted(reload)
 </script>
 
 <style scoped>
-.level-page { box-sizing: border-box; min-height: 100vh; padding: 32px 28px 80px; background: #f7f9fb; color: #17334f; font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+/* 与主站 Quiet Intelligence 令牌一致：暖纸白底、酒红主色、香槟金点缀。 */
+.level-page { box-sizing: border-box; min-height: 100vh; padding: 32px 28px 80px; background: #F6F2EA; color: #17232D; font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; }
 .level-heading, .level-roadmap, .level-explanation, .account-benefits { width: 100%; max-width: 1440px; margin: 0 auto; box-sizing: border-box; }
-.page-title { display: block; color: #073e72; font-size: 28px; font-weight: 700; line-height: 1.4; }
-.page-desc { display: block; margin-top: 8px; color: #61748a; font-size: 15px; }
+.page-title { display: block; color: #3E1922; font-size: 28px; font-weight: 700; line-height: 1.4; }
+.page-desc { display: block; margin-top: 8px; color: #626B6D; font-size: 15px; }
 .level-roadmap { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: 32px; }
-.level-card { display: flex; flex-direction: column; min-width: 0; min-height: 292px; padding: 28px; border: 2px solid #e5e9ee; border-radius: 24px; box-sizing: border-box; background: #fff; }
-.level-card.current { border-color: #104d83; box-shadow: 0 8px 24px #17334f10; }
-.level-card.locked { background: #fff; color: #38485b; }
+.level-card { display: flex; flex-direction: column; min-width: 0; min-height: 292px; padding: 28px; border: 2px solid rgba(23, 35, 45, .13); border-radius: 24px; box-sizing: border-box; background: #FCFAF5; }
+.level-card.current { border-color: #5A2530; box-shadow: 0 8px 24px rgba(90, 37, 48, .08); }
+.level-card.locked { background: #FCFAF5; color: #626B6D; }
 .level-card-heading { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 700; }
 .level-card-heading image { width: 36px; height: 36px; flex-shrink: 0; }
-.level-number { display: block; font-size: 12px; letter-spacing: 1px; color: #61748a; margin-bottom: 4px; }
-.level-tagline { display: block; margin-top: 16px; color: #61748a; font-size: 14px; line-height: 1.6; }
-.upgrade-button { margin: 0; padding: 6px 12px; border-radius: 6px; background: #e5effa; color: #104d83; font-size: 13px; line-height: 1.5; }
+.level-number { display: block; font-size: 12px; letter-spacing: 1px; color: #968F83; margin-bottom: 4px; }
+.level-tagline { display: block; margin-top: 16px; color: #626B6D; font-size: 14px; line-height: 1.6; }
+.upgrade-button { margin: 0; padding: 6px 12px; border-radius: 6px; background: #F2EBDD; color: #5A2530; font-size: 13px; line-height: 1.5; }
 .upgrade-button::after { border: 0; }
 .locked .level-card-heading image { opacity: .5; filter: grayscale(1); }
-.lock-label { margin-left: auto; font-size: 12px; font-weight: 400; white-space: nowrap; }
+.lock-label { margin-left: auto; color: #A47B42; font-size: 12px; font-weight: 400; white-space: nowrap; }
 .level-benefits { display: flex; flex-direction: column; gap: 16px; padding: 32px 0; font-size: 15px; line-height: 1.6; overflow-wrap: anywhere; }
-.level-footer { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; margin-top: auto; padding-top: 20px; border-top: 1px solid #dce2e9; font-size: 14px; font-weight: 600; }
+.level-footer { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(23, 35, 45, .1); font-size: 14px; font-weight: 600; }
 .level-note { font-size: 12px; font-weight: 400; }
-.level-explanation { display: flex; align-items: flex-start; gap: 10px; padding: 22px 0; color: #61748a; font-size: 13px; line-height: 1.7; }
+.level-explanation { display: flex; align-items: flex-start; gap: 10px; padding: 22px 0; color: #626B6D; font-size: 13px; line-height: 1.7; }
 .level-explanation image { width: 20px; height: 20px; flex-shrink: 0; }
-.account-benefits { padding: 24px; border: 1px solid #e5e9ee; border-radius: 20px; background: #fff; }
+.account-benefits { padding: 24px; border: 1px solid rgba(23, 35, 45, .13); border-radius: 20px; background: #FCFAF5; }
 .benefits-title, .benefits-desc, .benefits-value { display: block; }
 .benefits-title { font-size: 19px; font-weight: 700; }
-.benefits-desc { margin-top: 8px; font-size: 14px; color: #61748a; }
-.benefits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 24px 0; font-size: 13px; color: #61748a; }
-.benefits-value { color: #17334f; font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+.benefits-desc { margin-top: 8px; font-size: 14px; color: #626B6D; }
+.benefits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 24px 0; font-size: 13px; color: #626B6D; }
+.benefits-value { color: #3E1922; font-size: 20px; font-weight: 600; margin-bottom: 8px; }
 .benefits-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
-.benefits-actions button, .page-state button { margin: 0; padding: 10px 20px; background: #087cdb; color: #fff; border-radius: 8px; font-size: 14px; line-height: 1.5; }
+.benefits-actions button, .page-state button { margin: 0; padding: 10px 20px; background: #5A2530; color: #FCFAF5; border-radius: 8px; font-size: 14px; line-height: 1.5; }
 .benefits-actions button::after { border: 0; }
-.page-state { padding: 80px 0; display: flex; align-items: center; flex-direction: column; gap: 20px; color: #61748a; }
+.page-state { padding: 80px 0; display: flex; align-items: center; flex-direction: column; gap: 20px; color: #626B6D; }
 @media (max-width: 760px) { .level-page { padding: 24px 16px 60px; }.page-title { font-size: 23px; }.level-roadmap { grid-template-columns: 1fr; gap: 16px; margin-top: 24px; }.level-card { padding: 24px; min-height: 250px; }.level-benefits { padding: 24px 0; }.level-card-heading { font-size: 21px; } }
 </style>

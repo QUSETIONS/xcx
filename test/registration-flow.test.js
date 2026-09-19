@@ -39,7 +39,7 @@ describe('注册验证码流程', () => {
     expect(login).not.toContain('平台使用方式')
     expect(login).not.toContain('需求方')
     expect(login).not.toContain('服务方')
-    expect(login).toContain('registration_party: props.fixedParty')
+    expect(login).toContain('registration_party: registrationRole.value')
     expect(login).toContain("uni.reLaunch({ url: '/pages/intake/index' })")
   })
 })

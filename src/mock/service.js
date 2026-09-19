@@ -1602,6 +1602,46 @@ export const adminService = {
       return true
     }
   },
+  campaigns: {
+    list() { return campaignData.map(c => ({ ...c, _id: c._id || c.id, status: c.status || 'active' })) },
+    create(data = {}) {
+      const item = { _id: uid(), id: uid(), title: data.title || '新活动', desc_text: data.desc_text || '', cover: data.cover || '', tag: data.tag || '', color: data.color || '#FF6B35', end_text: data.end_text || '', type: data.type || 'event', city: data.city || '', category: data.category || '', starts_at: data.starts_at || '', ends_at: data.ends_at || '', signup_url: data.signup_url || '', status: data.status || 'active' }
+      campaignData.push(item)
+      return item
+    },
+    update(id, data = {}) {
+      const item = campaignData.find(c => (c._id || c.id) === id)
+      if (!item) return null
+      Object.assign(item, data)
+      return item
+    },
+    delete(id) {
+      const item = campaignData.find(c => (c._id || c.id) === id)
+      if (!item) return false
+      item.status = 'disabled'
+      return true
+    }
+  },
+  news: {
+    list() { return adminNewsData.map(n => ({ ...n })) },
+    create(data = {}) {
+      const item = { _id: uid(), id: uid(), title: data.title || '新资讯', summary: data.summary || '', content: data.content || '', source_name: data.source_name || '', source_url: data.source_url || '', published_at: data.published_at || '', status: data.status || 'draft' }
+      adminNewsData.push(item)
+      return item
+    },
+    update(id, data = {}) {
+      const item = adminNewsData.find(n => (n._id || n.id) === id)
+      if (!item) return null
+      Object.assign(item, data)
+      return item
+    },
+    delete(id) {
+      const item = adminNewsData.find(n => (n._id || n.id) === id)
+      if (!item) return false
+      item.status = 'disabled'
+      return true
+    }
+  },
   system: {
     get() { return { ...systemConfigData } },
     update(data = {}) {
@@ -2959,9 +2999,16 @@ const campaignData = [
   { id: 'c6', title: '产业合作主题周', desc: '集中发现资金、渠道、供应链与技术合作机会', cover: '/static/icons/dashboard.svg', tag: '专题', color: '#69574A', end: '7天后', type: 'discount' }
 ]
 export const campaignService = {
-  list() { return campaignData },
-  detail(id) { return campaignData.find(c => c.id === id) || null }
+  list() { return campaignData.filter(c => c.status !== 'disabled') },
+  detail(id) {
+    const item = campaignData.find(c => c.id === id)
+    return item && item.status !== 'disabled' ? item : null
+  }
 }
+
+const adminNewsData = [
+  { _id: 'news_demo_1', id: 'news_demo_1', title: '平台上线公告', summary: '媒合智联企业服务对接平台正式上线', content: '', source_name: '媒合智联', source_url: '', published_at: '2026-09-01 10:00:00', status: 'published' }
+]
 
 
 // ========== 签到积分 Mock ==========

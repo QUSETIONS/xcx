@@ -33,17 +33,16 @@
       <view class="section-card">
         <view class="section-heading"><text>你的业务身份</text><text>让合作方快速了解你</text></view>
         <view class="identity-group">
-          <text class="field-label">融资身份</text>
+          <text class="field-label">机构类型</text>
           <view class="identity-options">
-            <view class="identity-option" :class="{ active: form.organization_type === 'capital' }" @tap="form.organization_type = 'capital'"><text>甲方 / 资金方</text><text>银行、基金、券商、FA 或产业资本</text></view>
-            <view class="identity-option" :class="{ active: form.organization_type === 'project' }" @tap="form.organization_type = 'project'"><text>乙方 / 项目企业</text><text>有融资、渠道、资源或业务合作需求</text></view>
+            <view v-for="item in organizationTypeOptions" :key="item.value" class="identity-option" :class="{ active: form.organization_type === item.value }" @tap="form.organization_type = item.value"><text>{{ item.label }}</text><text>{{ item.desc }}</text></view>
           </view>
         </view>
         <view class="identity-group">
           <text class="field-label">平台使用方式</text>
           <view class="identity-options">
-            <view class="identity-option" :class="{ active: form.workflow_role === 'demand_owner' }" @tap="form.workflow_role = 'demand_owner'"><text>发布需求</text><text>让 AI 帮我整理并发布合作需求</text></view>
-            <view class="identity-option" :class="{ active: form.workflow_role === 'service_provider' }" @tap="form.workflow_role = 'service_provider'"><text>寻找项目</text><text>从需求广场找机会并与需求 Agent 沟通</text></view>
+            <view class="identity-option" :class="{ active: form.workflow_role === 'demand_owner' }" @tap="form.workflow_role = 'demand_owner'"><text>甲方 · 发布需求</text><text>让 AI 帮我整理并发布合作需求</text></view>
+            <view class="identity-option" :class="{ active: form.workflow_role === 'service_provider' }" @tap="form.workflow_role = 'service_provider'"><text>乙方 · 寻找项目</text><text>从需求广场找机会并与需求 Agent 沟通</text></view>
           </view>
         </view>
         <view class="field">
@@ -102,6 +101,14 @@ const userStore = useUserStore()
 const loading = ref(true)
 const saving = ref(false)
 const errorMessage = ref('')
+// 机构类型只描述“你是谁”，不再决定甲乙方身份；平台使用方式才是业务角色。
+const organizationTypeOptions = [
+  { value: 'project', label: '项目企业', desc: '有融资、渠道、资源或业务合作需求' },
+  { value: 'capital', label: '资金 / 投资机构', desc: '银行、基金、券商、FA 或产业资本' },
+  { value: 'brand', label: '品牌方', desc: '消费品牌、厂商或内容 IP 方' },
+  { value: 'agency', label: '服务机构', desc: '营销、活动、媒体等专业服务团队' },
+  { value: 'other', label: '其他机构', desc: '园区、协会、平台或其他组织' }
+]
 const form = ref({ nickname: '', phone: '', email: '', emailVerified: false, company: '', title: '', city: '', workflow_role: 'demand_owner', organization_type: 'project' })
 const originalEmail = ref('')
 const emailCode = ref('')
