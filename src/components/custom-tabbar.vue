@@ -40,10 +40,10 @@ function switchTab(item) {
 
 @media (min-width: 561px) {
   .tabbar {
-    left:50%;
+    left:calc((100vw - var(--h5-shell-width, 720px)) / 2);
     right:auto;
     width:var(--h5-shell-width, 720px);
-    transform:translate3d(-50%, 0, 0);
+    transform:none;
   }
   .tabbar-icon { width:24px; height:24px; flex-basis:24px; }
   .tabbar-text { margin-top:4px; font-size:12px; }

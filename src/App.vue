@@ -186,6 +186,7 @@ image {
     bottom: 96px !important;
   }
 }
+
 /* #endif */
 
 /* #ifdef H5 */
@@ -1933,5 +1934,142 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, .card-press:f
   #app .friends-page { padding-right: 24rpx; padding-left: 24rpx; }
   #app .friends-page .topbar { margin-right: -24rpx; margin-left: -24rpx; padding-right: 24rpx; padding-left: 24rpx; }
   #app .friends-page .recent-scroll { margin-right: -24rpx; margin-left: -24rpx; padding-right: 24rpx; padding-left: 24rpx; }
+}
+
+/* Visual stability patch：页面根节点不能带 transform。
+ * transformed ancestor 会改变 fixed 子元素的包含块，导致底栏、浮钮和遮罩
+ * 在 H5 滚动/切页时产生重影、跑位或尺寸异常。入场只保留 opacity，不创建
+ * 持久合成层；装饰印章也保持静止，避免图片在缩放动画中出现插值扭曲。 */
+#app .page,
+#app .home,
+#app .chat-page,
+#app .detail-page,
+#app .confirm-page,
+#app .publish-page,
+#app .login-page,
+#app .profile-page,
+#app .onboard-page,
+#app .page-state,
+#app .state-page {
+  animation: mm-page-fade-in .18s ease-out both;
+  transform: none !important;
+  transform-origin: initial;
+  will-change: auto;
+}
+
+#app .home .home-masthead,
+#app .home .editorial-hero,
+#app .home .service-alert,
+#app .home .service-note,
+#app .home .workspace-index,
+#app .home .brief-launcher,
+#app .home .editorial-feature,
+#app .home .todo-card,
+#app .home .industry-atlas,
+#app .home .category-section,
+#app .home .quick-entry-section,
+#app .home .product-section,
+#app .home .recommend-section,
+#app .home .promo-strip,
+#app .page .header,
+#app .page .topbar,
+#app .page .page-header,
+#app .page .hero-card,
+#app .page .list-intro,
+#app .page .summary-card,
+#app .page .action-desk,
+#app .page .section-heading,
+#app .page .section-head,
+#app .page .section-card,
+#app .page .form-card,
+#app .page .result-card,
+#app .detail-page .detail-card,
+#app .chat-page .direct-header,
+#app .page .fade-in,
+#app .home .todo-item,
+#app .home .industry-lane,
+#app .home .category-item,
+#app .home .quick-entry-card,
+#app .home .home-product-card,
+#app .message-page .action-row,
+#app .message-page .msg-item,
+#app .chat-page .msg-item,
+#app .chat-page .typing,
+#app .chat-page .service-action-panel {
+  animation: none !important;
+  transform: none !important;
+  will-change: auto;
+}
+
+#app .home .editorial-hero-seal,
+#app .network-page .hero-seal {
+  animation: none !important;
+  transform: none !important;
+  will-change: auto;
+}
+
+/* 弹层的 fixed 定位必须独立于页面内容层，避免出现半透明重影。 */
+#app .modal-mask,
+#app .picker-mask,
+#app .sheet-mask,
+#app .intro-mask,
+#app .modal-panel,
+#app .modal,
+#app .picker-panel,
+#app .join-sheet,
+#app .branch-sheet,
+#app .manage-sheet,
+#app .sheet,
+#app .intro-sheet {
+  animation: none !important;
+  transform: none !important;
+  will-change: auto;
+}
+
+@keyframes mm-page-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* H5 宽屏壳层使用整数边界直接定位，避免 translateX(-50%) 的子像素插值
+ * 让细边框和文字边缘发虚。 */
+@media (min-width: 561px) {
+  #app .uni-page-head {
+    left: calc((100vw - var(--h5-shell-width)) / 2) !important;
+    transform: none !important;
+  }
+
+  #app uni-tabbar.uni-tabbar-bottom,
+  #app .uni-tabbar-bottom .uni-tabbar,
+  #app .tabbar,
+  #app .fixed-bottom,
+  #app .action-bar,
+  #app .bottom-bar,
+  #app .submit-bar,
+  #app .settle-bar,
+  #app .comment-bar,
+  #app .nav,
+  #app .modal-mask,
+  #app .picker-mask,
+  #app .sheet-mask {
+    left: calc((100vw - var(--h5-shell-width)) / 2) !important;
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #app .page,
+  #app .home,
+  #app .chat-page,
+  #app .detail-page,
+  #app .confirm-page,
+  #app .publish-page,
+  #app .login-page,
+  #app .profile-page,
+  #app .onboard-page,
+  #app .page-state,
+  #app .state-page {
+    animation: none !important;
+  }
 }
 </style>
